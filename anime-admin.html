@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة إدارة الأنمي | Anime Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #C7372C;
+      --primary-dark: #710D0B;
+      --secondary-color: #4A4743;
+      --bg-dark: #2A2522;
+      --card-bg: #3A3532;
+      --bg-light: #4A4743;
+      --text-color: #D6D7D2;
+      --text-muted: #9C9C9C;
+      --border-radius: 8px;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .admin-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--secondary-color);
+    }
+
+    .top-bar h2 {
+      color: var(--primary-color);
+    }
+
+    .logout-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .tab-btn {
+      background-color: var(--bg-light);
+      color: var(--text-color);
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tab-btn:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .tab-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--secondary-color);
+      border-radius: var(--border-radius);
+      background-color: var(--bg-light);
+      color: var(--text-color);
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a5753;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.9rem;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+      padding: 12px;
+      text-align: right;
+      border-bottom: 1px solid var(--secondary-color);
+    }
+
+    .admin-table th {
+      background-color: var(--bg-light);
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .admin-table th:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .admin-table th i {
+      margin-left: 5px;
+      font-size: 0.9rem;
+    }
+
+    .action-btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      margin-left: 5px;
+      font-size: 0.9rem;
+    }
+
+    .edit-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .success {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: #4CAF50;
+      border: 1px solid #4CAF50;
+    }
+
+    .error {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+      border: 1px solid #f44336;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .loading-spinner {
+      border: 4px solid var(--bg-light);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    .server-options {
+      background-color: var(--bg-light);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .server-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .quality-inputs {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .add-quality-btn, .remove-server-btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .add-quality-btn {
+      background-color: #4CAF50;
+      color: white;
+      margin-right: 10px;
+    }
+
+    .remove-server-btn {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .add-server-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    /* أنماط البحث والتصفية */
+    .filters-container {
+      background-color: var(--bg-light);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 40px 10px 10px;
+      border: 1px solid var(--secondary-color);
+      border-radius: var(--border-radius);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .search-box i {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-group label {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .filter-select {
+      padding: 8px 12px;
+      border: 1px solid var(--secondary-color);
+      border-radius: var(--border-radius);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      min-width: 150px;
+    }
+
+    .sort-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .sort-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--secondary-color);
+      color: var(--text-color);
+      padding: 8px 12px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s;
+    }
+
+    .sort-btn:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .sort-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 5px;
+    }
+
+    .pagination-btn {
+      background-color: var(--bg-light);
+      border: 1px solid var(--secondary-color);
+      color: var(--text-color);
+      padding: 8px 12px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .pagination-btn:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .pagination-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .table-info {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: left;
+    }
+
+    /* أنماط جديدة للتصنيفات المتعددة */
+    .multiselect-container {
+      position: relative;
+    }
+    
+    .multiselect-select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--secondary-color);
+      border-radius: var(--border-radius);
+      background-color: var(--bg-light);
+      color: var(--text-color);
+      font-family: inherit;
+      cursor: pointer;
+      text-align: right;
+    }
+    
+    .multiselect-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: var(--card-bg);
+      border: 1px solid var(--secondary-color);
+      border-radius: var(--border-radius);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+    
+    .multiselect-dropdown.show {
+      display: block;
+    }
+    
+    .multiselect-option {
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .multiselect-option:hover {
+      background-color: var(--bg-light);
+    }
+    
+    .multiselect-option.selected {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .selected-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .selected-tag {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .selected-tag i {
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    
+    .status-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .status-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid var(--secondary-color);
+      border-radius: var(--border-radius);
+      background-color: var(--bg-light);
+      color: var(--text-color);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .status-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    .status-btn i {
+      margin-left: 5px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* أنماط للجوال */
+    @media (max-width: 768px) {
+      .admin-tabs {
+        flex-direction: column;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .admin-table {
+        font-size: 0.9rem;
+      }
+      
+      .admin-table th,
+      .admin-table td {
+        padding: 8px;
+      }
+      
+      .quality-inputs {
+        grid-template-columns: 1fr;
+      }
+      
+      .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-box {
+        min-width: 100%;
+      }
+      
+      .filter-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .sort-buttons {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .status-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="top-bar">
+      <h2>لوحة إدارة الأنمي</h2>
+      <button onclick="logout()" class="logout-btn">تسجيل الخروج</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="showTab('animeTab')">إدارة الأنمي</button>
+      <button class="tab-btn" onclick="showTab('episodeTab')">إدارة الحلقات</button>
+    </div>
+
+    <!-- رسائل التنبيه -->
+    <div id="message" class="message" style="display: none;"></div>
+
+    <!-- تبويب إدارة الأنمي -->
+    <div id="animeTab" class="tab-content active">
+      <h3>إضافة أنمي جديد</h3>
+      <form id="animeForm">
+        <div class="form-group">
+          <label for="animeTitle">اسم الأنمي *</label>
+          <input type="text" id="animeTitle" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="animeStatus">حالة الأنمي *</label>
+          <div class="status-buttons">
+            <div class="status-btn" data-status="ongoing" onclick="selectStatus('ongoing')">
+              <i class="fas fa-play-circle"></i> مستمر
+            </div>
+            <div class="status-btn" data-status="completed" onclick="selectStatus('completed')">
+              <i class="fas fa-check-circle"></i> مكتمل
+            </div>
+          </div>
+          <input type="hidden" id="animeStatus" value="ongoing" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="animeCategory">التصنيفات *</label>
+          <div class="multiselect-container">
+            <div class="multiselect-select" onclick="toggleDropdown()">
+              اختر التصنيفات
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="multiselect-dropdown" id="categoryDropdown">
+              <div class="multiselect-option" data-value="أكشن" onclick="toggleCategory('أكشن')">أكشن</div>
+              <div class="multiselect-option" data-value="مغامرة" onclick="toggleCategory('مغامرة')">مغامرة</div>
+              <div class="multiselect-option" data-value="كوميدي" onclick="toggleCategory('كوميدي')">كوميدي</div>
+              <div class="multiselect-option" data-value="دراما" onclick="toggleCategory('دراما')">دراما</div>
+              <div class="multiselect-option" data-value="فانتازيا" onclick="toggleCategory('فانتازيا')">فانتازيا</div>
+              <div class="multiselect-option" data-value="رومانسي" onclick="toggleCategory('رومانسي')">رومانسي</div>
+              <div class="multiselect-option" data-value="خيال علمي" onclick="toggleCategory('خيال علمي')">خيال علمي</div>
+              <div class="multiselect-option" data-value="رياضة" onclick="toggleCategory('رياضة')">رياضة</div>
+              <div class="multiselect-option" data-value="شونين" onclick="toggleCategory('شونين')">شونين</div>
+              <div class="multiselect-option" data-value="شوجو" onclick="toggleCategory('شوجو')">شوجو</div>
+            </div>
+          </div>
+          <div class="selected-tags" id="selectedCategories">
+            <!-- سيتم إضافة التصنيفات المحددة هنا -->
+          </div>
+          <input type="hidden" id="animeCategory" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="animeThumb">رابط الصورة المصغرة *</label>
+          <input type="url" id="animeThumb" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="animeDescription">وصف الأنمي *</label>
+          <textarea id="animeDescription" required></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="resetAnimeForm()">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ الأنمي</button>
+        </div>
+      </form>
+      
+      <h3>قائمة الأنمي</h3>
+      <div class="loading" id="animeLoading">
+        <div class="loading-spinner"></div>
+        <p>جاري تحميل قائمة الأنمي...</p>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>اسم الأنمي</th>
+            <th>التصنيفات</th>
+            <th>الحالة</th>
+            <th>عدد الحلقات</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="animeList">
+          <!-- سيتم ملؤها بالبيانات -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- تبويب إدارة الحلقات -->
+    <div id="episodeTab" class="tab-content">
+      <h3>إضافة حلقة جديدة</h3>
+      <form id="episodeForm">
+        <div class="form-group">
+          <label for="episodeAnime">الأنمي *</label>
+          <select id="episodeAnime" required>
+            <option value="">اختر الأنمي</option>
+            <!-- سيتم ملؤها بالأنمي -->
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="episodeNumber">رقم الحلقة *</label>
+          <input type="number" id="episodeNumber" min="1" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="episodeTitle">عنوان الحلقة *</label>
+          <input type="text" id="episodeTitle" required>
+        </div>
+        
+        <!-- خوادم التشغيل -->
+        <div id="serversContainer">
+          <!-- سيتم إضافة خوادم التشغيل هنا ديناميكياً -->
+        </div>
+        
+        <button type="button" id="addServerBtn" class="add-server-btn">
+          <i class="fas fa-plus"></i> إضافة خادم تشغيل
+        </button>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="resetEpisodeForm()">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ الحلقة</button>
+        </div>
+      </form>
+      
+      <h3>قائمة الحلقات</h3>
+      
+      <!-- أدوات البحث والتصفية -->
+      <div class="filters-container">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchEpisodes" placeholder="البحث في الحلقات...">
+        </div>
+        
+        <div class="filter-group">
+          <label for="animeFilter">تصفية حسب الأنمي:</label>
+          <select id="animeFilter" class="filter-select">
+            <option value="">جميع الأنمي</option>
+            <!-- سيتم ملؤها بالأنمي -->
+          </select>
+        </div>
+        
+        <div class="sort-buttons">
+          <button class="sort-btn" data-sort="anime" data-direction="asc">
+            <i class="fas fa-sort-alpha-down"></i> حسب الأنمي
+          </button>
+          <button class="sort-btn" data-sort="number" data-direction="asc">
+            <i class="fas fa-sort-numeric-down"></i> حسب رقم الحلقة
+          </button>
+        </div>
+      </div>
+      
+      <div class="loading" id="episodeLoading">
+        <div class="loading-spinner"></div>
+        <p>جاري تحميل قائمة الحلقات...</p>
+      </div>
+      
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th data-sort="anime">الأنمي <i class="fas fa-sort"></i></th>
+            <th data-sort="number">رقم الحلقة <i class="fas fa-sort"></i></th>
+            <th data-sort="title">العنوان <i class="fas fa-sort"></i></th>
+            <th>عدد الخوادم</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="episodeList">
+          <!-- سيتم ملؤها بالبيانات -->
+        </tbody>
+      </table>
+      
+      <div class="table-info" id="episodeTableInfo">
+        عرض 0 من 0 حلقة
+      </div>
+      
+      <div class="pagination" id="episodePagination">
+        <!-- سيتم إضافة أزرار الترقيم هنا -->
+      </div>
+    </div>
+  </div>
+
+  <!-- إضافة مكتبة Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // تهيئة Firebase مع الإعدادات الجديدة
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyx5DUHCK7tzSrwIB_DF33xExfCh0EbCo",
+      authDomain: "anime-studio-videos.firebaseapp.com",
+      databaseURL: "https://anime-studio-videos-default-rtdb.firebaseio.com",
+      projectId: "anime-studio-videos",
+      storageBucket: "anime-studio-videos.firebasestorage.app",
+      messagingSenderId: "593166797912",
+      appId: "1:593166797912:web:b5bcdab817f1baecb70e2d",
+      measurementId: "G-LS4NSXW208"
+    };
+
+    // تهيئة Firebase
+    try {
+      firebase.initializeApp(firebaseConfig);
+      console.log("Firebase initialized successfully with new config");
+    } catch (error) {
+      console.error("Error initializing Firebase:", error);
+      showMessage("❌ خطأ في تهيئة Firebase: " + error.message, "error");
+    }
+
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    // متغيرات عامة
+    let allAnime = [];
+    let allEpisodes = [];
+    let serverCounter = 0;
+    let filteredEpisodes = [];
+    let currentSort = { field: 'number', direction: 'asc' };
+    let currentPage = 1;
+    const episodesPerPage = 20;
+    
+    // متغيرات جديدة للتصنيفات والحالة
+    let selectedCategories = [];
+    let currentStatus = 'ongoing';
+
+    // التحقق من حالة المصادقة
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        console.log("User not authenticated, redirecting to login");
+        window.location.href = "login2.html";
+      } else {
+        console.log("User authenticated:", user.email);
+        loadAdminData();
+      }
+    });
+
+    // تسجيل الخروج
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "login2.html";
+      }).catch((error) => {
+        console.error("Logout error:", error);
+        showMessage("❌ خطأ في تسجيل الخروج: " + error.message, "error");
+      });
+    }
+
+    // عرض الرسائل
+    function showMessage(message, type = "info") {
+      const messageElement = document.getElementById("message");
+      messageElement.textContent = message;
+      messageElement.className = `message ${type}`;
+      messageElement.style.display = "block";
+      
+      // إخفاء الرسالة بعد 5 ثواني
+      setTimeout(() => {
+        messageElement.style.display = "none";
+      }, 5000);
+    }
+
+    // تبديل التبويبات
+    function showTab(tabId) {
+      // إخفاء جميع التبويبات
+      document.querySelectorAll(".tab-content").forEach(tab => {
+        tab.classList.remove("active");
+      });
+      
+      // إظهار التبويب المحدد
+      document.getElementById(tabId).classList.add("active");
+      
+      // تحديث الأزرار النشطة
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+      event.target.classList.add("active");
+    }
+
+    // دالة لعرض/إخفاء قائمة التصنيفات
+    function toggleDropdown() {
+      const dropdown = document.getElementById('categoryDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    // دالة لإضافة أو إزالة تصنيف
+    function toggleCategory(category) {
+      const index = selectedCategories.indexOf(category);
+      
+      if (index === -1) {
+        // إضافة التصنيف
+        selectedCategories.push(category);
+      } else {
+        // إزالة التصنيف
+        selectedCategories.splice(index, 1);
+      }
+      
+      // تحديث الواجهة
+      updateSelectedCategories();
+      
+      // إخفاء القائمة بعد الاختيار
+      document.getElementById('categoryDropdown').classList.remove('show');
+    }
+
+    // دالة لتحديث التصنيفات المحددة في الواجهة
+    function updateSelectedCategories() {
+      const container = document.getElementById('selectedCategories');
+      const hiddenInput = document.getElementById('animeCategory');
+      
+      // مسح المحتوى الحالي
+      container.innerHTML = '';
+      
+      // تحديث خيارات القائمة
+      document.querySelectorAll('.multiselect-option').forEach(option => {
+        const value = option.dataset.value;
+        if (selectedCategories.includes(value)) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+      
+      // إضافة التصنيفات المحددة
+      selectedCategories.forEach(category => {
+        const tag = document.createElement('div');
+        tag.className = 'selected-tag';
+        tag.innerHTML = `
+          ${category}
+          <i class="fas fa-times" onclick="removeCategory('${category}')"></i>
+        `;
+        container.appendChild(tag);
+      });
+      
+      // تحديث الحقل المخفي
+      hiddenInput.value = selectedCategories.join(',');
+    }
+
+    // دالة لإزالة تصنيف
+    function removeCategory(category) {
+      const index = selectedCategories.indexOf(category);
+      if (index !== -1) {
+        selectedCategories.splice(index, 1);
+        updateSelectedCategories();
+      }
+    }
+
+    // دالة لاختيار حالة الأنمي
+    function selectStatus(status) {
+      currentStatus = status;
+      const hiddenInput = document.getElementById('animeStatus');
+      
+      // تحديث الواجهة
+      document.querySelectorAll('.status-btn').forEach(btn => {
+        if (btn.dataset.status === status) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      
+      // تحديث الحقل المخفي
+      hiddenInput.value = status;
+    }
+
+    // إغلاق قائمة التصنيفات عند النقر خارجها
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('categoryDropdown');
+      const select = document.querySelector('.multiselect-select');
+      
+      if (!select.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    // إنشاء خادم تشغيل جديد
+    function createServerElement(serverId = null, serverData = null) {
+      const serverElement = document.createElement('div');
+      serverElement.className = 'server-options';
+      serverElement.dataset.serverId = serverId || `server-${serverCounter++}`;
+      
+      const serverHeader = document.createElement('div');
+      serverHeader.className = 'server-header';
+      
+      const serverNameSelect = document.createElement('select');
+      serverNameSelect.className = 'server-name';
+      serverNameSelect.innerHTML = `
+        <option value="witanime">Witanime</option>
+        <option value="okru">Ok.ru</option>
+        <option value="uqload">Uqload</option>
+        <option value="other">خادم آخر</option>
+      `;
+      
+      if (serverData && serverData.name) {
+        serverNameSelect.value = serverData.name;
+      }
+      
+      const removeServerBtn = document.createElement('button');
+      removeServerBtn.type = 'button';
+      removeServerBtn.className = 'remove-server-btn';
+      removeServerBtn.innerHTML = '<i class="fas fa-trash"></i> حذف الخادم';
+      removeServerBtn.onclick = function() {
+        serverElement.remove();
+      };
+      
+      serverHeader.appendChild(serverNameSelect);
+      serverHeader.appendChild(removeServerBtn);
+      
+      const qualitiesContainer = document.createElement('div');
+      qualitiesContainer.className = 'server-qualities';
+      
+      // إضافة جودة افتراضية إذا لم توجد بيانات
+      if (!serverData || !serverData.qualities || Object.keys(serverData.qualities).length === 0) {
+        const qualityRow = document.createElement('div');
+        qualityRow.className = 'quality-inputs';
+        qualityRow.innerHTML = `
+          <select class="quality-name">
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+            <option value="360p">360p</option>
+            <option value="auto">تلقائي</option>
+          </select>
+          <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
+        `;
+        qualitiesContainer.appendChild(qualityRow);
+      } else {
+        // إضافة الجودات الموجودة
+        for (const [quality, url] of Object.entries(serverData.qualities)) {
+          const qualityRow = document.createElement('div');
+          qualityRow.className = 'quality-inputs';
+          qualityRow.innerHTML = `
+            <select class="quality-name">
+              <option value="1080p" ${quality === '1080p' ? 'selected' : ''}>1080p</option>
+              <option value="720p" ${quality === '720p' ? 'selected' : ''}>720p</option>
+              <option value="480p" ${quality === '480p' ? 'selected' : ''}>480p</option>
+              <option value="360p" ${quality === '360p' ? 'selected' : ''}>360p</option>
+              <option value="auto" ${quality === 'auto' ? 'selected' : ''}>تلقائي</option>
+            </select>
+                        <input type="url" class="quality-url" value="${url}" placeholder="رابط الفيديو لهذه الجودة" required>
+          `;
+          qualitiesContainer.appendChild(qualityRow);
+        }
+      }
+      
+      const addQualityBtn = document.createElement('button');
+      addQualityBtn.type = 'button';
+      addQualityBtn.className = 'add-quality-btn';
+      addQualityBtn.innerHTML = '<i class="fas fa-plus"></i> إضافة جودة';
+      addQualityBtn.onclick = function() {
+        const qualityRow = document.createElement('div');
+        qualityRow.className = 'quality-inputs';
+        qualityRow.innerHTML = `
+          <select class="quality-name">
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+            <option value="360p">360p</option>
+            <option value="auto">تلقائي</option>
+          </select>
+          <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
+          <button type="button" class="remove-quality-btn" style="background: #f44336; color: white; border: none; border-radius: var(--border-radius); padding: 8px; cursor: pointer;" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        qualitiesContainer.appendChild(qualityRow);
+      };
+      
+      serverElement.appendChild(serverHeader);
+      serverElement.appendChild(qualitiesContainer);
+      serverElement.appendChild(addQualityBtn);
+      
+      return serverElement;
+    }
+
+    // إضافة خادم تشغيل
+    document.getElementById('addServerBtn').addEventListener('click', function() {
+      const serversContainer = document.getElementById('serversContainer');
+      serversContainer.appendChild(createServerElement());
+    });
+
+    // تحميل بيانات الإدارة
+    function loadAdminData() {
+      // تحميل الأنمي
+      database.ref("anime").once("value")
+        .then(snapshot => {
+          allAnime = [];
+          if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+              allAnime.push({
+                id: childSnapshot.key,
+                ...childSnapshot.val()
+              });
+            });
+          }
+          
+          // تعبئة قائمة الأنمي في dropdown الحلقات
+          const episodeAnimeSelect = document.getElementById("episodeAnime");
+          episodeAnimeSelect.innerHTML = '<option value="">اختر الأنمي</option>';
+          
+          allAnime.forEach(anime => {
+            const option = document.createElement("option");
+            option.value = anime.id;
+            option.textContent = anime.title;
+            episodeAnimeSelect.appendChild(option);
+          });
+          
+          // تعبئة قائمة التصفية حسب الأنمي
+          const animeFilter = document.getElementById("animeFilter");
+          animeFilter.innerHTML = '<option value="">جميع الأنمي</option>';
+          
+          allAnime.forEach(anime => {
+            const option = document.createElement("option");
+            option.value = anime.id;
+            option.textContent = anime.title;
+            animeFilter.appendChild(option);
+          });
+          
+          // تعبئة جدول الأنمي
+          const animeList = document.getElementById("animeList");
+          animeList.innerHTML = "";
+          
+          allAnime.forEach(anime => {
+            const episodesCount = allEpisodes.filter(ep => ep.animeId === anime.id).length;
+            
+            // عرض الحالة والتصنيفات
+            const statusBadge = anime.status === 'completed' ? 
+              '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> مكتمل</span>' : 
+              '<span style="color: #FF9800;"><i class="fas fa-play-circle"></i> مستمر</span>';
+            
+            const categories = typeof anime.category === 'string' ? 
+              anime.category : 
+              (Array.isArray(anime.category) ? anime.category.join(', ') : '');
+            
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${anime.title}</td>
+              <td>${categories}</td>
+              <td>${statusBadge}</td>
+              <td>${episodesCount}</td>
+              <td>
+                <button class="action-btn edit-btn" onclick="editAnime('${anime.id}')">تعديل</button>
+                <button class="action-btn delete-btn" onclick="deleteAnime('${anime.id}')">حذف</button>
+              </td>
+            `;
+            
+            animeList.appendChild(row);
+          });
+          
+          document.getElementById("animeLoading").style.display = "none";
+        })
+        .catch(error => {
+          console.error("Error loading anime:", error);
+          showMessage("❌ خطأ في تحميل قائمة الأنمي", "error");
+        });
+      
+      // تحميل الحلقات
+      database.ref("episodes").once("value")
+        .then(snapshot => {
+          allEpisodes = [];
+          if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+              allEpisodes.push({
+                id: childSnapshot.key,
+                ...childSnapshot.val()
+              });
+            });
+          }
+          
+          // تطبيق الفلاتر والترتيب
+          filterAndSortEpisodes();
+          
+          document.getElementById("episodeLoading").style.display = "none";
+        })
+        .catch(error => {
+          console.error("Error loading episodes:", error);
+          showMessage("❌ خطأ في تحميل قائمة الحلقات", "error");
+        });
+    }
+
+    // تصفية وترتيب الحلقات
+    function filterAndSortEpisodes() {
+      const searchText = document.getElementById("searchEpisodes").value.toLowerCase();
+      const animeFilter = document.getElementById("animeFilter").value;
+      
+      // تطبيق البحث والتصفية
+      filteredEpisodes = allEpisodes.filter(episode => {
+        const anime = allAnime.find(a => a.id === episode.animeId);
+        const animeTitle = anime ? anime.title : "";
+        
+        // البحث بالنص
+        const matchesSearch = searchText === "" || 
+                             animeTitle.toLowerCase().includes(searchText) || 
+                             episode.number.toString().includes(searchText) || 
+                             (episode.title && episode.title.toLowerCase().includes(searchText));
+        
+        // التصفية حسب الأنمي
+        const matchesFilter = animeFilter === "" || episode.animeId === animeFilter;
+        
+        return matchesSearch && matchesFilter;
+      });
+      
+      // تطبيق الترتيب
+      filteredEpisodes.sort((a, b) => {
+        const animeA = allAnime.find(anime => anime.id === a.animeId) || {};
+        const animeB = allAnime.find(anime => anime.id === b.animeId) || {};
+        
+        let valueA, valueB;
+        
+        switch (currentSort.field) {
+          case 'anime':
+            valueA = animeA.title || "";
+            valueB = animeB.title || "";
+            break;
+          case 'number':
+            valueA = a.number;
+            valueB = b.number;
+            break;
+          case 'title':
+            valueA = a.title || "";
+            valueB = b.title || "";
+            break;
+          default:
+            valueA = a.number;
+            valueB = b.number;
+        }
+        
+        // المقارنة بناءً على نوع القيمة
+        let comparison = 0;
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          comparison = valueA.localeCompare(valueB, 'ar');
+        } else {
+          comparison = valueA > valueB ? 1 : valueA < valueB ? -1 : 0;
+        }
+        
+        // تطبيق الاتجاه (تصاعدي/تنازلي)
+        return currentSort.direction === 'desc' ? comparison * -1 : comparison;
+      });
+      
+      // عرض النتائج
+      displayEpisodesTable();
+    }
+
+    // عرض جدول الحلقات مع الترقيم
+    function displayEpisodesTable() {
+      const episodeList = document.getElementById("episodeList");
+      const tableInfo = document.getElementById("episodeTableInfo");
+      const pagination = document.getElementById("episodePagination");
+      
+      episodeList.innerHTML = '';
+      
+      if (filteredEpisodes.length === 0) {
+        episodeList.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد حلقات تطابق معايير البحث</td></tr>';
+        tableInfo.textContent = 'عرض 0 من 0 حلقة';
+        pagination.innerHTML = '';
+        return;
+      }
+      
+      // حساب عدد الصفحات
+      const totalPages = Math.ceil(filteredEpisodes.length / episodesPerPage);
+      
+      // التأكد من أن الصفحة الحالية ضمن الحدود
+      if (currentPage > totalPages) {
+        currentPage = totalPages;
+      }
+      if (currentPage < 1) {
+        currentPage = 1;
+      }
+      
+      // حساب بداية ونهاية العناصر المعروضة
+      const startIndex = (currentPage - 1) * episodesPerPage;
+      const endIndex = Math.min(startIndex + episodesPerPage, filteredEpisodes.length);
+      const currentEpisodes = filteredEpisodes.slice(startIndex, endIndex);
+      
+      // تعبئة الجدول
+      currentEpisodes.forEach(episode => {
+        const anime = allAnime.find(a => a.id === episode.animeId);
+        const animeTitle = anime ? anime.title : "غير معروف";
+        const serversCount = episode.servers ? Object.keys(episode.servers).length : 0;
+        
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${animeTitle}</td>
+          <td>${episode.number}</td>
+          <td>${episode.title || `الحلقة ${episode.number}`}</td>
+          <td>${serversCount}</td>
+          <td>
+            <button class="action-btn edit-btn" onclick="editEpisode('${episode.id}')">تعديل</button>
+            <button class="action-btn delete-btn" onclick="deleteEpisode('${episode.id}')">حذف</button>
+          </td>
+        `;
+        
+        episodeList.appendChild(row);
+      });
+      
+      // تحديث معلومات الجدول
+      tableInfo.textContent = `عرض ${startIndex + 1}-${endIndex} من ${filteredEpisodes.length} حلقة`;
+      
+      // إنشاء أزرار الترقيم
+      pagination.innerHTML = '';
+      
+      // زر الصفحة السابقة
+      if (currentPage > 1) {
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'pagination-btn';
+        prevBtn.innerHTML = '&laquo; السابقة';
+        prevBtn.onclick = () => {
+          currentPage--;
+          displayEpisodesTable();
+        };
+        pagination.appendChild(prevBtn);
+      }
+      
+      // أزرار الصفحات
+      const startPage = Math.max(1, currentPage - 2);
+      const endPage = Math.min(totalPages, startPage + 4);
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = 'pagination-btn';
+        if (i === currentPage) {
+          pageBtn.classList.add('active');
+        }
+        pageBtn.textContent = i;
+        pageBtn.onclick = () => {
+          currentPage = i;
+          displayEpisodesTable();
+        };
+        pagination.appendChild(pageBtn);
+      }
+      
+      // زر الصفحة التالية
+      if (currentPage < totalPages) {
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'pagination-btn';
+        nextBtn.innerHTML = 'التالية &raquo;';
+        nextBtn.onclick = () => {
+          currentPage++;
+          displayEpisodesTable();
+        };
+        pagination.appendChild(nextBtn);
+      }
+    }
+
+    // إضافة/تعديل أنمي
+    document.getElementById("animeForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      const animeId = document.getElementById("animeId")?.value;
+      const animeData = {
+        title: document.getElementById("animeTitle").value,
+        status: document.getElementById("animeStatus").value,
+        category: selectedCategories,
+        thumbnail: document.getElementById("animeThumb").value,
+        description: document.getElementById("animeDescription").value,
+        updatedAt: new Date().toISOString()
+      };
+      
+      if (animeId) {
+        // تعديل الأنمي الموجود
+        database.ref("anime/" + animeId).update(animeData)
+          .then(() => {
+            showMessage("✅ تم تحديث الأنمي بنجاح", "success");
+            resetAnimeForm();
+            loadAdminData();
+          })
+          .catch(error => {
+            console.error("Error updating anime:", error);
+            showMessage("❌ حدث خطأ أثناء تحديث الأنمي", "error");
+          });
+      } else {
+        // إضافة أنمي جديد
+        animeData.createdAt = new Date().toISOString();
+        database.ref("anime").push(animeData)
+          .then(() => {
+            showMessage("✅ تم إضافة الأنمي بنجاح", "success");
+            resetAnimeForm();
+            loadAdminData();
+          })
+          .catch(error => {
+            console.error("Error adding anime:", error);
+            showMessage("❌ حدث خطأ أثناء إضافة الأنمي", "error");
+          });
+      }
+    });
+
+    // إضافة/تعديل حلقة
+    document.getElementById("episodeForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      const episodeId = document.getElementById("episodeId")?.value;
+      
+      // جمع بيانات الخوادم والجودات
+      const servers = {};
+      const serverElements = document.querySelectorAll('.server-options');
+      
+      serverElements.forEach(serverElement => {
+        const serverName = serverElement.querySelector('.server-name').value;
+        const qualities = {};
+        
+        const qualityElements = serverElement.querySelectorAll('.quality-inputs');
+        qualityElements.forEach(qualityElement => {
+          const qualityName = qualityElement.querySelector('.quality-name').value;
+          const qualityUrl = qualityElement.querySelector('.quality-url').value;
+          
+          if (qualityUrl) {
+            qualities[qualityName] = qualityUrl;
+          }
+        });
+        
+        if (Object.keys(qualities).length > 0) {
+          servers[serverElement.dataset.serverId] = {
+            name: serverName,
+            qualities: qualities
+          };
+        }
+      });
+      
+      const episodeData = {
+        animeId: document.getElementById("episodeAnime").value,
+        number: parseInt(document.getElementById("episodeNumber").value),
+        title: document.getElementById("episodeTitle").value,
+        servers: servers,
+        updatedAt: new Date().toISOString()
+      };
+      
+      if (episodeId) {
+        // تعديل الحلقة الموجودة
+        database.ref("episodes/" + episodeId).update(episodeData)
+          .then(() => {
+            showMessage("✅ تم تحديث الحلقة بنجاح", "success");
+            resetEpisodeForm();
+            loadAdminData();
+          })
+          .catch(error => {
+            console.error("Error updating episode:", error);
+            showMessage("❌ حدث خطأ أثناء تحديث الحلقة", "error");
+          });
+      } else {
+        // إضافة حلقة جديدة
+        episodeData.createdAt = new Date().toISOString();
+        database.ref("episodes").push(episodeData)
+          .then(() => {
+            showMessage("✅ تم إضافة الحلقة بنجاح", "success");
+            resetEpisodeForm();
+            loadAdminData();
+          })
+          .catch(error => {
+            console.error("Error adding episode:", error);
+            showMessage("❌ حدث خطأ أثناء إضافة الحلقة", "error");
+          });
+      }
+    });
+
+    // تعديل أنمي
+    function editAnime(animeId) {
+      const anime = allAnime.find(a => a.id === animeId);
+      if (!anime) return;
+      
+      // إضافة حقل مخفي لمعرف الأنمي
+      if (!document.getElementById("animeId")) {
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.id = "animeId";
+        document.getElementById("animeForm").appendChild(hiddenInput);
+      }
+      
+      document.getElementById("animeId").value = animeId;
+      document.getElementById("animeTitle").value = anime.title;
+      
+      // تعبئة حالة الأنمي
+      if (anime.status) {
+        selectStatus(anime.status);
+      } else {
+        selectStatus('ongoing');
+      }
+      
+      // تعبئة التصنيفات
+      if (anime.category) {
+        if (typeof anime.category === 'string') {
+          selectedCategories = anime.category.split(',').map(cat => cat.trim());
+        } else if (Array.isArray(anime.category)) {
+          selectedCategories = [...anime.category];
+        } else {
+          selectedCategories = [];
+        }
+        updateSelectedCategories();
+      }
+      
+      document.getElementById("animeThumb").value = anime.thumbnail;
+      document.getElementById("animeDescription").value = anime.description;
+      
+      // التمرير إلى الأعلى
+      document.getElementById("animeForm").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // تعديل حلقة
+    function editEpisode(episodeId) {
+      const episode = allEpisodes.find(ep => ep.id === episodeId);
+      if (!episode) return;
+      
+      // إضافة حقل مخفي لمعرف الحلقة
+      if (!document.getElementById("episodeId")) {
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.id = "episodeId";
+        document.getElementById("episodeForm").appendChild(hiddenInput);
+      }
+      
+      document.getElementById("episodeId").value = episodeId;
+      document.getElementById("episodeAnime").value = episode.animeId;
+      document.getElementById("episodeNumber").value = episode.number;
+      document.getElementById("episodeTitle").value = episode.title;
+      
+      // مسح خوادم التشغيل الحالية
+      const serversContainer = document.getElementById("serversContainer");
+      serversContainer.innerHTML = "";
+      
+      // إضافة خوادم التشغيل
+      if (episode.servers) {
+        for (const [serverId, serverData] of Object.entries(episode.servers)) {
+          serversContainer.appendChild(createServerElement(serverId, serverData));
+        }
+      } else {
+        // إضافة خادم افتراضي إذا لم توجد خوادم
+        serversContainer.appendChild(createServerElement());
+      }
+      
+      // إظهار تبويب الحلقات
+      showTab("episodeTab");
+      
+      // التمرير إلى الأعلى
+      document.getElementById("episodeForm").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // حذف أنmi
+    function deleteAnime(animeId) {
+      if (!confirm("هل أنت متأكد من حذف هذا الأنمي؟ سيتم حذف جميع الحلقات المرتبطة به أيضًا.")) return;
+      
+      // حذف الأنمي
+      database.ref("anime/" + animeId).remove()
+        .then(() => {
+          // حذف جميع الحلقات المرتبطة بهذا الأنمي
+          const episodesToDelete = allEpisodes.filter(ep => ep.animeId === animeId);
+          const deletePromises = episodesToDelete.map(ep => 
+            database.ref("episodes/" + ep.id).remove()
+          );
+          
+          return Promise.all(deletePromises);
+        })
+        .then(() => {
+          showMessage("✅ تم حذف الأنمي وحلقاته بنجاح", "success");
+          loadAdminData();
+        })
+        .catch(error => {
+          console.error("Error deleting anime:", error);
+          showMessage("❌ حدث خطأ أثناء حذف الأنمي", "error");
+        });
+    }
+
+    // حذف حلقة
+    function deleteEpisode(episodeId) {
+      if (!confirm("هل أنت متأكد من حذف هذه الحلقة؟")) return;
+      
+      database.ref("episodes/" + episodeId).remove()
+        .then(() => {
+          showMessage("✅ تم حذف الحلقة بنجاح", "success");
+          loadAdminData();
+        })
+        .catch(error => {
+          console.error("Error deleting episode:", error);
+          showMessage("❌ حدث خطأ أثناء حذف الحلقة", "error");
+        });
+    }
+
+    // إعادة تعيين نموذج الأنمي
+    function resetAnimeForm() {
+      document.getElementById("animeForm").reset();
+      const animeIdInput = document.getElementById("animeId");
+      if (animeIdInput) animeIdInput.remove();
+      
+      // إعادة تعيين التصنيفات والحالة
+      selectedCategories = [];
+      currentStatus = 'ongoing';
+      updateSelectedCategories();
+      selectStatus('ongoing');
+    }
+
+    // إعادة تعيين نموذج الحلقة
+    function resetEpisodeForm() {
+      document.getElementById("episodeForm").reset();
+      const episodeIdInput = document.getElementById("episodeId");
+      if (episodeIdInput) episodeIdInput.remove();
+      
+      // إعادة تعيين خوادم التشغيل
+      const serversContainer = document.getElementById("serversContainer");
+      serversContainer.innerHTML = "";
+      serversContainer.appendChild(createServerElement());
+    }
+
+    // تهيئة الصفحة
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log("Admin panel loaded with new Firebase config");
+      
+      // إضافة خادم افتراضي عند تحميل الصفحة
+      const serversContainer = document.getElementById("serversContainer");
+      serversContainer.appendChild(createServerElement());
+      
+      // إضافة مستمعات الأحداث للبحث والتصفية
+      document.getElementById("searchEpisodes").addEventListener("input", filterAndSortEpisodes);
+      document.getElementById("animeFilter").addEventListener("change", filterAndSortEpisodes);
+      
+      // إضافة مستمعات الأحداث لأزرار الترتيب
+      document.querySelectorAll(".sort-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+          const sortField = this.dataset.sort;
+          const sortDirection = this.dataset.direction;
+          
+          // إذا كان نفس الحقل، نغير الاتجاه
+          if (currentSort.field === sortField) {
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+          } else {
+            currentSort.field = sortField;
+            currentSort.direction = sortDirection;
+          }
+          
+          // تحديث حالة الأزرار
+          document.querySelectorAll(".sort-btn").forEach(b => {
+            b.classList.remove("active");
+          });
+          this.classList.add("active");
+          
+          // تطبيق الترتيب
+          filterAndSortEpisodes();
+        });
+      });
+      
+      // إضافة مستمعات الأحداث لترتيب الجدول
+      document.querySelectorAll(".admin-table th[data-sort]").forEach(th => {
+        th.addEventListener("click", function() {
+          const sortField = this.dataset.sort;
+          
+          // إذا كان نفس الحقل، نغير الاتجاه
+          if (currentSort.field === sortField) {
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+          } else {
+            currentSort.field = sortField;
+            currentSort.direction = 'asc';
+          }
+          
+          // تطبيق الترتيب
+          filterAndSortEpisodes();
+        });
+      });
+      
+      // تهيئة حالة الأنمي افتراضيًا
+      selectStatus('ongoing');
+      
+      // التحقق من اتصال Firebase
+      database.ref(".info/connected").on("value", function(snap) {
+        if (snap.val() === true) {
+          console.log("Connected to Firebase");
+        } else {
+          console.log("Not connected to Firebase");
+          showMessage("❌ لا يوجد اتصال بقاعدة البيانات", "error");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

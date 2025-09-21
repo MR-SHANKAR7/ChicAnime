@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تسجيل الدخول - المسؤول</title>
+  <link rel="stylesheet" href="CSS/style.css" />
+</head>
+<style>
+  body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #191211; /* خلفية رئيسية داكنة */
+  color: #D6D7D2; /* لون النص الرمادي الفاتح */
+  margin: 0;
+  padding: 0;
+  direction: rtl;
+}
+
+.login-container, .admin-container {
+  max-width: 400px;
+  margin: 80px auto;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<body>
+  <div class="login-container">
+    <h2>لوحة دخول المسؤول</h2>
+    <input type="email" id="email" placeholder="البريد الإلكتروني" />
+    <input type="password" id="password" placeholder="كلمة المرور" />
+    <button onclick="login()">تسجيل الدخول</button>
+    <p id="error-message"></p>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPSXK02S0Em-0ZLl2zhH6M6loW3VYpReA",
+      authDomain: "anime-gallery-b0a34.firebaseapp.com",
+      projectId: "anime-gallery-b0a34",
+      storageBucket: "anime-gallery-b0a34.firebasestorage.app",
+      messagingSenderId: "39241660436",
+      appId: "1:39241660436:web:c35efd2748674b5a824f01",
+      measurementId: "G-FH2B5ZDFRQ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          window.location.href = "admin.html";
+        })
+        .catch((error) => {
+          document.getElementById("error-message").innerText = "❌ " + error.message;
+        });
+    }
+  </script>
+</body>
+</html>

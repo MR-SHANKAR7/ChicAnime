@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+
+   <!-- Favicon أساسي -->
+<link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/ChicAnime.png">
+
+<!-- أيقونة لأجهزة Apple -->
+<link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
+
+<!-- أيقونة للأندرويد -->
+<link rel="manifest" href="images/ChicAnime.png">
+
+
+  <!-- SEO Meta -->
+<meta name="description" content="ChicAnime - مكتبة صور أنمي مع تفاصيل دقيقة وخلفيات عالية الجودة">
+<meta name="keywords" content="أنمي, خلفيات أنمي, صور شخصيات, ChicAnime , ChicAnime">
+<meta name="author" content="ChicAnime">
+
+<!-- OG Meta for Social Sharing -->
+<meta property="og:title" content="تفاصيل الصورة | ChicAnime">
+<meta property="og:description" content="استكشف تفاصيل صور الأنمي المفضلة لديك وحمّلها بجودة عالية.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://anime-gallery-b0a34.web.app/preview.jpg">
+<meta property="og:url" content="https://anime-gallery-b0a34.web.app/details.html">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل الصورة | ChicAnime</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #C7372C;
+      --primary-dark: #710D0B;
+      --secondary-color: #4A4743;
+      --bg-dark: #2A2522;
+      --card-bg: #3A3532;
+      --bg-light: #4A4743;
+      --text-color: #D6D7D2;
+      --text-muted: #9C9C9C;
+      --border-radius: 8px;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.2);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 0;
+    }
+
+    .header {
+      background-color: var(--card-bg);
+      padding: 15px 0;
+      box-shadow: var(--shadow);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    .logo i {
+      margin-left: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    /* أنماط صفحة التفاصيل */
+    .details-page {
+      padding: 20px 0;
+      min-height: calc(100vh - 80px);
+    }
+
+    .details-container {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .details-title {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .details-subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: var(--text-color);
+    }
+
+    .image-container {
+      text-align: center;
+      margin-bottom: 30px;
+      margin: 20px 0;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .image-container img {
+      max-width: 100%;
+      max-height: 70vh;
+      display: block;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+      
+
+    .details-content {
+      background-color: var(--bg-light);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin: 20px 0;
+      text-align: right;
+    }
+
+    .details-content h2 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      border-bottom: 1px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .details-content p {
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background-color: var(--card-bg);
+      padding: 12px;
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .info-value {
+      font-size: 1.1rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .action-btn.secondary {
+      background-color: var(--secondary-color);
+    }
+
+    .action-btn.secondary:hover {
+      background-color: #5a5753;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+
+    .nav-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .nav-btn:disabled {
+      background-color: var(--bg-light);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 1.2rem;
+    }
+
+    .error {
+      text-align: center;
+      padding: 40px;
+      color: #ff6b6b;
+      font-size: 1.2rem;
+    }
+
+    .footer {
+      background-color: var(--card-bg);
+      padding: 20px 0;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    /* أنماط للجوال */
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .details-title {
+        font-size: 1.5rem;
+      }
+      
+      .details-subtitle {
+        font-size: 1rem;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .navigation-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .nav-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- الهيدر -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime</span>
+      </a>
+      
+      <button id="back-btn" class="btn btn-outline">
+        <i class="fas fa-arrow-right"></i>
+        العودة للمعرض
+      </button>
+    </div>
+  </header>
+
+  <!-- المحتوى الرئيسي -->
+  <main class="details-page">
+    <div class="container">
+      <div id="loading" class="loading">جاري تحميل التفاصيل...</div>
+      
+      <div id="content" style="display: none;">
+        <div class="details-container">
+          <h1 class="details-title" id="image-title">عنوان الصورة</h1>
+          <p class="details-subtitle" id="image-anime">الأنمي: </p>
+          
+          <div class="image-container">
+            <img id="image-detail" src="" alt="صورة الشخصية أو الخلفية">
+          </div>
+          
+          <div class="navigation-buttons">
+            <button id="prev-btn" class="nav-btn" onclick="navigateImage('prev')">
+              <i class="fas fa-arrow-right"></i>
+              السابق
+            </button>
+            <button id="next-btn" class="nav-btn" onclick="navigateImage('next')">
+              التالي
+              <i class="fas fa-arrow-left"></i>
+            </button>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="action-btn" onclick="downloadImage()">
+              <i class="fas fa-download"></i>
+              تحميل الصورة
+            </button>
+            <button class="action-btn secondary" onclick="shareImage()">
+              <i class="fas fa-share-alt"></i>
+              مشاركة
+            </button>
+          </div>
+        </div>
+        
+        <div class="details-content">
+          <h2>تفاصيل</h2>
+          <p id="image-details">لا توجد تفاصيل متاحة</p>
+          
+          <div class="info-grid" id="image-extra-info">
+            <!-- سيتم تعبئة المعلومات الإضافية هنا -->
+          </div>
+        </div>
+      </div>
+      
+      <div id="error" class="error" style="display: none;">
+        حدث خطأ في تحميل التفاصيل. يرجى المحاولة لاحقًا.
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>جميع الحقوق محفوظة © 2025 - ChicAnime</p>
+    </div>
+  </footer>
+
+  <!-- إضافة مكتبة Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPSXK02S0Em-0ZLl2zhH6M6loW3VYpReA",
+      authDomain: "anime-gallery-b0a34.firebaseapp.com",
+      databaseURL: "https://anime-gallery-b0a34-default-rtdb.firebaseio.com/",
+      projectId: "anime-gallery-b0a34",
+      storageBucket: "anime-gallery-b0a34.appspot.com",
+      messagingSenderId: "39241660436",
+      appId: "1:39241660436:web:c35efd2748674b5a824f01",
+      measurementId: "G-FH2B5ZDFRQ"
+    };
+
+    // تهيئة Firebase
+    try {
+      firebase.initializeApp(firebaseConfig);
+      console.log("Firebase initialized successfully");
+    } catch (error) {
+      console.error("Error initializing Firebase:", error);
+      showError();
+    }
+
+    // متغيرات عامة
+    let allImages = [];
+    let currentImageIndex = 0;
+    let referrerPage = '';
+
+    // دالة للحصول على معرّف الصورة من URL
+    function getImageIdFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id');
+    }
+
+    // دالة لتحديد الصفحة المرجعية
+    function setReferrerPage() {
+      // التحقق من وجود referrer في sessionStorage أولاً
+      const storedReferrer = sessionStorage.getItem('imageReferrer');
+      
+      if (storedReferrer) {
+        referrerPage = storedReferrer;
+      } else if (document.referrer && document.referrer.includes(window.location.hostname)) {
+        // إذا كان هناك referrer من نفس الموقع
+        referrerPage = document.referrer;
+      } else {
+        // إذا لم يكن هناك referrer، استخدم الصفحة الرئيسية كافتراضي
+        referrerPage = 'index.html';
+      }
+    }
+
+    // دالة للعودة إلى الصفحة السابقة
+    function goBackToGallery() {
+      if (referrerPage && referrerPage !== window.location.href) {
+        window.location.href = referrerPage;
+      } else {
+        // إذا لم تكن هناك صفحة مرجعية، انتقل إلى الصفحة الرئيسية
+        window.location.href = 'index.html';
+      }
+    }
+
+    // دالة لجلب جميع الصور من Firebase
+    function fetchAllImages() {
+      const database = firebase.database();
+      const imageId = getImageIdFromURL();
+      
+      database.ref('images').once('value')
+        .then((snapshot) => {
+          allImages = [];
+          snapshot.forEach((childSnapshot) => {
+            allImages.push({ id: childSnapshot.key, ...childSnapshot.val() });
+          });
+          
+          // البحث عن الصورة الحالية بعد جلب جميع الصور
+          if (imageId) {
+            currentImageIndex = allImages.findIndex(img => img.id === imageId);
+          }
+          
+          if (currentImageIndex === -1 && allImages.length > 0) {
+            currentImageIndex = 0;
+          }
+          
+          if (allImages.length > 0 && currentImageIndex >= 0) {
+            displayImageDetails(allImages[currentImageIndex]);
+          } else {
+            showError();
+          }
+          
+          // تحديث أزرار التنقل
+          updateNavigationButtons();
+        })
+        .catch((error) => {
+          console.error('حدث خطأ في تحميل الصور:', error);
+          showError();
+        });
+    }
+
+    // دالة لعرض تفاصيل الصورة
+    function displayImageDetails(image) {
+      if (!image) {
+        showError();
+        return;
+      }
+      
+      // إخفاء شاشة التحميل وإظهار المحتوى
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      document.getElementById('error').style.display = 'none';
+      
+      // تعبئة البيانات
+      document.getElementById('image-title').textContent = image.title || 'بدون عنوان';
+      document.getElementById('image-anime').textContent = `الأنمي: ${image.anime || 'غير معروف'}`;
+      
+      const imageUrl = image.image || image.url || image.secure_url;
+      const imgElement = document.getElementById('image-detail');
+      imgElement.src = imageUrl;
+      imgElement.alt = image.title || 'صورة أنمي';
+      
+      document.getElementById('image-details').textContent = image.details || 'لا توجد تفاصيل متاحة';
+      
+      // تعبئة المعلومات الإضافية
+      const extraInfo = document.getElementById('image-extra-info');
+      extraInfo.innerHTML = '';
+      
+      if (image.birthdate) {
+        addInfoItem(extraInfo, 'تاريخ الميلاد', image.birthdate);
+      }
+      
+      if (image.seasons) {
+        addInfoItem(extraInfo, 'عدد المواسم', image.seasons);
+      }
+      
+      if (image.start_date) {
+        addInfoItem(extraInfo, 'تاريخ البداية', image.start_date);
+      }
+      
+      if (image.type) {
+        addInfoItem(extraInfo, 'النوع', image.type === 'character' ? 'شخصية' : 'خلفية');
+      }
+      
+      if (image.uploadedAt) {
+        const uploadDate = new Date(image.uploadedAt).toLocaleDateString('ar-AR');
+        addInfoItem(extraInfo, 'تاريخ الرفع', uploadDate);
+      }
+      
+      // تحديث أزرار التنقل
+      updateNavigationButtons();
+    }
+
+    // دالة لإضافة عنصر معلومات
+    function addInfoItem(container, label, value) {
+      const item = document.createElement('div');
+      item.className = 'info-item';
+      item.innerHTML = `
+        <span class="info-label">${label}:</span>
+        <span class="info-value">${value}</span>
+      `;
+      container.appendChild(item);
+    }
+
+    // دالة لتحديث أزرار التنقل
+    function updateNavigationButtons() {
+      document.getElementById('prev-btn').style.display = currentImageIndex > 0 ? 'flex' : 'none';
+      document.getElementById('next-btn').style.display = currentImageIndex < allImages.length - 1 ? 'flex' : 'none';
+    }
+
+    // دالة للتنقل بين الصور
+    function navigateImage(direction) {
+      if (direction === 'prev' && currentImageIndex > 0) {
+        currentImageIndex--;
+      } else if (direction === 'next' && currentImageIndex < allImages.length - 1) {
+        currentImageIndex++;
+      }
+      
+      displayImageDetails(allImages[currentImageIndex]);
+      
+      // تحديث URL دون إعادة تحميل الصفحة
+      const newUrl = `${window.location.pathname}?id=${allImages[currentImageIndex].id}`;
+      window.history.replaceState({}, '', newUrl);
+    }
+
+    // دالة لتحميل الصورة
+    function downloadImage() {
+      const imageUrl = document.getElementById('image-detail').src;
+      const title = document.getElementById('image-title').textContent.trim().replace(/\s+/g, '_');
+
+      fetch(imageUrl)
+        .then(res => res.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${title || 'anime-image'}.jpg`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(() => alert('حدث خطأ أثناء تحميل الصورة.'));
+    }
+
+    // دالة للمشاركة
+    function shareImage() {
+      if (navigator.share) {
+        navigator.share({
+          title: document.getElementById('image-title').textContent,
+          text: document.getElementById('image-details').textContent,
+          url: window.location.href
+        })
+        .catch(error => {
+          console.log('حدث خطأ أثناء المشاركة:', error);
+          copyToClipboard();
+        });
+      } else {
+        copyToClipboard();
+      }
+    }
+
+    // دالة للنسخ إلى الحافظة
+    function copyToClipboard() {
+      const tempInput = document.createElement('input');
+      tempInput.value = window.location.href;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      alert('تم نسخ رابط الصورة إلى الحافظة');
+    }
+
+    // دالة لعرض الخطأ
+    function showError() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+    }
+
+    // تحميل البيانات عند فتح الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      // حفظ الصفحة الحالية كمرجع للصفحات التالية
+      sessionStorage.setItem('imageReferrer', document.referrer);
+      
+      // تحديد الصفحة المرجعية
+      setReferrerPage();
+      
+      // إضافة حدث النقر على زر العودة
+      document.getElementById('back-btn').addEventListener('click', goBackToGallery);
+      
+      // جلب البيانات
+      fetchAllImages();
+    });
+  </script>
+</body>
+</html>

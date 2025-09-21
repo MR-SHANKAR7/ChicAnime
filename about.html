@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+
+  <!-- Favicon أساسي -->
+<link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/ChicAnime.png">
+
+<!-- أيقونة لأجهزة Apple -->
+<link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
+
+<!-- أيقونة للأندرويد -->
+<link rel="manifest" href="images/ChicAnime.png">
+
+
+  <!-- SEO Meta -->
+<meta name="description" content="ChicAnime - مكتبة صور أنمي مع تفاصيل دقيقة وخلفيات عالية الجودة">
+<meta name="keywords" content="أنمي, خلفيات أنمي, صور شخصيات, ChicAnime">
+<meta name="author" content="ChicAnime Team">
+
+<!-- OG Meta for Social Sharing -->
+<meta property="og:title" content="تفاصيل الصورة | ChicAnime">
+<meta property="og:description" content="استكشف تفاصيل صور الأنمي المفضلة لديك وحمّلها بجودة عالية.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://anime-gallery-b0a34.web.app/preview.jpg">
+<meta property="og:url" content="https://anime-gallery-b0a34.web.app/details.html">
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عن الموقع | ChicAnime</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* أنماط إضافية خاصة بصفحة عن الموقع */
+    .about-page {
+      padding: 40px 0;
+    }
+    
+    .about-section {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+    }
+    
+    .about-section h2 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .about-section p {
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+    
+    .about-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .feature-item {
+      background-color: var(--bg-light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .feature-item:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .feature-item i {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+    
+    .feature-item h3 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+    
+    .feature-item p {
+      color: var(--text-color);
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+    
+    .features-list {
+      list-style: none;
+      margin-top: 20px;
+    }
+    
+    .features-list li {
+      padding: 10px 0;
+      padding-right: 30px;
+      position: relative;
+      border-bottom: 1px solid var(--secondary-color);
+    }
+    
+    .features-list li:before {
+      content: "•";
+      color: var(--primary-color);
+      font-weight: bold;
+      position: absolute;
+      right: 0;
+      font-size: 1.5rem;
+    }
+    
+    .creator-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      text-align: center;
+      margin-top: 40px;
+      box-shadow: var(--shadow);
+    }
+    
+    .creator-avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: white;
+    }
+    
+    .creator-card h2 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+    }
+    
+    .creator-card p {
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+    
+    .creator-skills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .skill-tag {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+    
+    /* تأثيرات للقائمة */
+    .nav-list a[href="about.html"] {
+      color: var(--primary-color);
+      background-color: rgba(199, 55, 44, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- زر القائمة للجوال -->
+  <div class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>   ChicAnime   </span>
+      </div>
+      
+      <!-- شريط البحث -->
+      <div class="search-container">
+        <input type="text" id="search-bar" placeholder="ابحث في الموقع...">
+        <button class="search-btn" onclick="searchSite()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      
+      <nav class="nav" id="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
+          <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image"></i> الخلفيات</a></li>
+          <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
+          <li><a href="anime-studio.html" class="nav-link" ><i class="fas fa-play-circle"></i> استديو الأنمي</a></li>
+          <li><a href="about.html" class="nav-link active"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
+          <!-- <li><a href="login.html" class="nav-link admin-link"><i class="fas fa-cog"></i> الإدارة</a></li> -->
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">عن <span class="text-primary">الموقع</span></h1>
+      <p class="hero-description">مكتبة صور أنمي مجانية لجميع محبي الأنمي ❤️</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="scrollToContent()">استكشف المزيد</button>
+        <button class="btn btn-secondary" onclick="window.location.href='index.html'">العودة للرئيسية</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- محتوى الصفحة -->
+  <main class="about-page">
+    <div class="container">
+      <div class="about-section">
+        <h2>هدفنا</h2>
+        <p>نقدم لكم مكتبة ضخمة من الصور المميزة لشخصيات الأنمي الشهيرة، بخلفيات مذهلة وصور قابلة للتنزيل بجودة عالية. نسعى دائمًا لتقديم أفضل تجربة لمحبي الأنمي وعشاقه.</p>
+        <p>نؤمن بأن الأنمي ليس مجرد رسوم متحركة، بل هو فن يحكي قصصًا عميقة ويقدم شخصيات لا تنسى. لذلك نحن هنا لنحفظ هذه الذكريات الجميلة من خلال صور عالية الجودة.</p>
+      </div>
+
+      <div class="about-section">
+        <h2>مميزات الموقع</h2>
+        <div class="about-features">
+          <div class="feature-item">
+            <i class="fas fa-paint-brush"></i>
+            <h3>تصميم مظلم جذاب</h3>
+            <p>واجهة مستخدم مصممة بعناية لتجربة تصفح مريحة للعين</p>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-image"></i>
+            <h3>صور عالية الجودة</h3>
+            <p>أرشيف ضخم من الصور بدقة عالية لجميع الشخصيات المحبوبة</p>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-layer-group"></i>
+            <h3>تنظيم محكم</h3>
+            <p>تصنيف الصور حسب الشخصيات والخلفيات لتجربة بحث أسهل</p>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-mobile-alt"></i>
+            <h3>تطبيق جوال</h3>
+            <p>إمكانية تطوير تطبيق مرتبط بالموقع للوصول السريع للصور</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <h2>طريقة استخدام الموقع</h2>
+        <ul class="features-list">
+          <li>تصفح الصفحة الرئيسية لأحدث الإضافات</li>
+          <li>استخدم شريط البحث للعثور على شخصيات محددة</li>
+          <li>استكشف قسم الشخصيات للصور المتعلقة بشخصيات الأنمي</li>
+          <li>زور قسم الخلفيات لتحميل صور عالية الدقة</li>
+          <li>انقر على أي صورة لعرض التفاصيل الكاملة وتحميلها</li>
+        </ul>
+      </div>
+
+      <div class="creator-card">
+        <div class="creator-avatar">Y</div>
+        <h2>ياسين سعدي</h2>
+        <p>مطور مواقع وتطبيقات، شغوف بعالم الأنمي والتقنية. أسعى دائمًا لخلق تجارب رقمية ممتعة ومفيدة لمجتمع الأنمي العربي.</p>
+        <p>أعمل على تطوير هذا الموقع كهدية لمحبي الأنمي، وأطمح لتطويره ليصبح المنصة الأكبر للصور المتعلقة بالأنمي في العالم العربي.</p>
+        <div class="creator-skills">
+          <span class="skill-tag">Web Development</span>
+          <span class="skill-tag">UI/UX Design</span>
+          <span class="skill-tag">Anime</span>
+          <span class="skill-tag">Photography</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <button class="floating-btn scroll-top" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="logo">
+            <i class="fas fa-dragon"></i>
+            <span>ChicAnime</span>
+          </div>
+          <p>أكبر مكتبة صور لأنمي العربية، نوفر لك أحدث وأجود الخلفيات لشخصياتك المفضلة.</p>
+          <div class="social-links">
+            <a href="https://web.facebook.com/profile.php?id=61580828810174"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/ChicAnimeX"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/chicanimee/"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/channel/UCQudfTcDpWPJSorRM_f9dcw"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>روابط سريعة</h3>
+          <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="wallpapers.html">الخلفيات</a></li>
+            <li><a href="characters.html">الشخصيات</a></li>
+            <li><a href="about.html">عن الموقع</a></li>
+             <!-- <li><a href="login.html">لوحة التحكم</a></li> -->
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>خلفيات شائعة</h3>
+          <ul>
+            <li><a href="wallpapers.html?filter=ون بيس">خلفيات ون بيس</a></li>
+            <li><a href="wallpapers.html?filter=ناروتو">خلفيات ناروتو</a></li>
+            <li><a href="wallpapers.html?filter=أتاك على تيتان">خلفيات أتاك على تيتان</a></li>
+            <li><a href="wallpapers.html?filter=بليتش">خلفيات بليتش</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>معلومات التواصل</h3>
+          <ul>
+            <li><i class="fas fa-envelope"></i> info@animegallery.com</li>
+            <li><i class="fas fa-phone"></i> +212624280501</li>
+            <li><i class="fas fa-map-marker-alt"></i>المغرب MARCO</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة &copy; 2025 - ChicAnime</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- إضافة مكتبة Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+  <!-- ملفات JavaScript -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // دالة للتمرير إلى المحتوى
+    function scrollToContent() {
+      document.querySelector('.about-page').scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+
+    // دالة للبحث في الموقع
+    function searchSite() {
+      const searchTerm = document.getElementById('search-bar').value.trim();
+      if (searchTerm) {
+        // حفظ مصطلح البحث وتوجيه المستخدم إلى صفحة البحث
+        localStorage.setItem('searchTerm', searchTerm);
+        window.location.href = `index.html?search=${encodeURIComponent(searchTerm)}`;
+      }
+    }
+
+    // تحميل البيانات عند فتح الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      // إخفاء شاشة التحميل بعد وقت قصير
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) {
+          loadingScreen.style.opacity = '0';
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+          }, 500);
+        }
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

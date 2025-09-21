@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark-mode">
+<head>
+  <!-- Favicon أساسي -->
+  <link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/ChicAnime.png">
+
+  <!-- أيقونة لأجهزة Apple -->
+  <link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
+
+  <!-- أيقونة للأندرويد -->
+  <link rel="manifest" href="images/ChicAnime.png">
+
+  <!-- SEO Meta -->
+  <meta name="description" content="ChicAnime - آخر أخبار الأنمي والعالم الياباني">
+  <meta name="keywords" content="أنمي, أخبار أنمي, مانغا, أخبار, ChicAnime">
+  <meta name="author" content="ChicAnime">
+
+  <!-- OG Meta for Social Sharing -->
+  <meta property="og:title" content="أخبار الأنمي | ChicAnime">
+  <meta property="og:description" content="تابع آخر أخبار الأنمي والمانغا والعالم الياباني">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://anime-gallery-b0a34.web.app/preview.jpg">
+  <meta property="og:url" content="https://anime-gallery-b0a34.web.app/news-single.html">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل الخبر | ChicAnime</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .news-single-page {
+      padding: 40px 0;
+    }
+    
+    .news-single-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .news-single-header {
+      margin-bottom: 30px;
+    }
+    
+    .news-single-date {
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    
+    .news-single-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      line-height: 1.3;
+    }
+    
+    .news-single-meta {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .news-single-category {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+    }
+    
+    .news-single-author {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .news-single-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      margin-bottom: 30px;
+    }
+    
+    .news-single-content {
+      line-height: 1.8;
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+    }
+    
+    .news-single-content p {
+      margin-bottom: 20px;
+    }
+    
+    .news-single-content h2, 
+    .news-single-content h3 {
+      margin: 30px 0 15px;
+      color: var(--primary-color);
+    }
+    
+    .news-single-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    
+    .news-single-tag {
+      background-color: var(--bg-light);
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    
+    .news-single-navigation {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px 0;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 40px;
+    }
+    
+    .news-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    .related-news {
+      margin-bottom: 50px;
+    }
+    
+    .related-news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .related-news-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s;
+    }
+    
+    .related-news-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .related-news-thumb {
+      height: 160px;
+    }
+    
+    .related-news-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .related-news-content {
+      padding: 15px;
+    }
+    
+    .related-news-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .related-news-date {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    
+    .comments-section {
+      margin-bottom: 50px;
+    }
+    
+    .comment-form {
+      background-color: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      margin-bottom: 30px;
+    }
+    
+    .comment-form textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      background-color: var(--bg-light);
+      color: var(--text-color);
+      margin-bottom: 15px;
+      font-family: 'Cairo', sans-serif;
+    }
+    
+    .comment {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .comment-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    .comment-content {
+      flex: 1;
+    }
+    
+    .comment-author {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .comment-date {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+    
+    .comment-text {
+      line-height: 1.6;
+    }
+    
+    @media (max-width: 768px) {
+      .news-single-title {
+        font-size: 1.8rem;
+      }
+      
+      .news-single-image {
+        height: 250px;
+      }
+      
+      .news-single-navigation {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .related-news-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- زر القائمة للجوال -->
+  <div class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime</span>
+      </div>
+      
+      <!-- شريط البحث -->
+      <div class="search-container">
+        <input type="text" id="search-bar" placeholder="ابحث عن أخبار أو أنمي...">
+        <button class="search-btn" onclick="searchNews()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      
+      <nav class="nav" id="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
+          <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image"></i> الخلفيات</a></li>
+          <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
+          <li><a href="anime-studio.html" class="nav-link"><i class="fas fa-play-circle"></i> استديو الأنمي</a></li>
+          <li><a href="news.html" class="nav-link"><i class="fas fa-newspaper"></i> أخبار الأنمي</a></li>
+          <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="news-single-page">
+    <div class="container">
+      <div class="news-single-container">
+        <div class="news-single-header">
+          <div class="news-single-date" id="newsDate">2 أكتوبر 2025</div>
+          <h1 class="news-single-title" id="newsTitle">إعلان عن موسم جديد من أنمي Attack on Titan</h1>
+          <div class="news-single-meta">
+            <span class="news-single-category" id="newsCategory">أخبار</span>
+            <span class="news-single-author">بواسطة <span id="newsAuthor">فريق ChicAnime</span></span>
+          </div>
+        </div>
+        
+        <img src="https://via.placeholder.com/900x400/6a55fa/ffffff?text=صورة+الخبر" alt="صورة الخبر" class="news-single-image" id="newsImage">
+        
+        <div class="news-single-content" id="newsContent">
+          <p>كشفت استوديوهات MAPPA عن عملها على موسم جديد من أنمي Attack on Titan من المقرر عرضه في ربيع 2024، مع وعود بتقديم ختام مذهل للصراع بين إيرين والجيش.</p>
+          
+          <p>هذا الإعلان جاء خلال حدث خاص أقيم في طوكيو، حيث كشف المخرج يويشيرو هاياما عن بعض التفاصيل حول الموسم الجديد، مؤكداً أن الاستوديو يعمل بجد لتقديم تجربة بصرية ورؤية فنية تستحق إنهاء هذه السلسلة الأسطورية.</p>
+          
+          <h2>تفاصيل الموسم الجديد</h2>
+          
+          <p>وفقاً للتصريحات الرسمية، سيعمل الموسم الجديد على تغطية الفصول الأخيرة من المانغا الأصلية التي كتبها هاجيمي إيساياما. ومن المتوقع أن يحتوي الموسم على 12 حلقة، مع إمكانية إضافة حلقات خاصة لضمان تغطية كافة الأحداث بشكل مناسب.</p>
+          
+          <p>كما أكد الاستوديو أن جميع أعضاء فريق العمل الأصليين سيعودون للمشاركة في هذا الموسم، بما في ذلك الملحن الحائز على جوائز هيرويوكي ساوانو الذي سيعود لتأليف الموسيقى التصويرية.</p>
+          
+          <h2>ردود فعل المعجبين</h2>
+          
+          <p>أعرب المعجبون عن حماسهم الكبير لهذا الإعلان، حيث تصدر هاشتاغ #AOT_FinalSeason trending في العديد من البلدان حول العالم. عبر المعجبون عن أمنياتهم بأن يحظى الأنمي بنهاية تليق بمستوى التوقعات العالية التي وضعتها الأجزاء السابقة.</p>
+          
+          <p>من المتوقع أن يبدأ العرض الأول للحلقة الأولى في أبريل 2024، مع بث simultcast على منصات البث العالمية الرئيسية.</p>
+        </div>
+        
+        <div class="news-single-tags" id="newsTags">
+          <span class="news-single-tag">Attack on Titan</span>
+          <span class="news-single-tag">MAPPA</span>
+          <span class="news-single-tag">أنمي</span>
+          <span class="news-single-tag">أخبار</span>
+        </div>
+        
+        <div class="news-single-navigation">
+          <a href="news.html" class="news-nav-btn">
+            <i class="fas fa-arrow-right"></i>
+            العودة إلى الأخبار
+          </a>
+          <div>
+            <a href="#" class="news-nav-btn">
+              <i class="fab fa-facebook"></i>
+              مشاركة
+            </a>
+            <a href="#" class="news-nav-btn">
+              <i class="fab fa-twitter"></i>
+              تغريدة
+            </a>
+          </div>
+        </div>
+        
+        <section class="related-news">
+          <h2 class="section-title">أخبار <span class="text-primary">ذات صلة</span></h2>
+          <div class="related-news-grid" id="relatedNews">
+            <!-- سيتم تعبئة الأخبار ذات الصلة تلقائياً -->
+          </div>
+        </section>
+        
+        <section class="comments-section">
+          <h2 class="section-title">التعليقات <span class="text-primary">(3)</span></h2>
+          
+          <div class="comment-form">
+            <textarea placeholder="اكتب تعليقك هنا..."></textarea>
+            <button class="btn btn-primary">نشر التعليق</button>
+          </div>
+          
+          <div class="comments-list">
+            <div class="comment">
+              <div class="comment-avatar">م</div>
+              <div class="comment-content">
+                <div class="comment-author">محمد أحمد</div>
+                <div class="comment-date">منذ 3 ساعات</div>
+                <div class="comment-text">
+                  أخيراً! كنت في انتظار هذا الإعلان منذ مدة. أتمنى أن يقدموا نهاية تليق بهذه التحفة الفنية.
+                </div>
+              </div>
+            </div>
+            
+            <div class="comment">
+              <div class="comment-avatar">س</div>
+              <div class="comment-content">
+                <div class="comment-author">سارة عبدالله</div>
+                <div class="comment-date">منذ 5 ساعات</div>
+                <div class="comment-text">
+                  أتمنى أن يحافظوا على نفس جودة الرسوم والموسيقى. الموسم الأخير كان مذهلاً من الناحية البصرية!
+                </div>
+              </div>
+            </div>
+            
+            <div class="comment">
+              <div class="comment-avatar">ع</div>
+              <div class="comment-content">
+                <div class="comment-author">علي حسين</div>
+                <div class="comment-date">منذ يوم</div>
+                <div class="comment-text">
+                  قرأت المانغا وأنا متشوق لرؤية كيف سيعرضون الأحداث الأخيرة. بالتأكيد سيكون مذهلاً!
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <button class="floating-btn scroll-top" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="logo">
+            <i class="fas fa-dragon"></i>
+            <span>ChicAnime</span>
+          </div>
+          <p>أكبر مصدر لأخبار الأنمي باللغة العربية، نقدم آخر المستجدات في عالم الأنمي والمانغا.</p>
+          <div class="social-links">
+            <a href="https://web.facebook.com/profile.php?id=61580828810174"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/ChicAnimeX"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/chicanimee/"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/channel/UCQudfTcDpWPJSorRM_f9dcw"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>روابط سريعة</h3>
+          <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="wallpapers.html">الخلفيات</a></li>
+            <li><a href="characters.html">الشخصيات</a></li>
+            <li><a href="news.html">أخبار الأنمي</a></li>
+            <li><a href="about.html">عن الموقع</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>أقسام الأخبار</h3>
+          <ul>
+            <li><a href="news.html?filter=أخبار">أخبار</a></li>
+            <li><a href="news.html?filter=عروض">عروض حصرية</a></li>
+            <li><a href="news.html?filter=مانغا">مانغا</a></li>
+            <li><a href="news.html?filter=أفلام">أفلام</a></li>
+            <li><a href="news.html?filter=ألعاب">ألعاب</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>معلومات التواصل</h3>
+          <ul>
+            <li><i class="fas fa-envelope"></i> news@chicanime.com</li>
+            <li><i class="fas fa-phone"></i> +212624280501</li>
+            <li><i class="fas fa-map-marker-alt"></i> المغرب MAROC</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة &copy; 2025 - ChicAnime</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- إضافة مكتبة Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+  <!-- ملفات JavaScript -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  
+  <script>
+    // دالة لتحميل تفاصيل الخبر من Firebase
+    function loadNewsDetail() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const newsId = urlParams.get('id');
+      
+      if (!newsId) {
+        // إذا لم يتم تقديم معرف الخبر، عرض رسالة خطأ
+        document.querySelector('.news-single-container').innerHTML = `
+          <div class="no-results" style="text-align: center; padding: 60px 20px;">
+            <h2>لم يتم العثور على الخبر</h2>
+            <p>عذراً، لم يتم العثور على الخبر المطلوب. يرجى التأكد من صحة الرابط.</p>
+            <a href="news.html" class="btn btn-primary" style="margin-top: 20px;">العودة إلى الأخبار</a>
+          </div>
+        `;
+        return;
+      }
+      
+      const newsRef = firebase.database().ref('news/' + newsId);
+      
+      newsRef.once('value')
+        .then((snapshot) => {
+          if (!snapshot.exists()) {
+            document.querySelector('.news-single-container').innerHTML = `
+              <div class="no-results" style="text-align: center; padding: 60px 20px;">
+                <h2>لم يتم العثور على الخبر</h2>
+                <p>عذراً، الخبر الذي تبحث عنه غير موجود أو قد تم حذفه.</p>
+                <a href="news.html" class="btn btn-primary" style="margin-top: 20px;">العودة إلى الأخبار</a>
+              </div>
+            `;
+            return;
+          }
+          
+          const news = snapshot.val();
+          
+          // تحديث عناصر الصفحة ببيانات الخبر
+          document.getElementById('newsTitle').textContent = news.title;
+          document.getElementById('newsDate').textContent = formatDate(news.date);
+          document.getElementById('newsCategory').textContent = news.category;
+          document.getElementById('newsAuthor').textContent = news.author || 'فريق ChicAnime';
+          document.getElementById('newsImage').src = news.imageUrl;
+          document.getElementById('newsImage').alt = news.title;
+          document.getElementById('newsContent').innerHTML = news.content || `<p>${news.excerpt}</p>`;
+          
+          // تحديث الكلمات المفتاحية
+          const tagsContainer = document.getElementById('newsTags');
+          tagsContainer.innerHTML = '';
+          
+          if (news.tags && news.tags.length > 0) {
+            news.tags.forEach(tag => {
+              const tagElement = document.createElement('span');
+              tagElement.className = 'news-single-tag';
+              tagElement.textContent = tag;
+              tagsContainer.appendChild(tagElement);
+            });
+          }
+          
+          // تحديث عنوان الصفحة
+          document.title = `${news.title} | ChicAnime`;
+          
+          // تحميل أخبار ذات صلة
+          loadRelatedNews(news.category, newsId);
+        })
+        .catch((error) => {
+          console.error('Error loading news detail:', error);
+          document.querySelector('.news-single-container').innerHTML = `
+            <div class="no-results" style="text-align: center; padding: 60px 20px;">
+              <h2>حدث خطأ</h2>
+              <p>عذراً، حدث خطأ أثناء تحميل الخبر. يرجى المحاولة مرة أخرى لاحقاً.</p>
+              <a href="news.html" class="btn btn-primary" style="margin-top: 20px;">العودة إلى الأخبار</a>
+            </div>
+          `;
+        });
+    }
+    
+    // دالة لتحميل الأخبار ذات الصلة
+    function loadRelatedNews(category, excludeId) {
+      const newsRef = firebase.database().ref('news');
+      
+      newsRef.orderByChild('category').equalTo(category).once('value')
+        .then((snapshot) => {
+          const relatedNewsContainer = document.getElementById('relatedNews');
+          relatedNewsContainer.innerHTML = '';
+          
+          if (!snapshot.exists()) {
+            relatedNewsContainer.innerHTML = '<p>لا توجد أخبار ذات صلة</p>';
+            return;
+          }
+          
+          let relatedNews = [];
+          
+          snapshot.forEach((childSnapshot) => {
+            if (childSnapshot.key !== excludeId) {
+              const news = childSnapshot.val();
+              news.id = childSnapshot.key;
+              relatedNews.push(news);
+            }
+          });
+          
+          // عرض最多 3 أخبار ذات صلة
+          relatedNews = relatedNews.slice(0, 3);
+          
+          if (relatedNews.length === 0) {
+            relatedNewsContainer.innerHTML = '<p>لا توجد أخبار ذات صلة</p>';
+            return;
+          }
+          
+          relatedNews.forEach(news => {
+            const newsCard = document.createElement('a');
+            newsCard.href = `news-single.html?id=${news.id}`;
+            newsCard.className = 'related-news-card';
+            
+            newsCard.innerHTML = `
+              <div class="related-news-thumb">
+                <img src="${news.imageUrl}" alt="${news.title}" onerror="this.src='https://via.placeholder.com/400x200/6a55fa/ffffff?text=صورة+غير+متوفرة'">
+              </div>
+              <div class="related-news-content">
+                <h3 class="related-news-title">${news.title}</h3>
+                <div class="related-news-date">${formatDate(news.date)}</div>
+              </div>
+            `;
+            
+            relatedNewsContainer.appendChild(newsCard);
+          });
+        })
+        .catch((error) => {
+          console.error('Error loading related news:', error);
+        });
+    }
+    
+    // دالة لتنسيق التاريخ
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('ar-EG', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+    
+    // تهيئة الصفحة عند التحميل
+    document.addEventListener('DOMContentLoaded', function() {
+      // تحميل تفاصيل الخبر
+      loadNewsDetail();
+      
+      // إعداد زر العودة للأعلى
+      document.getElementById('scrollTopBtn').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      
+      // إخفاء شاشة التحميل
+      setTimeout(() => {
+        document.getElementById('loadingScreen').style.display = 'none';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark-mode">
+<head>
+<!-- Favicon أساسي -->
+<link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/ChicAnime.png">
+
+<!-- أيقونة لأجهزة Apple -->
+<link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
+
+<!-- أيقونة للأندرويد -->
+<link rel="manifest" href="images/ChicAnime.png">
+
+
+  <!-- SEO Meta -->
+<meta name="description" content="ChicAnime - مكتبة صور أنمي مع تفاصيل دقيقة وخلفيات عالية الجودة">
+<meta name="keywords" content="أنمي, خلفيات أنمي, صور شخصيات, ChicAnime , ChicAnime">
+<meta name="author" content="ChicAnime">
+
+<!-- OG Meta for Social Sharing -->
+<meta property="og:title" content="تفاصيل الصورة | ChicAnime">
+<meta property="og:description" content="استكشف تفاصيل صور الأنمي المفضلة لديك وحمّلها بجودة عالية.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://anime-gallery-b0a34.web.app/preview.jpg">
+<meta property="og:url" content="https://anime-gallery-b0a34.web.app/details.html">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChicAnime - مكتبة صور الأنمي</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- زر القائمة للجوال -->
+  <div class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime</span>
+      </div>
+      
+      <!-- شريط البحث -->
+     <!-- داخل عنصر search-container -->
+<div class="search-container">
+  <input type="text" id="search-bar" placeholder="ابحث عن شخصية أو أنمي...">
+  <button class="search-btn" onclick="searchCharacter()">
+    <i class="fas fa-search"></i>
+  </button>
+  <!-- إضافة عنصر الاقتراحات -->
+  <div id="search-suggestions" class="search-suggestions"></div>
+</div>
+      
+      <nav class="nav" id="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link active"><i class="fas fa-home"></i> الرئيسية</a></li>
+          <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image"></i> الخلفيات</a></li>
+          <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
+          <li><a href="anime-studio.html" class="nav-link" ><i class="fas fa-play-circle"></i> استديو الأنمي</a></li>
+          <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
+          
+          <!-- <li><a href="login.html" class="nav-link admin-link"><i class="fas fa-cog"></i> الإدارة</a></li> -->
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">مرحبًا بك في عالم <span class="text-primary">صور الأنمي</span></h1>
+      <p class="hero-description">استكشف آلاف الخلفيات عالية الجودة لشخصياتك المفضلة من مختلف أعمال الأنمي</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="scrollToGallery()">استكشف المعرض</button>
+        <button class="btn btn-secondary" onclick="window.location.href='wallpapers.html'">أحدث الخلفيات</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+
+
+<!-- معرض الأعمال المميزة -->
+<section class="featured-section">
+  <div class="container">
+    <h2 class="section-title">أحدث <span class="text-primary">الإضافات</span></h2>
+    <div class="featured-gallery" id="featuredGallery">
+      <!-- سيتم تعبئة أحدث الصور تلقائياً -->
+    </div>
+  </div>
+</section>  
+ 
+
+  <!-- فلترة المحتوى -->
+  <section class="filters-section">
+    <div class="container">
+      <h2 class="section-title">تصفح <span class="text-primary">المعرض</span></h2>
+      <div class="category-filter">
+        <button class="category-btn active" data-filter="all">الكل</button>
+        <button class="category-btn" data-filter="character">الشخصيات</button>
+        <button class="category-btn" data-filter="wallpaper">الخلفيات</button>
+        <button class="category-btn" data-filter="popular">الأكثر شيوعاً</button>
+        <button class="category-btn" data-filter="new">الأحدث</button>
+      </div>
+      
+      <div class="sort-filter">
+        <select id="sort-by">
+          <option value="newest">الأحدث</option>
+          <option value="oldest">الأقدم</option>
+          <option value="popular">الأكثر شيوعاً</option>
+          <option value="az">من الألف إلى الياء</option>
+          <option value="za">من الياء إلى الألف</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- المعرض الرئيسي -->
+  <main id="gallery" class="gallery">
+    <div class="container">
+      <div class="gallery-grid" id="galleryGrid">
+        <!-- سيتم تعبئة الصور من Firebase -->
+      </div>
+      
+      <div class="load-more-container">
+        <button class="btn btn-outline" id="loadMoreBtn">تحميل المزيد</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- النشرة البريدية -->
+  <section class="newsletter">
+    <div class="container">
+      <div class="newsletter-content">
+        <h2>اشترك في نشرتنا البريدية</h2>
+        <p>كن أول من يعرف عن أحدث الإضافات والعروض الخاصة</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="بريدك الإلكتروني" required>
+          <button type="submit">اشتراك</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <button class="floating-btn scroll-top" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="logo">
+            <i class="fas fa-dragon"></i>
+            <span>ChicAnime</span>
+          </div>
+          <p>أكبر مكتبة صور لأنمي العربية، نوفر لك أحدث وأجود الخلفيات لشخصياتك المفضلة.</p>
+          <div class="social-links">
+            <a href="https://web.facebook.com/profile.php?id=61580828810174"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/ChicAnimeX"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/chicanimee/"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/channel/UCQudfTcDpWPJSorRM_f9dcw"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>روابط سريعة</h3>
+          <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="wallpapers.html">الخلفيات</a></li>
+            <li><a href="characters.html">الشخصيات</a></li>
+            <li><a href="about.html">عن الموقع</a></li>
+            <!--   <li><a href="login.html">لوحة التحكم</a></li>   -->
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>الفئات</h3>
+          <ul>
+            <li><a href="characters.html" data-filter="character">شخصيات أنمي</a></li>
+            <li><a href="wallpapers.html" data-filter="wallpaper">خلفيات HD</a></li>
+            <li><a href="anime-studio.html">أفلام أنمي</a></li>
+            <li><a href="anime-studio.html">مسلسلات أنمي</a></li>
+            <li><a href="anime-studio.html">ألعاب أنمي</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>معلومات التواصل</h3>
+          <ul>
+            <li><i class="fas fa-envelope"></i> info@animegallery.com</li>
+            <li><i class="fas fa-phone"></i> +1234567890</li>
+            <li><i class="fas fa-map-marker-alt"></i>المغرب MARCO</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة &copy; 2025 - ChicAnime</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- إضافة مكتبة Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+  <!-- ملفات JavaScript -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/gallery.js"></script>
+
+  
+<script>
+  // دالة لجلب أحدث الصور من Firebase
+  function fetchLatestImages() {
+    const database = firebase.database();
+    const featuredGallery = document.getElementById('featuredGallery');
+    
+    featuredGallery.innerHTML = '<div class="loading">جاري تحميل أحدث الصور...</div>';
+    
+    database.ref('images').orderByChild('uploadedAt').limitToLast(4).once('value')
+      .then((snapshot) => {
+        const data = [];
+        snapshot.forEach((childSnapshot) => {
+          data.push({ id: childSnapshot.key, ...childSnapshot.val() });
+        });
+        
+        // عكس الترتيب لعرض الأحدث أولاً
+        data.reverse();
+        
+        if (featuredGallery) {
+          renderFeaturedGallery(data, featuredGallery);
+        }
+      })
+      .catch((error) => {
+        console.error('حدث خطأ في تحميل أحدث الصور:', error);
+        if (featuredGallery) {
+          featuredGallery.innerHTML = '<p class="error-message">حدث خطأ في تحميل أحدث الصور.</p>';
+        }
+      });
+  }
+// دالة للبحث في الشخصيات
+    function searchCharacter() {
+      const searchTerm = document.getElementById('search-bar').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        alert('يرجى إدخال مصطلح للبحث');
+        return;
+      }
+      
+      const cards = document.querySelectorAll('.card');
+      let found = false;
+      
+      cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const anime = card.querySelector('p').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || anime.includes(searchTerm)) {
+          card.style.display = 'block';
+          found = true;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      if (!found) {
+        alert('لم يتم العثور على شخصيات تطابق: ' + searchTerm);
+      }
+    }
+
+  // دالة لعرض المعرض المميز
+  function renderFeaturedGallery(data, galleryElement) {
+    galleryElement.innerHTML = '';
+    
+    if (!data || data.length === 0) {
+      galleryElement.innerHTML = '<p class="no-results">لا توجد صور لعرضها</p>';
+      return;
+    }
+    
+    data.forEach((image) => {
+      const featuredItem = document.createElement('div');
+      featuredItem.classList.add('featured-item');
+      
+      // استخدام الحقل الصحيح للصورة
+      const imageUrl = image.image || image.url || image.secure_url;
+      
+      featuredItem.innerHTML = `
+        <div class="featured-img">
+          <img src="${imageUrl}" alt="${image.title || 'صورة أنمي'}" loading="lazy">
+          <div class="featured-overlay">
+            <button class="btn-view" onclick="viewFeaturedDetails('${image.id}')">عرض التفاصيل</button>
+          </div>
+        </div>
+        <div class="featured-content">
+          <h3>${image.title || 'بدون عنوان'}</h3>
+          <p>${image.anime || 'غير معروف'}</p>
+        </div>
+      `;
+      
+      galleryElement.appendChild(featuredItem);
+    });
+  }
+
+  // دالة لعرض تفاصيل الصورة المميزة
+  function viewFeaturedDetails(imageId) {
+    // الانتقال إلى صفحة التفاصيل مع معرّف الصورة
+    window.location.href = `details.html?id=${imageId}`;
+  }
+
+  // تحميل أحدث الصور عند فتح الصفحة
+  document.addEventListener('DOMContentLoaded', function() {
+    fetchLatestImages();
+  });
+</script>
+
+
+
+
+</body>
+</html>
