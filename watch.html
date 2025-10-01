@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+   <!-- Favicon أساسي -->
+<link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/ChicAnime.png">
+
+<!-- أيقونة لأجهزة Apple -->
+<link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
+
+<!-- أيقونة للأندرويد -->
+<link rel="manifest" href="images/ChicAnime.png">
+
+
+<!-- OG Meta for Social Sharing -->
+<meta property="og:title" content="تفاصيل الصورة | ChicAnime">
+<meta property="og:description" content="استكشف تفاصيل صور الأنمي المفضلة لديك وحمّلها بجودة عالية.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://anime-gallery-b0a34.web.app/preview.jpg">
+<meta property="og:url" content="https://anime-gallery-b0a34.web.app/details.html">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مشاهدة الأنمي | Anime Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root {
+      --primary-color: #C7372C;
+      --primary-dark: #710D0B;
+      --secondary-color: #4A4743;
+      --bg-dark: #2A2522;
+      --card-bg: #3A3532;
+      --bg-light: #4A4743;
+      --text-color: #D6D7D2;
+      --text-muted: #9C9C9C;
+      --border-radius: 8px;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.2);
+      --transition: all 0.3s ease;
+    }
+
+    .watch-page {
+      padding: 20px 0;
+      min-height: 100vh;
+    }
+    
+    .watch-container {
+      display: flex;
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .main-content {
+      flex: 1;
+      min-width: 0; /* لمنع تجاوز الحجم */
+    }
+    
+    .episodes-sidebar {
+      width: 320px;
+      flex-shrink: 0;
+    }
+    
+    .anime-header {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    
+    .anime-title {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      /* حل مشكلة العنوان الطويل */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+      max-height: 2.6em; /* 2 lines * 1.3 line-height */
+    }
+    
+    .episode-title {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: var(--text-color);
+      /* حل مشكلة العنوان الطويل للحلقات */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+      max-height: 2.6em;
+    }
+    
+    .video-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .server-selector, .quality-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: var(--bg-light);
+      padding: 8px 15px;
+      border-radius: var(--border-radius);
+    }
+    
+    .server-selector select, .quality-selector select {
+      background-color: transparent;
+      border: 1px solid var(--secondary-color);
+      color: var(--text-color);
+      padding: 5px 10px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+    }
+    
+    .video-main-container {
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      height: 0;
+      background-color: #000;
+    }
+    
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+    
+    .nav-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: center;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    .nav-btn:disabled {
+      background-color: var(--bg-light);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    /* قائمة الحلقات في الشريط الجانبي - تحسينات */
+    .episodes-sidebar {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      box-shadow: var(--shadow);
+      height: fit-content;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .sidebar-title {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--secondary-color);
+    }
+    
+    .episodes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .episode-item {
+      background-color: var(--bg-light);
+      border-radius: var(--border-radius);
+      padding: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+    
+    .episode-item:hover {
+      background-color: rgba(199, 55, 44, 0.1);
+      transform: translateX(-5px);
+    }
+    
+    .episode-item.current {
+      background-color: var(--primary-color);
+      color: white;
+      border-right: 4px solid #fff;
+    }
+    
+    .episode-item.current::before {
+      content: "▶";
+      position: absolute;
+      left: 10px;
+      color: white;
+      font-size: 0.8rem;
+    }
+    
+    .episode-num {
+      background-color: var(--card-bg);
+      color: var(--primary-color);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+    
+    .episode-item.current .episode-num {
+      background-color: white;
+      color: var(--primary-color);
+    }
+    
+    .episode-item-title {
+      flex: 1;
+      /* حل مشكلة العنوان الطويل في قائمة الحلقات */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.9rem;
+    }
+    
+    /* إضافة أيقونة للحلقات بدلاً من الصور */
+    .episode-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    
+    .episode-item.current .episode-icon {
+      background: linear-gradient(135deg, white, #f0f0f0);
+      color: var(--primary-color);
+    }
+    
+    /* قسم الاقتراحات */
+    .suggestions-section {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-top: 30px;
+      box-shadow: var(--shadow);
+    }
+    
+    .section-title {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .suggestions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .anime-suggestion {
+      background-color: var(--bg-light);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    
+    .anime-suggestion:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .suggestion-thumb {
+      height: 140px;
+      overflow: hidden;
+    }
+    
+    .suggestion-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+    
+    .anime-suggestion:hover .suggestion-thumb img {
+      transform: scale(1.1);
+    }
+    
+    .suggestion-info {
+      padding: 12px;
+    }
+    
+    .suggestion-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: var(--text-color);
+      /* حل مشكلة العنوان الطويل في الاقتراحات */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .suggestion-category {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    .watch-meta {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background-color: var(--bg-light);
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+    }
+    
+    .meta-item i {
+      color: var(--primary-color);
+    }
+    
+    .no-servers {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+    
+    /* أنماط للجوال - تحسينات إضافية */
+    @media (max-width: 1200px) {
+      .watch-container {
+        flex-direction: column;
+      }
+      
+      .episodes-sidebar {
+        width: 100%;
+        max-height: none;
+      }
+      
+      .episodes-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+      
+      .episode-item {
+        flex-direction: column;
+        text-align: center;
+        width: 120px;
+        height: auto;
+        padding: 10px;
+      }
+      
+      .episode-item-title {
+        font-size: 0.8rem;
+        margin-top: 5px;
+        white-space: normal;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+        max-height: 2.4em;
+      }
+      
+      .episode-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+      }
+      
+      .episode-num {
+        margin-top: 5px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .anime-title {
+        font-size: 1.5rem;
+      }
+      
+      .episode-title {
+        font-size: 1.2rem;
+      }
+      
+      .video-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .server-selector, .quality-selector {
+        justify-content: space-between;
+      }
+      
+      .navigation-buttons {
+        flex-direction: column;
+      }
+      
+      .header-container {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      
+      .logo {
+        font-size: 1.2rem;
+      }
+      
+      .suggestions-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+      
+      .episodes-list {
+        justify-content: center;
+      }
+      
+      .episode-item {
+        width: 110px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .anime-title {
+        font-size: 1.3rem;
+      }
+      
+      .episode-title {
+        font-size: 1.1rem;
+      }
+      
+      .episode-item {
+        width: 100px;
+      }
+      
+      .episode-item-title {
+        font-size: 0.75rem;
+      }
+      
+      .episode-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري تحميل الأنمي...</p>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>Anime Studio</span>
+      </a>
+      
+      <a href="index.html" class="btn btn-outline">
+        <i class="fas fa-arrow-right"></i>
+        العودة للاستوديو
+      </a>
+    </div>
+  </header>
+
+  <main class="watch-page">
+    <div class="container">
+      <!-- رأس الأنمي -->
+      <div class="anime-header">
+        <h1 class="anime-title" id="animeTitle">اسم الأنمي</h1>
+        <div class="watch-meta">
+          <span class="meta-item">
+            <i class="fas fa-film"></i>
+            <span id="episodeCount">0 حلقة</span>
+          </span>
+          <span class="meta-item">
+            <i class="fas fa-tag"></i>
+            <span id="animeCategory">نوع الأنمي</span>
+          </span>
+        </div>
+        <h2 class="episode-title" id="episodeTitle">الحلقة 1: عنوان الحلقة</h2>
+      </div>
+
+      <div class="watch-container">
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+          <!-- عناصر التحكم في التشغيل -->
+          <div class="video-controls" id="videoControls" style="display: none;">
+            <div class="server-selector">
+              <span><i class="fas fa-server"></i> الخادم:</span>
+              <select id="serverSelect">
+                <!-- سيتم ملؤها بالخوادم المتاحة -->
+              </select>
+            </div>
+            
+            <div class="quality-selector">
+              <span><i class="fas fa-hd"></i> الجودة:</span>
+              <select id="qualitySelect">
+                <!-- سيتم ملؤها بجودات الخادم المحدد -->
+              </select>
+            </div>
+          </div>
+
+          <!-- مشغل الفيديو -->
+          <div class="video-main-container">
+            <div class="video-container">
+              <iframe id="videoFrame" src="" allowfullscreen style="border: 0;"></iframe>
+            </div>
+          </div>
+
+          <!-- أزرار التنقل -->
+          <div class="navigation-buttons">
+            <button class="nav-btn" id="prevBtn" disabled>
+              <i class="fas fa-arrow-right"></i>
+              الحلقة السابقة
+            </button>
+            <button class="nav-btn" id="nextBtn">
+              الحلقة التالية
+              <i class="fas fa-arrow-left"></i>
+            </button>
+          </div>
+
+          <!-- قسم الاقتراحات -->
+          <div class="suggestions-section">
+            <h3 class="section-title"><i class="fas fa-lightbulb"></i> قد يعجبك أيضاً</h3>
+            <div class="suggestions-grid" id="suggestionsList">
+              <!-- سيتم ملؤها بالأنميات المقترحة -->
+            </div>
+          </div>
+        </div>
+
+        <!-- الشريط الجانبي للحلقات -->
+        <div class="episodes-sidebar">
+          <h3 class="sidebar-title"><i class="fas fa-list-ol"></i> قائمة الحلقات</h3>
+          <div class="episodes-list" id="episodesList">
+            <!-- سيتم ملؤها بالحلقات -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة &copy; 2025 - Anime Studio</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- إضافة مكتبة Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+  <script>
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyx5DUHCK7tzSrwIB_DF33xExfCh0EbCo",
+      authDomain: "anime-studio-videos.firebaseapp.com",
+      databaseURL: "https://anime-studio-videos-default-rtdb.firebaseio.com",
+      projectId: "anime-studio-videos",
+      storageBucket: "anime-studio-videos.firebasestorage.app",
+      messagingSenderId: "593166797912",
+      appId: "1:593166797912:web:b5bcdab817f1baecb70e2d",
+      measurementId: "G-LS4NSXW208"
+    };
+
+    // تهيئة Firebase
+    try {
+      firebase.initializeApp(firebaseConfig);
+      console.log("Firebase initialized successfully");
+    } catch (error) {
+      console.error("Error initializing Firebase:", error);
+      alert("حدث خطأ في الاتصال بقاعدة البيانات. يرجى تحديث الصفحة والمحاولة مرة أخرى.");
+    }
+
+    // متغيرات عامة
+    let currentAnime = null;
+    let currentEpisode = null;
+    let allEpisodes = [];
+    let currentServer = null;
+    let currentQuality = null;
+    let allAnime = [];
+
+    // دالة للحصول على معاملات URL
+    function getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        animeId: params.get('anime'),
+        episodeId: params.get('episode')
+      };
+    }
+
+    // دالة تحميل بيانات الأنمي والحلقات
+    function loadAnimeData(animeId, episodeId) {
+      const database = firebase.database();
+      
+      // تحميل جميع الأنميات أولاً (للعثور على الاقتراحات)
+      database.ref('anime').once('value')
+        .then(animeSnapshot => {
+          allAnime = [];
+          if (animeSnapshot.exists()) {
+            animeSnapshot.forEach(childSnapshot => {
+              allAnime.push({
+                id: childSnapshot.key,
+                ...childSnapshot.val()
+              });
+            });
+          }
+          
+          // تحميل بيانات الأنمي الحالي
+          return database.ref('anime/' + animeId).once('value');
+        })
+        .then(animeSnapshot => {
+          if (!animeSnapshot.exists()) {
+            throw new Error('الأنمي غير موجود');
+          }
+          
+          currentAnime = {
+            id: animeSnapshot.key,
+            ...animeSnapshot.val()
+          };
+          
+          // تحديث عنوان الصفحة
+          document.getElementById('animeTitle').textContent = currentAnime.title;
+          document.getElementById('animeCategory').textContent = currentAnime.category || 'غير محدد';
+          document.title = `مشاهدة ${currentAnime.title} | Anime Studio`;
+          
+          // تحميل الحلقات
+          return database.ref('episodes').orderByChild('animeId').equalTo(animeId).once('value');
+        })
+        .then(episodesSnapshot => {
+          allEpisodes = [];
+          if (episodesSnapshot.exists()) {
+            episodesSnapshot.forEach(childSnapshot => {
+              allEpisodes.push({
+                id: childSnapshot.key,
+                ...childSnapshot.val()
+              });
+            });
+            
+            // ترتيب الحلقات حسب الرقم
+            allEpisodes.sort((a, b) => a.number - b.number);
+            
+            // تحديث عدد الحلقات
+            document.getElementById('episodeCount').textContent = `${allEpisodes.length} حلقة`;
+            
+            // تحديد الحلقة الحالية
+            let currentEpisodeIndex = 0;
+            
+            if (episodeId) {
+              const foundIndex = allEpisodes.findIndex(ep => ep.id === episodeId);
+              if (foundIndex !== -1) {
+                currentEpisodeIndex = foundIndex;
+              }
+            }
+            
+            currentEpisode = allEpisodes[currentEpisodeIndex];
+            
+            // عرض الحلقة الحالية
+            displayCurrentEpisode();
+            
+            // تعبئة قائمة الحلقات
+            displayEpisodesList();
+            
+            // عرض الاقتراحات
+            displaySuggestions();
+            
+            // تحديث أزرار التنقل
+            updateNavigationButtons(currentEpisodeIndex);
+          } else {
+            throw new Error('لا توجد حلقات لهذا الأنمي');
+          }
+        })
+        .catch(error => {
+          console.error('Error loading data:', error);
+          alert(error.message || 'حدث خطأ في تحميل البيانات. يرجى التأكد من اتصال الإنترنت وتحديث الصفحة.');
+        })
+        .finally(() => {
+          // إخفاء شاشة التحميل
+          const loadingScreen = document.getElementById('loadingScreen');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+              loadingScreen.style.display = 'none';
+            }, 500);
+          }
+        });
+    }
+
+    // دالة لعرض خوادم التشغيل المتاحة
+    function displayServerOptions() {
+      const serverSelect = document.getElementById('serverSelect');
+      const qualitySelect = document.getElementById('qualitySelect');
+      const videoControls = document.getElementById('videoControls');
+      
+      // مسح الخيارات الحالية
+      serverSelect.innerHTML = '';
+      qualitySelect.innerHTML = '';
+      
+      // التحقق من وجود خوادم
+      if (!currentEpisode.servers || Object.keys(currentEpisode.servers).length === 0) {
+        videoControls.style.display = 'none';
+        return;
+      }
+      
+      // إظهار عناصر التحكم
+      videoControls.style.display = 'flex';
+      
+      // إضافة الخوادم إلى القائمة
+      Object.entries(currentEpisode.servers).forEach(([serverId, serverData]) => {
+        const option = document.createElement('option');
+        option.value = serverId;
+        option.textContent = getServerName(serverData.name);
+        serverSelect.appendChild(option);
+      });
+      
+      // تحديد الخادم الأول افتراضيًا
+      const firstServerId = Object.keys(currentEpisode.servers)[0];
+      serverSelect.value = firstServerId;
+      
+      // تحديث خيارات الجودة للخادم المحدد
+      updateQualityOptions(firstServerId);
+      
+      // إضافة مستمع حدث لتغيير الخادم
+      serverSelect.addEventListener('change', function() {
+        updateQualityOptions(this.value);
+      });
+      
+      // إضافة مستمع حدث لتغيير الجودة
+      qualitySelect.addEventListener('change', function() {
+        loadSelectedVideo();
+      });
+    }
+
+    // دالة للحصول على اسم الخادم بشكل مقروء
+    function getServerName(serverKey) {
+      const serverNames = {
+        'witanime': 'Witanime',
+        'okru': 'Ok.ru',
+        'uqload': 'Uqload',
+        'other': 'خادم آخر'
+      };
+      
+      return serverNames[serverKey] || serverKey;
+    }
+
+    // دالة لتحديث خيارات الجودة بناءً على الخادم المحدد
+    function updateQualityOptions(serverId) {
+      const qualitySelect = document.getElementById('qualitySelect');
+      qualitySelect.innerHTML = '';
+      
+      const serverData = currentEpisode.servers[serverId];
+      
+      if (serverData && serverData.qualities) {
+        // إضافة الجودات المتاحة
+        Object.entries(serverData.qualities).forEach(([quality, url]) => {
+          const option = document.createElement('option');
+          option.value = url;
+          option.textContent = getQualityName(quality);
+          qualitySelect.appendChild(option);
+        });
+        
+        // تحديد أعلى جودة افتراضيًا (أو التلقائي إذا كان متاحًا)
+        const hasAuto = Object.keys(serverData.qualities).includes('auto');
+        const defaultQuality = hasAuto ? 'auto' : Object.keys(serverData.qualities)[0];
+        
+        const defaultUrl = serverData.qualities[defaultQuality];
+        qualitySelect.value = defaultUrl;
+        
+        // تحميل الفيديو بالجودة المحددة
+        loadSelectedVideo();
+      }
+    }
+
+    // دالة للحصول على اسم الجودة بشكل مقروء
+    function getQualityName(qualityKey) {
+      const qualityNames = {
+        '1080p': '1080p (عالية جدًا)',
+        '720p': '720p (عالية)',
+        '480p': '480p (متوسطة)',
+        '360p': '360p (منخفضة)',
+        'auto': 'تلقائي (افضل جودة)'
+      };
+      
+      return qualityNames[qualityKey] || qualityKey;
+    }
+
+    // دالة لتحميل الفيديو المحدد
+    function loadSelectedVideo() {
+      const serverSelect = document.getElementById('serverSelect');
+      const qualitySelect = document.getElementById('qualitySelect');
+      
+      const serverId = serverSelect.value;
+      const videoUrl = qualitySelect.value;
+      
+      if (!videoUrl) return;
+      
+      // حفظ الإعدادات الحالية
+      currentServer = serverId;
+      currentQuality = qualitySelect.options[qualitySelect.selectedIndex].text;
+      
+      // تحضير رابط التشغيل
+      let finalUrl = videoUrl;
+      
+      // معالجة روابط الخوادم الخاصة
+      if (videoUrl.includes('yourupload.com')) {
+        if (videoUrl.includes('/watch/')) {
+          const videoId = videoUrl.replace('https://www.yourupload.com/watch/', '');
+          finalUrl = `https://www.yourupload.com/embed/${videoId}`;
+        }
+      }
+      
+      // إضافة خاصية التشغيل التلقائي إذا كان مدعومًا
+      if (finalUrl.includes('embed') && !finalUrl.includes('autoplay')) {
+        finalUrl += finalUrl.includes('?') ? '&autoplay=1' : '?autoplay=1';
+      }
+      
+      // تحديث الإطار بالفيديو
+      document.getElementById('videoFrame').src = finalUrl;
+    }
+
+    // دالة لعرض الاقتراحات
+    function displaySuggestions() {
+      const suggestionsList = document.getElementById('suggestionsList');
+      suggestionsList.innerHTML = '';
+      
+      if (!currentAnime || allAnime.length <= 1) {
+        suggestionsList.innerHTML = '<p>لا توجد اقتراحات متاحة</p>';
+        return;
+      }
+      
+      // فلترة الأنميات المقترحة (نفس التصنيف أو اسم مشابه)
+      const suggestions = allAnime.filter(anime => {
+        return anime.id !== currentAnime.id && 
+               (anime.category === currentAnime.category || 
+                anime.title.includes(currentAnime.title.split(' ')[0]));
+      }).slice(0, 6); // عرض最多6 اقتراحات
+      
+      if (suggestions.length === 0) {
+        suggestionsList.innerHTML = '<p>لا توجد اقتراحات متاحة</p>';
+        return;
+      }
+      
+      // عرض الاقتراحات
+      suggestions.forEach(anime => {
+        const animeCard = document.createElement('div');
+        animeCard.className = 'anime-suggestion';
+        animeCard.onclick = () => {
+          window.location.href = `watch.html?anime=${anime.id}`;
+        };
+        
+        animeCard.innerHTML = `
+          <div class="suggestion-thumb">
+            
+            <img src="${anime.thumbnail || 'https://via.placeholder.com/200x150?text=صورة+الأنمي'}" alt="${anime.title}">
+          </div>
+          <div class="suggestion-info">
+            <div class="suggestion-title">${anime.title}</div>
+            <div class="suggestion-category">${anime.category || 'غير محدد'}</div>
+          </div>
+        `;
+        
+        suggestionsList.appendChild(animeCard);
+      });
+    }
+
+    // دالة عرض الحلقة الحالية
+    function displayCurrentEpisode() {
+      if (!currentEpisode) return;
+      
+      // تحديث عنوان الحلقة
+      document.getElementById('episodeTitle').textContent = 
+        `الحلقة ${currentEpisode.number}: ${currentEpisode.title}`;
+      
+      // عرض خيارات الخوادم والجودة
+      displayServerOptions();
+      
+      // إذا لم يكن هناك خوادم، استخدام النظام القديم
+      if (!currentEpisode.servers || Object.keys(currentEpisode.servers).length === 0) {
+        // استخدام رابط التضمين إذا كان متاحاً، وإلا استخدام رابط الفيديو
+        let videoUrl = currentEpisode.embedUrl || currentEpisode.videoUrl;
+        
+        // تحديد رابط مشغل الفيديو المناسب
+        if (videoUrl && videoUrl.includes('yourupload.com')) {
+          if (videoUrl.includes('/watch/')) {
+            videoUrl = videoUrl.replace('https://www.yourupload.com/watch/', '');
+            videoUrl = `https://www.yourupload.com/embed/${videoUrl}`;
+          }
+        }
+        
+        // إضافة خاصية التشغيل التلقائي للفيديو
+        if (videoUrl && videoUrl.includes('embed')) {
+          if (!videoUrl.includes('autoplay')) {
+            videoUrl += videoUrl.includes('?') ? '&autoplay=1' : '?autoplay=1';
+          }
+        }
+        
+        // تحديث الإطار بالفيديو
+        if (videoUrl) {
+          document.getElementById('videoFrame').src = videoUrl;
+        }
+      }
+    }
+
+    // دالة عرض قائمة الحلقات في الشريط الجانبي
+    function displayEpisodesList() {
+      const episodesList = document.getElementById('episodesList');
+      episodesList.innerHTML = '';
+      
+      if (allEpisodes.length === 0) {
+        episodesList.innerHTML = '<div class="no-episodes">لا توجد حلقات متاحة</div>';
+        return;
+      }
+      
+      allEpisodes.forEach(episode => {
+        const isCurrent = episode.id === currentEpisode.id;
+        
+        const episodeItem = document.createElement('div');
+        episodeItem.className = `episode-item ${isCurrent ? 'current' : ''}`;
+        episodeItem.onclick = () => playEpisode(episode.id);
+        
+        // استخدام أيقونة بدلاً من الصورة
+        episodeItem.innerHTML = `
+          <div class="episode-icon">EP</div>
+          <div class="episode-num">${episode.number}</div>
+          <div class="episode-item-title">${episode.title || `الحلقة ${episode.number}`}</div>
+        `;
+        
+        episodesList.appendChild(episodeItem);
+      });
+    }
+
+    // دالة تشغيل حلقة محددة
+    function playEpisode(episodeId) {
+      // تحديث URL بدون إعادة تحميل الصفحة
+      const newUrl = `${window.location.pathname}?anime=${currentAnime.id}&episode=${episodeId}`;
+      window.history.replaceState({}, '', newUrl);
+      
+      // العثور على الحلقة المحددة
+      const episodeIndex = allEpisodes.findIndex(ep => ep.id === episodeId);
+      if (episodeIndex !== -1) {
+        currentEpisode = allEpisodes[episodeIndex];
+        displayCurrentEpisode();
+        displayEpisodesList();
+        updateNavigationButtons(episodeIndex);
+        
+        // التمرير إلى الأعلى
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // دالة تحديث أزرار التنقل
+    function updateNavigationButtons(currentIndex) {
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      
+      // تفعيل أو تعطيل زر الحلقة السابقة
+      if (currentIndex > 0) {
+        prevBtn.disabled = false;
+        prevBtn.onclick = () => playEpisode(allEpisodes[currentIndex - 1].id);
+      } else {
+        prevBtn.disabled = true;
+        prevBtn.onclick = null;
+      }
+      
+      // تفعيل أو تعطيل زر الحلقة التالية
+      if (currentIndex < allEpisodes.length - 1) {
+        nextBtn.disabled = false;
+        nextBtn.onclick = () => playEpisode(allEpisodes[currentIndex + 1].id);
+      } else {
+        nextBtn.disabled = true;
+        nextBtn.onclick = null;
+      }
+    }
+
+    // تحميل البيانات عند فتح الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      const { animeId, episodeId } = getUrlParams();
+      
+      if (!animeId) {
+        alert('لم يتم تحديد أنمي للمشاهدة');
+        window.location.href = 'anime-studio.html';
+        return;
+      }
+      
+      loadAnimeData(animeId, episodeId);
+    });
+  </script>
+</body>
+</html>

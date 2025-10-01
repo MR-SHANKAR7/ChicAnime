@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark-mode">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم أخبار الأنمي | ChicAnime</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .admin-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      box-shadow: var(--shadow);
+      margin-bottom: 25px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      background-color: var(--bg-light);
+      color: var(--text-color);
+      font-family: 'Cairo', sans-serif;
+      transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    textarea.form-control {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    .image-upload {
+      position: relative;
+      border: 2px dashed var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.3s;
+      margin-bottom: 20px;
+    }
+    
+    .image-upload:hover {
+      border-color: var(--primary-color);
+    }
+    
+    .image-upload i {
+      font-size: 3rem;
+      color: var(--text-muted);
+      margin-bottom: 15px;
+    }
+    
+    .image-upload p {
+      color: var(--text-muted);
+      margin: 0;
+    }
+    
+    .image-preview {
+      display: none;
+      max-width: 100%;
+      margin-top: 20px;
+      border-radius: var(--border-radius);
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 25px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary-color);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--secondary-dark);
+    }
+    
+    .alert {
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .news-list {
+      margin-top: 40px;
+    }
+    
+    .news-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .news-item-img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      margin-left: 15px;
+    }
+    
+    .news-item-content {
+      flex: 1;
+    }
+    
+    .news-item-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .news-item-date {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .news-item-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .btn-edit {
+      background-color: #ffc107;
+      color: #000;
+    }
+    
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+    
+    .login-container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 30px;
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .login-title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    /* تبويب JSON الجديد */
+    .json-upload {
+      min-height: 300px;
+      font-family: monospace;
+      direction: ltr;
+    }
+    
+    .tab-container {
+      margin-bottom: 20px;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .tab-button {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .tab-button.active {
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- زر القائمة للجوال -->
+  <div class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <header class="header">
+    <a href="index.html">
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime</span>
+      </div>
+      </a>
+      <nav class="nav" id="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
+          <li><a href="admin.html" class="nav-link active"><i class="fas fa-cog"></i> لوحة التحكم</a></li>
+          <li><a href="#" id="logoutBtn" class="nav-link"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- محتوى لوحة التحكم -->
+  <main class="admin-container" id="adminContent" style="display: none;">
+    <div class="admin-header">
+      <h1>لوحة تحكم أخبار الأنمي</h1>
+      <button class="btn" id="toggleNewsListBtn">عرض الأخبار المرفوعة</button>
+    </div>
+    
+    <div class="alert" id="alertBox"></div>
+    
+    <!-- تبويب الاختيار بين النماذج -->
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <button class="tab-button active" data-tab="manual-form">رفع خبر يدوي</button>
+        <button class="tab-button" data-tab="json-form">رفع JSON</button>
+      </div>
+      
+      <!-- تبويب الرفع اليدوي -->
+      <div class="tab-content active" id="manual-form">
+        <div class="admin-card">
+          <h2>رفع خبر جديد</h2>
+          
+          <form id="newsForm">
+            <input type="hidden" id="editNewsId" value="">
+            
+            <div class="form-group">
+              <label class="form-label" for="newsTitle">عنوان الخبر</label>
+              <input type="text" id="newsTitle" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="newsExcerpt">ملخص الخبر</label>
+              <textarea id="newsExcerpt" class="form-control" required></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="newsContent">محتوى الخبر</label>
+              <textarea id="newsContent" class="form-control" required></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="newsCategory">التصنيف</label>
+              <select id="newsCategory" class="form-control" required>
+                <option value="">اختر التصنيف</option>
+                <option value="أخبار">أخبار</option>
+                <option value="عروض">عروض حصرية</option>
+                <option value="مانغا">مانغا</option>
+                <option value="أفلام">أفلام</option>
+                <option value="ألعاب">ألعاب</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">صورة الخبر</label>
+              <div class="image-upload" id="imageUpload">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>انقر أو اسحب الصورة هنا للرفع</p>
+                <input type="file" id="newsImage" accept="image/*" style="display: none;">
+              </div>
+              <img id="imagePreview" class="image-preview" alt="معاينة الصورة">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="newsTags">الكلمات المفتاحية (مفصولة بفواصل)</label>
+              <input type="text" id="newsTags" class="form-control" placeholder="مثال: أنمي, أخبار, One Piece">
+            </div>
+            
+            <button type="submit" class="btn" id="submitNewsBtn">رفع الخبر</button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- تبويب رفع JSON -->
+      <div class="tab-content" id="json-form">
+        <div class="admin-card">
+          <h2>رفع بيانات JSON</h2>
+          
+          <form id="jsonForm">
+            <div class="form-group">
+              <label class="form-label" for="jsonData">بيانات JSON</label>
+              <textarea id="jsonData" class="form-control json-upload" placeholder='{
+  "title": "عنوان الخبر",
+  "excerpt": "ملخص الخبر",
+  "content": "محتوى الخبر الكامل...",
+  "category": "أخبار",
+  "tags": ["أنمي", "أخبار"]
+}'></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">صورة الخبر</label>
+              <div class="image-upload" id="jsonImageUpload">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>انقر أو اسحب الصورة هنا للرفع</p>
+                <input type="file" id="jsonNewsImage" accept="image/*" style="display: none;">
+              </div>
+              <img id="jsonImagePreview" class="image-preview" alt="معاينة الصورة">
+            </div>
+            
+            <button type="submit" class="btn" id="submitJsonBtn">رفع بيانات JSON</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="news-list" id="newsList" style="display: none;">
+      <h2>الأخبار المرفوعة</h2>
+      
+      <div class="admin-card">
+        <div id="newsItemsContainer">
+          <!-- سيتم تعبئة الأخبار هنا -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- نموذج تسجيل الدخول -->
+  <div class="login-container" id="loginForm">
+    <h2 class="login-title">تسجيل الدخول إلى لوحة التحكم</h2>
+    <div class="alert" id="loginAlert"></div>
+    
+    <div class="form-group">
+      <label class="form-label" for="loginEmail">البريد الإلكتروني</label>
+      <input type="email" id="loginEmail" class="form-control" required>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="loginPassword">كلمة المرور</label>
+      <input type="password" id="loginPassword" class="form-control" required>
+    </div>
+    
+    <button class="btn" id="loginBtn">تسجيل الدخول</button>
+  </div>
+
+  <!-- إضافة مكتبات Firebase وCloudinary -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+  
+  <!-- ملفات JavaScript -->
+  <script src="js/firebase-config.js"></script>
+  <script>
+    // تكوين Cloudinary
+    const cloudinaryConfig = {
+      cloudName: 'dcq3dq2dq',
+      uploadPreset: 'anime_gallery'
+    };
+    
+    // حالة التطبيق
+    let currentUser = null;
+    let imageUrl = '';
+    let jsonImageUrl = '';
+    
+    // عناصر DOM
+    const loginForm = document.getElementById('loginForm');
+    const adminContent = document.getElementById('adminContent');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginAlert = document.getElementById('loginAlert');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const newsForm = document.getElementById('newsForm');
+    const jsonForm = document.getElementById('jsonForm');
+    const imageUpload = document.getElementById('imageUpload');
+    const jsonImageUpload = document.getElementById('jsonImageUpload');
+    const newsImage = document.getElementById('newsImage');
+    const jsonNewsImage = document.getElementById('jsonNewsImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const jsonImagePreview = document.getElementById('jsonImagePreview');
+    const alertBox = document.getElementById('alertBox');
+    const toggleNewsListBtn = document.getElementById('toggleNewsListBtn');
+    const newsList = document.getElementById('newsList');
+    const newsItemsContainer = document.getElementById('newsItemsContainer');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    // تهيئة Cloudinary Upload Widget
+    let cloudinaryWidget = cloudinary.createUploadWidget({
+      cloudName: cloudinaryConfig.cloudName,
+      uploadPreset: cloudinaryConfig.uploadPreset,
+      sources: ['local', 'url'],
+      multiple: false,
+      clientAllowedFormats: ['image'],
+      maxFileSize: 5000000,
+      styles: {
+        palette: {
+          window: "#1C1C1C",
+          sourceBg: "#2C2C2C",
+          windowBorder: "#4A4A4A",
+          tabIcon: "#FFFFFF",
+          inactiveTabIcon: "#8E8E8E",
+          menuIcons: "#FFFFFF",
+          link: "#6A55FA",
+          action: "#6A55FA",
+          inProgress: "#6A55FA",
+          complete: "#6A55FA",
+          error: "#EA4C4C",
+          textDark: "#000000",
+          textLight: "#FFFFFF"
+        }
+      }
+    }, (error, result) => {
+      if (!error && result && result.event === 'success') {
+        if (currentUploadType === 'manual') {
+          imageUrl = result.info.secure_url;
+          imagePreview.src = imageUrl;
+          imagePreview.style.display = 'block';
+        } else if (currentUploadType === 'json') {
+          jsonImageUrl = result.info.secure_url;
+          jsonImagePreview.src = jsonImageUrl;
+          jsonImagePreview.style.display = 'block';
+        }
+        showAlert('تم رفع الصورة بنجاح', 'success');
+      } else if (error) {
+        showAlert('حدث خطأ أثناء رفع الصورة: ' + error.message, 'error');
+      }
+    });
+    
+    // متغير لتحديد نوع الرفع الحالي
+    let currentUploadType = 'manual';
+    
+    // إعداد مستمعي الأحداث
+    document.addEventListener('DOMContentLoaded', function() {
+      // التحقق من حالة تسجيل الدخول
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          currentUser = user;
+          loginForm.style.display = 'none';
+          adminContent.style.display = 'block';
+          loadNews();
+        } else {
+          currentUser = null;
+          loginForm.style.display = 'block';
+          adminContent.style.display = 'none';
+        }
+        
+        // إخفاء شاشة التحميل
+        setTimeout(() => {
+          document.getElementById('loadingScreen').style.display = 'none';
+        }, 1000);
+      });
+      
+      // تسجيل الدخول
+      loginBtn.addEventListener('click', loginUser);
+      
+      // تسجيل الخروج
+      logoutBtn.addEventListener('click', logoutUser);
+      
+      // رفع الصورة للنموذج اليدوي
+      imageUpload.addEventListener('click', function() {
+        currentUploadType = 'manual';
+        cloudinaryWidget.open();
+      });
+      
+      // رفع الصورة لنموذج JSON
+      jsonImageUpload.addEventListener('click', function() {
+        currentUploadType = 'json';
+        cloudinaryWidget.open();
+      });
+      
+      // إرسال النموذج اليدوي
+      newsForm.addEventListener('submit', submitNews);
+      
+      // إرسال نموذج JSON
+      jsonForm.addEventListener('submit', submitJson);
+      
+      // تبديل عرض قائمة الأخبار
+      toggleNewsListBtn.addEventListener('click', function() {
+        if (newsList.style.display === 'none') {
+          newsList.style.display = 'block';
+          toggleNewsListBtn.textContent = 'إخفاء الأخبار المرفوعة';
+        } else {
+          newsList.style.display = 'none';
+          toggleNewsListBtn.textContent = 'عرض الأخبار المرفوعة';
+        }
+      });
+      
+      // تبديل التبويبات
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const tabId = this.getAttribute('data-tab');
+          
+          // تحديد التبويب النشط
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          tabContents.forEach(content => content.classList.remove('active'));
+          
+          this.classList.add('active');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    });
+    
+    // دالة تسجيل الدخول
+    function loginUser() {
+      const email = loginEmail.value;
+      const password = loginPassword.value;
+      
+      if (!email || !password) {
+        showLoginAlert('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+        return;
+      }
+      
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          showLoginAlert('تم تسجيل الدخول بنجاح', 'success');
+        })
+        .catch((error) => {
+          showLoginAlert('خطأ في تسجيل الدخول: ' + error.message, 'error');
+        });
+    }
+    
+    // دالة تسجيل الخروج
+    function logoutUser() {
+      firebase.auth().signOut()
+        .then(() => {
+          showAlert('تم تسجيل الخروج بنجاح', 'success');
+        })
+        .catch((error) => {
+          showAlert('خطأ في تسجيل الخروج: ' + error.message, 'error');
+        });
+    }
+    
+    // دالة لتحميل بيانات الخبر في النموذج للتعديل
+    function editNews(newsId) {
+      const newsRef = firebase.database().ref('news/' + newsId);
+      
+      newsRef.once('value')
+        .then((snapshot) => {
+          if (!snapshot.exists()) {
+            showAlert('لم يتم العثور على الخبر', 'error');
+            return;
+          }
+          
+          const news = snapshot.val();
+          
+          // تعبئة النموذج ببيانات الخبر
+          document.getElementById('editNewsId').value = newsId;
+          document.getElementById('newsTitle').value = news.title;
+          document.getElementById('newsExcerpt').value = news.excerpt;
+          document.getElementById('newsContent').value = news.content || '';
+          document.getElementById('newsCategory').value = news.category;
+          document.getElementById('newsTags').value = news.tags ? news.tags.join(', ') : '';
+          
+          // تعبئة صورة الخبر
+          imageUrl = news.imageUrl;
+          imagePreview.src = imageUrl;
+          imagePreview.style.display = 'block';
+          
+          // تغيير عنوان النموذج ونص زر الإرسال
+          document.getElementById('formTitle').textContent = 'تعديل الخبر';
+          document.getElementById('submitNewsBtn').textContent = 'تحديث الخبر';
+          
+          // التمرير إلى أعلى النموذج
+          document.getElementById('newsForm').scrollIntoView({ behavior: 'smooth' });
+          
+          showAlert('تم تحميل بيانات الخبر للتعديل', 'success');
+        })
+        .catch((error) => {
+          showAlert('حدث خطأ أثناء تحميل بيانات الخبر: ' + error.message, 'error');
+        });
+    }
+    
+    // دالة لإلغاء التعديل والعودة لوضع الإضافة
+    function cancelEdit() {
+      document.getElementById('editNewsId').value = '';
+      document.getElementById('newsForm').reset();
+      imageUrl = '';
+      imagePreview.style.display = 'none';
+      document.getElementById('formTitle').textContent = 'رفع خبر جديد';
+      document.getElementById('submitNewsBtn').textContent = 'رفع الخبر';
+      
+      // إزالة زر الإلغاء إذا كان موجوداً
+      const cancelBtn = document.getElementById('cancelEditBtn');
+      if (cancelBtn) {
+        cancelBtn.remove();
+      }
+    }
+    
+    // دالة إرسال الخبر (النموذج اليدوي)
+    function submitNews(e) {
+      e.preventDefault();
+      
+      if (!imageUrl) {
+        showAlert('يرجى رفع صورة للخبر', 'error');
+        return;
+      }
+      
+      const title = document.getElementById('newsTitle').value;
+      const excerpt = document.getElementById('newsExcerpt').value;
+      const content = document.getElementById('newsContent').value;
+      const category = document.getElementById('newsCategory').value;
+      const tags = document.getElementById('newsTags').value.split(',').map(tag => tag.trim());
+      const newsId = document.getElementById('editNewsId').value;
+      
+      const newsData = {
+        title,
+        excerpt,
+        content,
+        category,
+        tags,
+        imageUrl,
+        date: newsId ? firebase.database.ServerValue.TIMESTAMP : new Date().toISOString(),
+        author: currentUser.email
+      };
+      
+      let newsRef;
+      if (newsId) {
+        // وضع التعديل: تحديث الخبر الموجود
+        newsRef = firebase.database().ref('news/' + newsId);
+      } else {
+        // وضع الإضافة: إضافة خبر جديد
+        newsRef = firebase.database().ref('news').push();
+      }
+      
+      newsRef.update(newsData)
+        .then(() => {
+          const message = newsId ? 'تم تحديث الخبر بنجاح' : 'تم رفع الخبر بنجاح';
+          showAlert(message, 'success');
+          
+          // إعادة تعيين النموذج
+          cancelEdit();
+          
+          // تحديث قائمة الأخبار
+          loadNews();
+        })
+        .catch((error) => {
+          showAlert('حدث خطأ أثناء حفظ الخبر: ' + error.message, 'error');
+        });
+    }
+    
+    // دالة إرسال بيانات JSON
+    function submitJson(e) {
+      e.preventDefault();
+      
+      if (!jsonImageUrl) {
+        showAlert('يرجى رفع صورة للخبر', 'error');
+        return;
+      }
+      
+      const jsonDataText = document.getElementById('jsonData').value;
+      
+      if (!jsonDataText) {
+        showAlert('يرجى إدخال بيانات JSON', 'error');
+        return;
+      }
+      
+      try {
+        const newsData = JSON.parse(jsonDataText);
+        
+        // التحقق من الحقول المطلوبة
+        if (!newsData.title || !newsData.excerpt || !newsData.category) {
+          showAlert('بيانات JSON غير مكتملة. يرجى التأكد من وجود العنوان والملخص والتصنيف', 'error');
+          return;
+        }
+        
+        // إضافة الحقول الإضافية
+        newsData.imageUrl = jsonImageUrl;
+        newsData.date = new Date().toISOString();
+        newsData.author = currentUser.email;
+        
+        // إذا لم يكن هناك محتوى، استخدم الملخص
+        if (!newsData.content) {
+          newsData.content = newsData.excerpt;
+        }
+        
+        // إذا لم تكن هناك كلمات مفتاحية، استخدم مصفوفة فارغة
+        if (!newsData.tags || !Array.isArray(newsData.tags)) {
+          newsData.tags = [];
+        }
+        
+        // إضافة الخبر إلى قاعدة البيانات
+        const newsRef = firebase.database().ref('news').push();
+        
+        newsRef.set(newsData)
+          .then(() => {
+            showAlert('تم رفع بيانات JSON بنجاح', 'success');
+            
+            // إعادة تعيين النموذج
+            document.getElementById('jsonForm').reset();
+            jsonImageUrl = '';
+            jsonImagePreview.style.display = 'none';
+            
+            // تحديث قائمة الأخبار
+            loadNews();
+          })
+          .catch((error) => {
+            showAlert('حدث خطأ أثناء حفظ الخبر: ' + error.message, 'error');
+          });
+          
+      } catch (error) {
+        showAlert('بيانات JSON غير صالحة: ' + error.message, 'error');
+      }
+    }
+    
+    // إضافة زر إلغاء التعديل ديناميكياً
+    function addCancelButton() {
+      // التحقق إذا كان زر الإلغاء موجوداً بالفعل
+      if (document.getElementById('cancelEditBtn')) {
+        return;
+      }
+      
+      const submitBtn = document.getElementById('submitNewsBtn');
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.id = 'cancelEditBtn';
+      cancelBtn.className = 'btn btn-secondary';
+      cancelBtn.textContent = 'إلغاء التعديل';
+      cancelBtn.style.marginRight = '10px';
+      cancelBtn.addEventListener('click', cancelEdit);
+      
+      submitBtn.parentNode.insertBefore(cancelBtn, submitBtn);
+    }
+    
+    // دالة تحميل الأخبار
+    function loadNews() {
+      const newsRef = firebase.database().ref('news');
+      
+      newsRef.once('value')
+        .then((snapshot) => {
+          newsItemsContainer.innerHTML = '';
+          
+          if (!snapshot.exists()) {
+            newsItemsContainer.innerHTML = '<p>لا توجد أخبار مرفوعة بعد</p>';
+            return;
+          }
+          
+      snapshot.forEach((childSnapshot) => {
+        const news = childSnapshot.val();
+        const newsId = childSnapshot.key;
+        
+        const newsItem = document.createElement('div');
+        newsItem.className = 'news-item';
+        
+        const date = new Date(news.date);
+        const formattedDate = date.toLocaleDateString('ar-EG', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        newsItem.innerHTML = `
+          <img src="${news.imageUrl}" alt="${news.title}" class="news-item-img">
+          <div class="news-item-content">
+            <div class="news-item-title">${news.title}</div>
+            <div class="news-item-date">${formattedDate}</div>
+          </div>
+          <div class="news-item-actions">
+            <button class="action-btn btn-edit" data-id="${newsId}">تعديل</button>
+            <button class="action-btn btn-delete" data-id="${newsId}">حذف</button>
+          </div>
+        `;
+        
+        newsItemsContainer.appendChild(newsItem);
+      });
+      
+      // إضافة مستمعي الأحداث لأزرار التعديل
+      const editButtons = document.querySelectorAll('.btn-edit');
+      editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const newsId = this.getAttribute('data-id');
+          editNews(newsId);
+          addCancelButton(); // إضافة زر الإلغاء
+        });
+      });
+      
+      // إضافة مستمعي الأحداث لأزرار الحذف
+      const deleteButtons = document.querySelectorAll('.btn-delete');
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const newsId = this.getAttribute('data-id');
+          deleteNews(newsId);
+        });
+      });
+    })
+    .catch((error) => {
+      console.error('Error loading news:', error);
+    });
+    }
+    
+    // دالة حذف الخبر
+    function deleteNews(newsId) {
+      if (confirm('هل أنت متأكد من أنك تريد حذف هذا الخبر؟')) {
+        const newsRef = firebase.database().ref('news/' + newsId);
+        
+        newsRef.remove()
+          .then(() => {
+            showAlert('تم حذف الخبر بنجاح', 'success');
+            loadNews(); // تحديث قائمة الأخبار
+          })
+          .catch((error) => {
+            showAlert('حدث خطأ أثناء حذف الخبر: ' + error.message, 'error');
+          });
+      }
+    }
+    
+    // دالة عرض التنبيهات
+    function showAlert(message, type) {
+      alertBox.textContent = message;
+      alertBox.className = 'alert';
+      alertBox.classList.add(type === 'success' ? 'alert-success' : 'alert-error');
+      alertBox.style.display = 'block';
+      
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 5000);
+    }
+    
+    function showLoginAlert(message, type) {
+      loginAlert.textContent = message;
+      loginAlert.className = 'alert';
+      loginAlert.classList.add(type === 'success' ? 'alert-success' : 'alert-error');
+      loginAlert.style.display = 'block';
+      
+      setTimeout(() => {
+        loginAlert.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

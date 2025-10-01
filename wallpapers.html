@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+
+  <!-- Favicon أساسي -->
+<link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/ChicAnime.png">
+
+<!-- أيقونة لأجهزة Apple -->
+<link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
+
+<!-- أيقونة للأندرويد -->
+<link rel="manifest" href="images/ChicAnime.png">
+
+
+  <!-- SEO Meta -->
+<meta name="description" content="ChicAnime - مكتبة صور أنمي مع تفاصيل دقيقة وخلفيات عالية الجودة">
+<meta name="keywords" content="أنمي, خلفيات أنمي, صور شخصيات, ChicAnime">
+<meta name="author" content="ChicAnime Team">
+
+<!-- OG Meta for Social Sharing -->
+<meta property="og:title" content="تفاصيل الصورة | ChicAnime">
+<meta property="og:description" content="استكشف تفاصيل صور الأنمي المفضلة لديك وحمّلها بجودة عالية.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://anime-gallery-b0a34.web.app/preview.jpg">
+<meta property="og:url" content="https://anime-gallery-b0a34.web.app/details.html">
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خلفيات الأنمي | ChicAnime</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* أنماط إضافية لقسم أحدث الإضافات */
+    .latest-additions {
+      padding: 60px 0;
+      background: var(--bg-secondary);
+    }
+    
+    .latest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .new-badge {
+      background: var(--accent-color);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .new-badge i {
+      margin-left: 5px;
+    }
+    
+    .latest-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .latest-item {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .latest-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .latest-img-container {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .latest-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .latest-item:hover .latest-img {
+      transform: scale(1.05);
+    }
+    
+    .latest-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .latest-item:hover .latest-overlay {
+      opacity: 1;
+    }
+    
+    .latest-content {
+      padding: 15px;
+    }
+    
+    .latest-title {
+      font-size: 18px;
+      margin-bottom: 5px;
+      color: var(--text-primary);
+    }
+    
+    .latest-anime {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .latest-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- زر القائمة للجوال -->
+  <div class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <header class="header">
+    <a href="index.html">
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime</span>
+      </div>
+      </a>
+      <!-- شريط البحث -->
+    <!-- داخل عنصر search-container -->
+<div class="search-container">
+  <input type="text" id="search-bar" placeholder="ابحث عن شخصية أو أنمي...">
+  <button class="search-btn" onclick="searchCharacter()">
+    <i class="fas fa-search"></i>
+  </button>
+  <!-- إضافة عنصر الاقتراحات -->
+  <div id="search-suggestions" class="search-suggestions"></div>
+</div>
+      
+    <nav class="nav" id="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
+          <li><a href="news.html" class="nav-link "><i class="fas fa-newspaper"></i> أخبار الأنمي</a></li>
+          <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
+           <li><a href="wallpapers.html" class="nav-link active "><i class="fas fa-image"></i> الخلفيات</a></li>
+          <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
+          <!-- <li><a href="anime-admin.html" class="nav-link admin-link"><i class="fas fa-cog"></i> الإدارة</a></li> -->
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">خلفيات <span class="text-primary">أنمي</span> مذهلة</h1>
+      <p class="hero-description">اكتشف مجموعة رائعة من خلفيات الأنمي عالية الجودة لهاتفك أو حاسوبك الشخصي</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="scrollToGallery()">استكشف الخلفيات</button>
+        <button class="btn btn-secondary" onclick="filterByAnime('ون بيس')">خلفيات ون بيس</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- قسم أحدث الإضافات -->
+  <section class="latest-additions">
+    <div class="container">
+      <div class="latest-header">
+        <h2 class="section-title">أحدث <span class="text-primary">الإضافات</span></h2>
+        <span class="new-badge"><i class="fas fa-bell"></i> جديد</span>
+      </div>
+      
+      <div class="latest-grid" id="latestGrid">
+        <!-- سيتم تعبئة أحدث الصور هنا -->
+      </div>
+    </div>
+  </section>
+
+  <!-- فلترة المحتوى -->
+  <section class="filters-section">
+    <div class="container">
+      <h2 class="section-title">تصفح <span class="text-primary">الخلفيات</span></h2>
+      <div class="category-filter">
+        <button class="category-btn active" data-filter="all">الكل</button>
+        <button class="category-btn" data-filter="ون بيس">ون بيس</button>
+        <button class="category-btn" data-filter="ناروتو">ناروتو</button>
+        <button class="category-btn" data-filter="أتاك على تيتان">أتاك على تيتان</button>
+        <button class="category-btn" data-filter="بليتش">بليتش</button>
+        <button class="category-btn" data-filter="أخرى">أخرى</button>
+      </div>
+      
+      <div class="sort-filter">
+        <select id="sort-by">
+          <option value="newest">الأحدث</option>
+          <option value="oldest">الأقدم</option>
+          <option value="az">من الألف إلى الياء</option>
+          <option value="za">من الياء إلى الألف</option>
+          <option value="popular">الأكثر شيوعاً</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- المعرض الرئيسي -->
+  <main id="gallery" class="gallery">
+    <div class="container">
+      <div class="gallery-grid" id="galleryGrid">
+        <!-- سيتم تعبئة الخلفيات من Firebase -->
+      </div>
+      
+      <div class="load-more-container">
+        <button class="btn btn-outline" id="loadMoreBtn">تحميل المزيد</button>
+      </div>
+    </div>
+  </main>
+
+  <button class="floating-btn scroll-top" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="logo">
+            <i class="fas fa-dragon"></i>
+            <span>ChicAnime</span>
+          </div>
+          <p>أكبر مكتبة صور لأنمي العربية، نوفر لك أحدث وأجود الخلفيات لشخصياتك المفضلة.</p>
+          <div class="social-links">
+            <a href="https://web.facebook.com/profile.php?id=61580828810174"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/ChicAnimeX"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/chicanimee/"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/channel/UCQudfTcDpWPJSorRM_f9dcw"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>روابط سريعة</h3>
+          <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="wallpapers.html">الخلفيات</a></li>
+            <li><a href="characters.html">الشخصيات</a></li>
+            <li><a href="about.html">عن الموقع</a></li>
+            <!--<li><a href="login.html">لوحة التحكم</a></li> -->
+
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>خلفيات شائعة</h3>
+          <ul>
+            <li><a href="watch.html?anime=-OZkjy4I-nxWXYPZQnFG&episode=-OZkkZ-_T2texh8ctZ_A" data-filter="ون بيس">خلفيات ون بيس</a></li>
+            <li><a href="wallpapers.html" data-filter="ناروتو">خلفيات ناروتو</a></li>
+            <li><a href="wallpapers.html" data-filter="أتاك على تيتان">خلفيات أتاك على تيتان</a></li>
+            <li><a href="wallpapers.html" data-filter="بليتش">خلفيات بليتش</a></li>
+            <li><a href="wallpapers.html" data-filter="المدينة المفقودة">خلفيات المدينة المفقودة</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>معلومات التواصل</h3>
+          <ul>
+            <li><i class="fas fa-envelope"></i> info@animegallery.com</li>
+            <li><i class="fas fa-phone"></i> +212624280501</li>
+            <li><i class="fas fa-map-marker-alt"></i>المغرب MARCO</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة &copy; 2025 - ChicAnime</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- إضافة مكتبة Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+  <!-- ملفات JavaScript -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // دالة لجلب الخلفيات من Firebase (الخاصة بالخلفيات فقط)
+    function fetchWallpapersFromFirebase() {
+      const database = firebase.database();
+      const galleryGrid = document.getElementById('galleryGrid');
+      const latestGrid = document.getElementById('latestGrid');
+      
+      galleryGrid.innerHTML = '<div class="loading">جاري تحميل الخلفيات...</div>';
+      latestGrid.innerHTML = '<div class="loading">جاري تحميل أحدث الإضافات...</div>';
+      
+      database.ref('images').once('value')
+        .then((snapshot) => {
+          const data = [];
+          snapshot.forEach((childSnapshot) => {
+            const item = { id: childSnapshot.key, ...childSnapshot.val() };
+            // عرض فقط العناصر من نوع "wallpaper"
+            if (item.type === 'wallpaper') {
+              data.push(item);
+            }
+          });
+          
+          window.imagesData = data;
+          
+          if (galleryGrid) {
+            renderGallery(data, galleryGrid);
+          }
+          
+          if (latestGrid) {
+            renderLatestGrid(data, latestGrid);
+          }
+        })
+        .catch((error) => {
+          console.error('حدث خطأ في تحميل الخلفيات:', error);
+          if (galleryGrid) {
+            galleryGrid.innerHTML = '<p class="error-message">حدث خطأ في تحميل الخلفيات. يرجى المحاولة لاحقًا.</p>';
+          }
+          if (latestGrid) {
+            latestGrid.innerHTML = '<p class="error-message">حدث خطأ في تحميل أحدث الإضافات.</p>';
+          }
+        });
+    }
+
+    // دالة لعرض أحدث الإضافات
+    function renderLatestGrid(data, gridElement) {
+      gridElement.innerHTML = '';
+      
+      if (!data || data.length === 0) {
+        gridElement.innerHTML = '<p class="no-results">لا توجد إضافات حديثة</p>';
+        return;
+      }
+      
+      // فرز البيانات حسب التاريخ (الأحدث أولاً)
+      const sortedData = [...data].sort((a, b) => {
+        return new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0);
+      });
+      
+      // أخذ أول 4 عناصر (الأحدث)
+      const latestData = sortedData.slice(0, 4);
+      
+      latestData.forEach((image) => {
+        const latestItem = document.createElement('div');
+        latestItem.classList.add('latest-item');
+        
+        // استخدام الحقل الصحيح للصورة
+        const imageUrl = image.image || image.url || image.secure_url;
+        const timestamp = image.uploadedAt ? new Date(image.uploadedAt) : new Date();
+        const formattedDate = formatDate(timestamp);
+        
+        latestItem.innerHTML = `
+          <div class="latest-img-container">
+            <img src="${imageUrl}" alt="${image.title || 'خلفية أنمي'}" class="latest-img" loading="lazy">
+            <div class="latest-overlay">
+              <button class="btn btn-primary" onclick="viewImageDetails('${image.id}')">عرض الصورة</button>
+            </div>
+          </div>
+          <div class="latest-content">
+            <h3 class="latest-title">${image.title || 'بدون عنوان'}</h3>
+            <p class="latest-anime">${image.anime || 'غير معروف'}</p>
+            <div class="latest-meta">
+              <span><i class="far fa-clock"></i> ${formattedDate}</span>
+              <span><i class="far fa-eye"></i> ${image.views || 0}</span>
+            </div>
+          </div>
+        `;
+        
+        gridElement.appendChild(latestItem);
+      });
+    }
+    
+    // دالة مساعدة لتنسيق التاريخ
+    function formatDate(date) {
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) {
+        return "اليوم";
+      } else if (diffDays === 1) {
+        return "أمس";
+      } else if (diffDays < 7) {
+        return `قبل ${diffDays} أيام`;
+      } else {
+        return date.toLocaleDateString('ar-EG');
+      }
+    }
+    
+    // دالة لعرض تفاصيل الصورة
+    function viewImageDetails(imageId) {
+      const image = window.imagesData.find(img => img.id == imageId);
+      if (image) {
+        // حفظ البيانات مؤقتاً للوصول إليها في صفحة التفاصيل
+        sessionStorage.setItem('currentImage', JSON.stringify(image));
+        window.location.href = `details.html?id=${image.id}`;
+      }
+    }
+
+    // دالة لعرض المعرض
+    function renderGallery(data, galleryElement) {
+      galleryElement.innerHTML = '';
+      
+      if (!data || data.length === 0) {
+        galleryElement.innerHTML = '<p class="no-results">لم يتم العثور على خلفيات</p>';
+        return;
+      }
+      
+      data.forEach((image, index) => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.setAttribute('data-type', image.type || 'wallpaper');
+        card.setAttribute('data-anime', image.anime || '');
+        card.setAttribute('data-date', image.uploadedAt || '');
+        
+        // استخدام الحقل الصحيح للصورة
+        const imageUrl = image.image || image.url || image.secure_url;
+        
+        card.innerHTML = `
+          <div class="card-img">
+            <img src="${imageUrl}" alt="${image.title || 'خلفية أنمي'}" loading="lazy">
+          </div>
+          <div class="card-content">
+            <h3>${image.title || 'بدون عنوان'}</h3>
+            <p>${image.anime || 'غير معروف'}</p>
+            <div class="card-actions">
+              <button class="btn-view" onclick="viewDetails('${image.id || index}')">عرض التفاصيل</button>
+              <button class="btn-download" onclick="downloadImage('${imageUrl}', '${image.title || 'anime_wallpaper'}')">
+                <i class="fas fa-download"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        
+        galleryElement.appendChild(card);
+      });
+      
+      // تفعيل التحميل الكسول للصور
+      if ('IntersectionObserver' in window) {
+        lazyLoadImages();
+      }
+    }
+
+    // دالة لعرض التفاصيل
+    function viewDetails(id) {
+      const image = window.imagesData.find(img => img.id == id) || window.imagesData[id];
+      if (image) {
+        // حفظ البيانات مؤقتاً للوصول إليها في صفحة التفاصيل
+        sessionStorage.setItem('currentImage', JSON.stringify(image));
+        window.location.href = `details.html?id=${image.id || id}`;
+      }
+    }
+
+    // دالة لتحميل الصورة
+    function downloadImage(url, name) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name.replace(/\s+/g, '_')}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      // عرض رسالة تأكيد
+      showDownloadMessage();
+    }
+
+    // عرض رسالة تأكيد التحميل
+    function showDownloadMessage() {
+      const message = document.createElement('div');
+      message.className = 'download-message';
+      message.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>بدأ تحميل الصورة</span>
+      `;
+      document.body.appendChild(message);
+      
+      setTimeout(() => {
+        message.classList.add('show');
+      }, 100);
+      
+      setTimeout(() => {
+        message.classList.remove('show');
+        setTimeout(() => {
+          document.body.removeChild(message);
+        }, 300);
+      }, 3000);
+    }
+
+    // دالة للتصفية حسب الأنمي
+    function filterByAnime(animeName) {
+      const cards = document.querySelectorAll('.card');
+      const buttons = document.querySelectorAll('.category-btn');
+      
+      // تحديد الزر النشط
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-filter') === animeName) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      
+      cards.forEach(card => {
+        if (animeName === 'all') {
+          card.style.display = 'block';
+        } else {
+          const cardAnime = card.getAttribute('data-anime');
+          if (cardAnime === animeName) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    // دالة للبحث في الخلفيات
+    function searchWallpaper() {
+      const searchTerm = document.getElementById('search-bar').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        alert('يرجى إدخال مصطلح للبحث');
+        return;
+      }
+      
+      const cards = document.querySelectorAll('.card');
+      let found = false;
+      
+      cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const anime = card.querySelector('p').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || anime.includes(searchTerm)) {
+          card.style.display = 'block';
+          found = true;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      if (!found) {
+        alert('لم يتم العثور على خلفيات تطابق: ' + searchTerm);
+      }
+    }
+
+    // التحميل الكسول للصور
+    function lazyLoadImages() {
+      const lazyImages = document.querySelectorAll('.card-img img');
+      
+      const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            img.src = img.dataset.src || img.src;
+            img.classList.remove('lazy');
+            imageObserver.unobserve(img);
+          }
+        });
+      });
+      
+      lazyImages.forEach(img => {
+        if (img.complete) return;
+        imageObserver.observe(img);
+      });
+    }
+
+    // تفعيل الفلاتر
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // إزالة النشاط من جميع الأزرار
+        document.querySelectorAll('.category-btn').forEach(b => {
+          b.classList.remove('active');
+        });
+        
+        // إضافة النشاط للزر الحالي
+        this.classList.add('active');
+        
+        // تطبيق التصفية
+        const filter = this.getAttribute('data-filter');
+        filterByAnime(filter);
+      });
+    });
+
+    // تفعيل الفرز
+    document.getElementById('sort-by').addEventListener('change', function() {
+      sortGallery(this.value);
+    });
+
+    // دالة للفرز
+    function sortGallery(method) {
+      if (!window.imagesData) return;
+      
+      let sortedData = [...window.imagesData];
+      
+      switch(method) {
+        case 'newest':
+          sortedData.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+          break;
+        case 'oldest':
+          sortedData.sort((a, b) => new Date(a.uploadedAt) - new Date(b.uploadedAt));
+          break;
+        case 'az':
+          sortedData.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+          break;
+        case 'za':
+          sortedData.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+          break;
+      }
+      
+      renderGallery(sortedData, document.getElementById('galleryGrid'));
+    }
+
+    // تحميل المزيد من الصور
+    document.getElementById('loadMoreBtn')?.addEventListener('click', function() {
+      this.textContent = 'جاري التحميل...';
+      this.disabled = true;
+      
+      setTimeout(() => {
+        this.textContent = 'تحميل المزيد';
+        this.disabled = false;
+        alert('تم تحميل جميع الخلفيات المتاحة');
+      }, 1500);
+    });
+
+    // تحميل البيانات عند فتح الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchWallpapersFromFirebase();
+      
+      // التحقق من وجود معلمة تصفية في URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const filter = urlParams.get('filter');
+      if (filter) {
+        setTimeout(() => {
+          filterByAnime(filter);
+        }, 500);
+      }
+    });
+
+    // إضافة أنماط لرسالة التحميل
+    const style = document.createElement('style');
+    style.textContent = `
+      .download-message {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--success-color);
+        color: white;
+        padding: 12px 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .download-message.show {
+        opacity: 1;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // دالة للبحث في الشخصيات
+    function searchCharacter() {
+      const searchTerm = document.getElementById('search-bar').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        alert('يرجى إدخال مصطلح للبحث');
+        return;
+      }
+      
+      const cards = document.querySelectorAll('.card');
+      let found = false;
+      
+      cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const anime = card.querySelector('p').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || anime.includes(searchTerm)) {
+          card.style.display = 'block';
+          found = true;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      if (!found) {
+        alert('لم يتم العثور على شخصيات تطابق: ' + searchTerm);
+      }
+    }
+
+  </script>
+
+ 
+</body>
+</html>

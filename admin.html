@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم - رفع صور الأنمي</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary-color: #C7372C;
+      --primary-dark: #710D0B;
+      --secondary-color: #4A4743;
+      --bg-dark: #2A2522;
+      --card-bg: #3A3532;
+      --bg-light: #4A4743;
+      --text-color: #D6D7D2;
+      --text-muted: #9C9C9C;
+      --border-radius: 8px;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.2);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .nav-link {
+      padding: 8px 15px;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    .login-container {
+      max-width: 400px;
+      margin: 100px auto;
+      background-color: var(--card-bg);
+      padding: 30px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background-color: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .logo i {
+      margin-left: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a5753;
+    }
+
+    .admin-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .admin-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .upload-section, .preview-section {
+      background-color: var(--card-bg);
+      padding: 25px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+
+    .section-title {
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      background-color: var(--bg-light);
+      border: 1px solid var(--secondary-color);
+      border-radius: var(--border-radius);
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(199, 55, 44, 0.2);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .file-input-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .file-input {
+      width: 100%;
+      padding: 12px 15px;
+      background-color: var(--bg-light);
+      border: 2px dashed var(--secondary-color);
+      border-radius: var(--border-radius);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .file-input:hover {
+      border-color: var(--primary-color);
+    }
+
+    .image-preview {
+      display: none;
+      max-width: 100%;
+      max-height: 300px;
+      margin: 15px 0;
+      border-radius: var(--border-radius);
+      border: 2px solid var(--primary-color);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .submit-btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:disabled {
+      background-color: var(--secondary-color);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .loading-spinner {
+      border: 4px solid var(--bg-light);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin: 15px 0;
+      text-align: center;
+      display: none;
+    }
+
+    .success-message {
+      background-color: rgba(76, 175, 80, 0.2);
+      color: #4CAF50;
+      border: 1px solid #4CAF50;
+    }
+
+    .error-message {
+      background-color: rgba(244, 67, 54, 0.2);
+      color: #f44336;
+      border: 1px solid #f44336;
+    }
+
+    .preview-card {
+      background-color: var(--bg-light);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .preview-title {
+      font-size: 1.2rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .preview-image {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      margin-bottom: 15px;
+    }
+
+    .preview-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .preview-value {
+      font-weight: 600;
+    }
+
+    .preview-details {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--secondary-color);
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background-color: var(--bg-light);
+      padding: 15px;
+      border-radius: var(--border-radius);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .recent-uploads {
+      margin-top: 30px;
+    }
+
+    .upload-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: var(--bg-light);
+      border-radius: var(--border-radius);
+      margin-bottom: 10px;
+    }
+
+    .upload-thumb {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      margin-left: 15px;
+    }
+
+    .upload-info {
+      flex: 1;
+    }
+
+    .upload-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .upload-date {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+    }
+
+    /* نظام التبويبات الجديد */
+    .tab-container {
+      margin-bottom: 30px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      border-bottom: 1px solid var(--secondary-color);
+      margin-bottom: 20px;
+    }
+
+    .tab-button {
+      padding: 12px 25px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+    }
+
+    .tab-button:hover {
+      color: var(--text-color);
+    }
+
+    .tab-button.active {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--primary-color);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* تبويب JSON */
+    .json-textarea {
+      min-height: 300px;
+      font-family: monospace;
+      direction: ltr;
+    }
+
+    .json-example {
+      background-color: var(--bg-light);
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-top: 10px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      direction: ltr;
+      white-space: pre-wrap;
+    }
+
+    .json-example-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة الدخول -->
+  <div id="loginContainer" class="login-container" style="display: none;">
+    <div style="text-align: center; margin-bottom: 30px;">
+      <div class="logo" style="justify-content: center;">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime - لوحة التحكم</span>
+      </div>
+    </div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">البريد الإلكتروني</label>
+        <input type="email" id="email" class="form-control" placeholder="admin@chicanime.com" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" class="form-control" placeholder="********" required>
+      </div>
+      
+      <button type="button" class="btn btn-primary" onclick="login()" style="width: 100%; padding: 12px;">
+        <i class="fas fa-sign-in-alt"></i>
+        تسجيل الدخول
+      </button>
+    </form>
+    
+    <div id="loginMessage" class="message error-message" style="display: none;">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="loginMessageText"></span>
+    </div>
+  </div>
+
+  <!-- لوحة التحكم -->
+  <div id="adminContainer" class="admin-container" style="display: none;">
+    <!-- الهيدر -->
+    <header class="header">
+      <div class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime - لوحة التحكم</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div class="user-info">
+          <i class="fas fa-user"></i>
+          <span id="userEmail"></span>
+        </div>
+
+        <button class="btn btn-secondary" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          تسجيل الخروج
+        </button>
+      </div>
+    </header>
+
+    <!-- نظام التبويبات -->
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <button class="tab-button active" data-tab="manual-upload">رفع يدوي</button>
+        <button class="tab-button" data-tab="json-upload">رفع JSON</button>
+      </div>
+      
+      <!-- تبويب الرفع اليدوي -->
+      <div class="tab-content active" id="manual-upload">
+        <!-- المحتوى الرئيسي -->
+        <div class="admin-content">
+          <!-- قسم رفع الصور -->
+          <section class="upload-section">
+            <h2 class="section-title">رفع صورة جديدة</h2>
+            
+            <form id="uploadForm">
+              <!-- المعلومات الأساسية -->
+              <div class="form-group">
+                <label for="title">عنوان الصورة *</label>
+                <input type="text" id="title" class="form-control" placeholder="مثال: ساكورا هارونو" required>
+              </div>
+
+              <div class="form-group">
+                <label for="anime">اسم الأنمي *</label>
+                <input type="text" id="anime" class="form-control" placeholder="مثال: ناروتو / ناروتو شيبودن / بوروتو" required>
+              </div>
+
+              <div class="form-group">
+                <label for="type">نوع المحتوى *</label>
+                <select id="type" class="form-control" required>
+                  <option value="">اختر النوع</option>
+                  <option value="character">شخصية</option>
+                  <option value="wallpaper">خلفية</option>
+                </select>
+              </div>
+
+              <!-- المعلومات الإضافية -->
+              <div class="form-group">
+                <label for="birthdate">تاريخ الميلاد</label>
+                <input type="text" id="birthdate" class="form-control" placeholder="مثال: 28 مارس">
+              </div>
+
+              <div class="form-group">
+                <label for="seasons">عدد المواسم</label>
+                <input type="text" id="seasons" class="form-control" placeholder="مثال: ناروتو / ناروتو شيبودن / بوروتو">
+              </div>
+
+              <div class="form-group">
+                <label for="start_date">تاريخ البداية</label>
+                <input type="text" id="start_date" class="form-control" placeholder="مثال: 2002">
+              </div>
+
+              <!-- رفع الصورة -->
+              <div class="form-group">
+                <label for="imageInput">رفع الصورة *</label>
+                <div class="file-input-container">
+                  <input type="file" id="imageInput" class="form-control file-input" accept="image/*" required>
+                </div>
+                <small style="color: var(--text-muted);">الحد الأقصى لحجم الملف: 5MB (JPEG, PNG, WebP)</small>
+              </div>
+
+              <img id="imagePreview" class="image-preview" alt="معاينة الصورة">
+
+              <!-- التفاصيل -->
+              <div class="form-group">
+                <label for="details">تفاصيل الشخصية *</label>
+                <textarea id="details" class="form-control" placeholder="وصف مفصل للشخصية أو الخلفية..." required></textarea>
+              </div>
+
+              <!-- زر الرفع -->
+              <button type="button" id="uploadBtn" class="submit-btn" onclick="uploadImage()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                رفع الصورة
+              </button>
+            </form>
+
+            <!-- حالة التحميل -->
+            <div class="loading" id="loading">
+              <div class="loading-spinner"></div>
+              <p>جاري رفع الصورة وتنظيم البيانات...</p>
+            </div>
+
+            <!-- رسائل النجاح/الخطأ -->
+            <div id="successMessage" class="message success-message">
+              <i class="fas fa-check-circle"></i>
+              <span id="successText">تم رفع الصورة بنجاح!</span>
+            </div>
+
+            <div id="errorMessage" class="message error-message">
+              <i class="fas fa-exclamation-circle"></i>
+              <span id="errorText">حدث خطأ أثناء الرفع</span>
+            </div>
+          </section>
+
+          <!-- قسم المعاينة والإحصائيات -->
+          <section class="preview-section">
+            <h2 class="section-title">معاينة البيانات</h2>
+            
+            <!-- بطاقة المعاينة -->
+            <div class="preview-card">
+              <h3 class="preview-title" id="previewTitle">عنوان الصورة</h3>
+              <img id="previewImage" class="preview-image" src="" alt="معاينة" style="display: none;">
+              <div class="preview-info">
+                <div class="preview-item">
+                  <span class="preview-label">الأنمي:</span>
+                  <span class="preview-value" id="previewAnime">غير محدد</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">النوع:</span>
+                  <span class="preview-value" id="previewType">غير محدد</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">تاريخ الميلاد:</span>
+                  <span class="preview-value" id="previewBirthdate">غير محدد</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">المواسم:</span>
+                  <span class="preview-value" id="previewSeasons">غير محدد</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">تاريخ البداية:</span>
+                  <span class="preview-value" id="previewStartDate">غير محدد</span>
+                </div>
+              </div>
+              <div class="preview-details">
+                <span class="preview-label">التفاصيل:</span>
+                <p class="preview-value" id="previewDetails">لا توجد تفاصيل</p>
+              </div>
+            </div>
+
+            <!-- الإحصائيات -->
+            <div class="stats-container">
+              <div class="stat-card">
+                <div class="stat-number" id="totalImages">0</div>
+                <div class="stat-label">إجمالي الصور</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="characterCount">0</div>
+                <div class="stat-label">شخصيات</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="wallpaperCount">0</div>
+                <div class="stat-label">خلفيات</div>
+              </div>
+            </div>
+
+            <!-- آخر الرفوعات -->
+            <div class="recent-uploads">
+              <h3 class="section-title">آخر الصور المرفوعة</h3>
+              <div id="recentUploadsList">
+                <!-- سيتم تعبئة آخر الرفوعات هنا -->
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      
+      <!-- تبويب رفع JSON -->
+      <div class="tab-content" id="json-upload">
+        <div class="admin-content">
+          <section class="upload-section" style="grid-column: 1 / -1;">
+            <h2 class="section-title">رفع بيانات JSON</h2>
+            
+            <form id="jsonForm">
+              <div class="form-group">
+                <label for="jsonData">بيانات JSON *</label>
+                <textarea id="jsonData" class="form-control json-textarea" placeholder='{
+  "title": "أوروتشيمارو - Orochimaru",
+  "anime": "Naruto / Naruto Shippuden",
+  "birthdate": "27 أكتوبر",
+  "seasons": "Naruto / Naruto Shippuden",
+  "start_date": "2002",
+  "type": "character",
+  "details": "أوروتشيمارو هو أحد السانين الأسطوريين الثلاثة في قرية كونوها، ويشتهر بطموحه للخلود ومعرفته الواسعة بالتقنيات المحرمة. كان عالمًا نينجا متفردًا يمتلك مهارات هائلة في النينجوتسو واستدعاء المخلوقات والتحكم بالجسد. انشق عن كونوها وسعى وراء تحقيق أهدافه الخاصة، مما جعله شخصية مثيرة للجدل وخصمًا قويًا للعديد من الشينوبي. رغم أفعاله المظلمة، لعب دورًا محوريًا في تطور العديد من الشخصيات مثل ساكورا وساسكي."
+}' required></textarea>
+                
+                <div class="json-example">
+                  <div class="json-example-title">مثال على تنسيق JSON:</div>
+{
+  "title": "عنوان الصورة",
+  "anime": "اسم الأنمي",
+  "birthdate": "تاريخ الميلاد (اختياري)",
+  "seasons": "المواسم (اختياري)",
+  "start_date": "تاريخ البداية (اختياري)",
+  "type": "character أو wallpaper",
+  "details": "تفاصيل الشخصية أو الخلفية"
+}
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="jsonImageInput">رفع الصورة *</label>
+                <div class="file-input-container">
+                  <input type="file" id="jsonImageInput" class="form-control file-input" accept="image/*" required>
+                </div>
+                <small style="color: var(--text-muted);">الحد الأقصى لحجم الملف: 5MB (JPEG, PNG, WebP)</small>
+              </div>
+
+              <img id="jsonImagePreview" class="image-preview" alt="معاينة الصورة">
+
+              <!-- زر الرفع -->
+              <button type="button" id="uploadJsonBtn" class="submit-btn" onclick="uploadJson()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                رفع بيانات JSON
+              </button>
+            </form>
+
+            <!-- حالة التحميل -->
+            <div class="loading" id="jsonLoading">
+              <div class="loading-spinner"></div>
+              <p>جاري رفع الصورة وتنظيم البيانات...</p>
+            </div>
+
+            <!-- رسائل النجاح/الخطأ -->
+            <div id="jsonSuccessMessage" class="message success-message">
+              <i class="fas fa-check-circle"></i>
+              <span id="jsonSuccessText">تم رفع البيانات بنجاح!</span>
+            </div>
+
+            <div id="jsonErrorMessage" class="message error-message">
+              <i class="fas fa-exclamation-circle"></i>
+              <span id="jsonErrorText">حدث خطأ أثناء الرفع</span>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- مكتبات Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPSXK02S0Em-0ZLl2zhH6M6loW3VYpReA",
+      authDomain: "anime-gallery-b0a34.firebaseapp.com",
+      databaseURL: "https://anime-gallery-b0a34-default-rtdb.firebaseio.com/",
+      projectId: "anime-gallery-b0a34",
+      storageBucket: "anime-gallery-b0a34.appspot.com",
+      messagingSenderId: "39241660436",
+      appId: "1:39241660436:web:c35efd2748674b5a824f01",
+      measurementId: "G-FH2B5ZDFRQ"
+    };
+
+    // تهيئة Firebase
+    try {
+      firebase.initializeApp(firebaseConfig);
+      console.log("Firebase initialized successfully");
+    } catch (error) {
+      console.error("Error initializing Firebase:", error);
+    }
+
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    // إعدادات Cloudinary
+    const CLOUDINARY_CLOUD_NAME = 'dcq3dq2dq';
+    const CLOUDINARY_UPLOAD_PRESET = 'anime_gallery';
+
+    // التحقق من حالة المصادقة
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // المستخدم مسجل الدخول
+        showAdminPanel();
+        document.getElementById('userEmail').textContent = user.email;
+        loadStatistics();
+        loadRecentUploads();
+      } else {
+        // المستخدم غير مسجل الدخول
+        showLoginPanel();
+      }
+    });
+
+    // تسجيل الدخول
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      if (!email || !password) {
+        showLoginMessage('يرجى ملء جميع الحقول');
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // تم تسجيل الدخول بنجاح
+          showLoginMessage('تم تسجيل الدخول بنجاح', 'success');
+          showAdminPanel();
+        })
+        .catch((error) => {
+          console.error('Login error:', error);
+          let errorMessage = 'خطأ في تسجيل الدخول';
+          
+          switch (error.code) {
+            case 'auth/invalid-email':
+              errorMessage = 'البريد الإلكتروني غير صحيح';
+              break;
+            case 'auth/user-disabled':
+              errorMessage = 'هذا الحساب معطل';
+              break;
+            case 'auth/user-not-found':
+              errorMessage = 'لم يتم العثور على حساب بهذا البريد';
+              break;
+            case 'auth/wrong-password':
+              errorMessage = 'كلمة المرور غير صحيحة';
+              break;
+            default:
+              errorMessage = 'حدث خطأ غير متوقع';
+          }
+          
+          showLoginMessage(errorMessage);
+        });
+    }
+
+    // تسجيل الخروج
+    function logout() {
+      auth.signOut()
+        .then(() => {
+          showLoginPanel();
+        })
+        .catch((error) => {
+          console.error('Logout error:', error);
+          showError('خطأ في تسجيل الخروج');
+        });
+    }
+
+    // عرض لوحة التحكم
+    function showAdminPanel() {
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('adminContainer').style.display = 'block';
+    }
+
+    // عرض شاشة الدخول
+    function showLoginPanel() {
+      document.getElementById('loginContainer').style.display = 'block';
+      document.getElementById('adminContainer').style.display = 'none';
+      document.getElementById('loginForm').reset();
+      hideLoginMessage();
+    }
+
+    // عرض رسالة الدخول
+    function showLoginMessage(message, type = 'error') {
+      const messageElement = document.getElementById('loginMessage');
+      const messageText = document.getElementById('loginMessageText');
+      
+      messageText.textContent = message;
+      messageElement.className = `message ${type === 'success' ? 'success-message' : 'error-message'}`;
+      messageElement.style.display = 'block';
+    }
+
+    // إخفاء رسالة الدخول
+    function hideLoginMessage() {
+      document.getElementById('loginMessage').style.display = 'none';
+    }
+
+    // معاينة الصورة للرفع اليدوي
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById('imagePreview');
+      
+      if (file) {
+        // التحقق من نوع الملف
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+          showError('نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPEG أو PNG أو WebP');
+          this.value = '';
+          preview.style.display = 'none';
+          return;
+        }
+        
+        // التحقق من حجم الملف
+        if (file.size > 5 * 1024 * 1024) {
+          showError('حجم الصورة كبير جداً. الحد الأقصى هو 5MB');
+          this.value = '';
+          preview.style.display = 'none';
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          updatePreview();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+
+    // معاينة الصورة لرفع JSON
+    document.getElementById('jsonImageInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById('jsonImagePreview');
+      
+      if (file) {
+        // التحقق من نوع الملف
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+          showJsonError('نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPEG أو PNG أو WebP');
+          this.value = '';
+          preview.style.display = 'none';
+          return;
+        }
+        
+        // التحقق من حجم الملف
+        if (file.size > 5 * 1024 * 1024) {
+          showJsonError('حجم الصورة كبير جداً. الحد الأقصى هو 5MB');
+          this.value = '';
+          preview.style.display = 'none';
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+
+    // تحديث المعاينة عند تغيير النص
+    document.querySelectorAll('#title, #anime, #type, #birthdate, #seasons, #start_date, #details').forEach(input => {
+      input.addEventListener('input', updatePreview);
+    });
+
+    // تحديث المعاينة
+    function updatePreview() {
+      document.getElementById('previewTitle').textContent = document.getElementById('title').value || 'عنوان الصورة';
+      document.getElementById('previewAnime').textContent = document.getElementById('anime').value || 'غير محدد';
+      document.getElementById('previewType').textContent = document.getElementById('type').value === 'character' ? 'شخصية' : 
+                                                         document.getElementById('type').value === 'wallpaper' ? 'خلفية' : 'غير محدد';
+      document.getElementById('previewBirthdate').textContent = document.getElementById('birthdate').value || 'غير محدد';
+      document.getElementById('previewSeasons').textContent = document.getElementById('seasons').value || 'غير محدد';
+      document.getElementById('previewStartDate').textContent = document.getElementById('start_date').value || 'غير محدد';
+      document.getElementById('previewDetails').textContent = document.getElementById('details').value || 'لا توجد تفاصيل';
+      
+      // تحديث صورة المعاينة
+      const previewImage = document.getElementById('previewImage');
+      const uploadPreview = document.getElementById('imagePreview');
+      if (uploadPreview.style.display === 'block') {
+        previewImage.src = uploadPreview.src;
+        previewImage.style.display = 'block';
+      } else {
+        previewImage.style.display = 'none';
+      }
+    }
+
+    // رفع الصورة إلى Cloudinary
+    async function uploadToCloudinary(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error('فشل في رفع الصورة إلى Cloudinary');
+      }
+      
+      const data = await response.json();
+      return data.secure_url;
+    }
+
+    // رفع الصورة (الطريقة اليدوية)
+    async function uploadImage() {
+      const title = document.getElementById('title').value;
+      const anime = document.getElementById('anime').value;
+      const type = document.getElementById('type').value;
+      const birthdate = document.getElementById('birthdate').value;
+      const seasons = document.getElementById('seasons').value;
+      const start_date = document.getElementById('start_date').value;
+      const details = document.getElementById('details').value;
+      const imageFile = document.getElementById('imageInput').files[0];
+      const uploadBtn = document.getElementById('uploadBtn');
+
+      // التحقق من الحقول المطلوبة
+      if (!title || !anime || !type || !details || !imageFile) {
+        showError('يرجى ملء جميع الحقول المطلوبة');
+        return;
+      }
+
+      // تعطيل الزر وإظهار التحميل
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
+      showLoading(true);
+      hideMessages();
+
+      try {
+        // رفع الصورة إلى Cloudinary
+        const imageUrl = await uploadToCloudinary(imageFile);
+        
+        // تنظيم البيانات وحفظها في Firebase
+        const imageData = {
+          title: title,
+          anime: anime,
+          type: type,
+          birthdate: birthdate || '',
+          seasons: seasons || '',
+          start_date: start_date || '',
+          details: details,
+          image: imageUrl,
+          uploadedAt: new Date().toISOString(),
+          uploadedBy: auth.currentUser.email
+        };
+
+        // حفظ البيانات في Firebase
+        await database.ref('images').push(imageData);
+        
+        // إظهار رسالة النجاح
+        showSuccess('تم رفع الصورة وتنظيم البيانات بنجاح!');
+        
+        // إعادة تعيين النموذج
+        resetForm();
+        
+        // تحديث الإحصائيات وآخر الرفوعات
+        loadStatistics();
+        loadRecentUploads();
+        
+      } catch (error) {
+        console.error('Upload error:', error);
+        showError('حدث خطأ أثناء الرفع: ' + error.message);
+      } finally {
+        // إعادة تمكين الزر وإخفاء التحميل
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> رفع الصورة';
+        showLoading(false);
+      }
+    }
+
+    // رفع بيانات JSON
+    async function uploadJson() {
+      const jsonDataText = document.getElementById('jsonData').value;
+      const imageFile = document.getElementById('jsonImageInput').files[0];
+      const uploadBtn = document.getElementById('uploadJsonBtn');
+
+      // التحقق من الحقول المطلوبة
+      if (!jsonDataText || !imageFile) {
+        showJsonError('يرجى ملء جميع الحقول المطلوبة');
+        return;
+      }
+
+      // تعطيل الزر وإظهار التحميل
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
+      showJsonLoading(true);
+      hideJsonMessages();
+
+      try {
+        // تحليل بيانات JSON
+        const jsonData = JSON.parse(jsonDataText);
+        
+        // التحقق من الحقول المطلوبة في JSON
+        if (!jsonData.title || !jsonData.anime || !jsonData.type || !jsonData.details) {
+          showJsonError('بيانات JSON غير مكتملة. يرجى التأكد من وجود العنوان والأنمي والنوع والتفاصيل');
+          return;
+        }
+
+        // رفع الصورة إلى Cloudinary
+        const imageUrl = await uploadToCloudinary(imageFile);
+        
+        // تنظيم البيانات وحفظها في Firebase
+        const imageData = {
+          title: jsonData.title,
+          anime: jsonData.anime,
+          type: jsonData.type,
+          birthdate: jsonData.birthdate || '',
+          seasons: jsonData.seasons || '',
+          start_date: jsonData.start_date || '',
+          details: jsonData.details,
+          image: imageUrl,
+          uploadedAt: new Date().toISOString(),
+          uploadedBy: auth.currentUser.email
+        };
+
+        // حفظ البيانات في Firebase
+        await database.ref('images').push(imageData);
+        
+        // إظهار رسالة النجاح
+        showJsonSuccess('تم رفع البيانات بنجاح!');
+        
+        // إعادة تعيين النموذج
+        resetJsonForm();
+        
+        // تحديث الإحصائيات وآخر الرفوعات
+        loadStatistics();
+        loadRecentUploads();
+        
+      } catch (error) {
+        console.error('JSON upload error:', error);
+        if (error.name === 'SyntaxError') {
+          showJsonError('بيانات JSON غير صالحة: ' + error.message);
+        } else {
+          showJsonError('حدث خطأ أثناء الرفع: ' + error.message);
+        }
+      } finally {
+        // إعادة تمكين الزر وإخفاء التحميل
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> رفع بيانات JSON';
+        showJsonLoading(false);
+      }
+    }
+
+    // تحميل الإحصائيات
+    function loadStatistics() {
+      database.ref('images').once('value')
+        .then((snapshot) => {
+          const images = snapshot.val();
+          let total = 0;
+          let characters = 0;
+          let wallpapers = 0;
+          
+          if (images) {
+            Object.values(images).forEach(image => {
+              total++;
+              if (image.type === 'character') characters++;
+              if (image.type === 'wallpaper') wallpapers++;
+            });
+          }
+          
+          document.getElementById('totalImages').textContent = total;
+          document.getElementById('characterCount').textContent = characters;
+          document.getElementById('wallpaperCount').textContent = wallpapers;
+        })
+        .catch((error) => {
+          console.error('Error loading statistics:', error);
+        });
+    }
+
+    // تحميل آخر الرفوعات
+    function loadRecentUploads() {
+      database.ref('images').orderByChild('uploadedAt').limitToLast(5).once('value')
+        .then((snapshot) => {
+          const images = snapshot.val();
+          const recentUploadsList = document.getElementById('recentUploadsList');
+          recentUploadsList.innerHTML = '';
+          
+          if (!images) {
+            recentUploadsList.innerHTML = '<p style="text-align: center; color: var(--text-muted);">لا توجد صور مرفوعة بعد</p>';
+            return;
+          }
+          
+          // تحويل إلى مصفوفة وفرز حسب التاريخ
+          const imagesArray = Object.entries(images).map(([key, value]) => ({
+            id: key,
+            ...value
+          }));
+          
+          imagesArray.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+          
+          imagesArray.forEach(image => {
+            const uploadItem = document.createElement('div');
+            uploadItem.className = 'upload-item';
+            
+            const date = new Date(image.uploadedAt);
+            const formattedDate = date.toLocaleDateString('ar-EG', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
+            
+            uploadItem.innerHTML = `
+              <img src="${image.image}" alt="${image.title}" class="upload-thumb" onerror="this.src='https://via.placeholder.com/50x50/3A3532/94938F?text=صورة'">
+              <div class="upload-info">
+                <div class="upload-title">${image.title}</div>
+                <div class="upload-date">${formattedDate}</div>
+              </div>
+            `;
+            
+            recentUploadsList.appendChild(uploadItem);
+          });
+        })
+        .catch((error) => {
+          console.error('Error loading recent uploads:', error);
+        });
+    }
+
+    // إعادة تعيين النموذج اليدوي
+    function resetForm() {
+      document.getElementById('uploadForm').reset();
+      document.getElementById('imagePreview').style.display = 'none';
+      updatePreview();
+    }
+
+    // إعادة تعيين نموذج JSON
+    function resetJsonForm() {
+      document.getElementById('jsonForm').reset();
+      document.getElementById('jsonImagePreview').style.display = 'none';
+    }
+
+    // وظائف المساعدة للرفع اليدوي
+    function showLoading(show) {
+      document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    function showSuccess(message) {
+      const successElement = document.getElementById('successMessage');
+      document.getElementById('successText').textContent = message;
+      successElement.style.display = 'block';
+      setTimeout(() => {
+        successElement.style.display = 'none';
+      }, 5000);
+    }
+
+    function showError(message) {
+      const errorElement = document.getElementById('errorMessage');
+      document.getElementById('errorText').textContent = message;
+      errorElement.style.display = 'block';
+      setTimeout(() => {
+        errorElement.style.display = 'none';
+      }, 5000);
+    }
+
+    function hideMessages() {
+      document.getElementById('successMessage').style.display = 'none';
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    // وظائف المساعدة لرفع JSON
+    function showJsonLoading(show) {
+      document.getElementById('jsonLoading').style.display = show ? 'block' : 'none';
+    }
+
+    function showJsonSuccess(message) {
+      const successElement = document.getElementById('jsonSuccessMessage');
+      document.getElementById('jsonSuccessText').textContent = message;
+      successElement.style.display = 'block';
+      setTimeout(() => {
+        successElement.style.display = 'none';
+      }, 5000);
+    }
+
+    function showJsonError(message) {
+      const errorElement = document.getElementById('jsonErrorMessage');
+      document.getElementById('jsonErrorText').textContent = message;
+      errorElement.style.display = 'block';
+      setTimeout(() => {
+        errorElement.style.display = 'none';
+      }, 5000);
+    }
+
+    function hideJsonMessages() {
+      document.getElementById('jsonSuccessMessage').style.display = 'none';
+      document.getElementById('jsonErrorMessage').style.display = 'none';
+    }
+
+    // نظام التبويبات
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const tabId = button.getAttribute('data-tab');
+          
+          // إزالة النشاط من جميع الأزرار والمحتويات
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          tabContents.forEach(content => content.classList.remove('active'));
+          
+          // إضافة النشاط للتبويب المحدد
+          button.classList.add('active');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+      
+      console.log("Admin panel initialized");
+      updatePreview();
+    });
+  </script>
+</body>
+</html>

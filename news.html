@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark-mode">
+<head>
+  <!-- Favicon أساسي -->
+  <link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/ChicAnime.png">
+
+  <!-- أيقونة لأجهزة Apple -->
+  <link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
+
+  <!-- أيقونة للأندرويد -->
+  <link rel="manifest" href="images/ChicAnime.png">
+
+  <!-- SEO Meta -->
+  <meta name="description" content="ChicAnime - آخر أخبار الأنمي والعالم الياباني">
+  <meta name="keywords" content="أنمي, أخبار أنمي, مانغا, أخبار, ChicAnime">
+  <meta name="author" content="ChicAnime">
+
+  <!-- OG Meta for Social Sharing -->
+  <meta property="og:title" content="أخبار الأنمي | ChicAnime">
+  <meta property="og:description" content="تابع آخر أخبار الأنمي والمانغا والعالم الياباني">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://anime-gallery-b0a34.web.app/preview.jpg">
+  <meta property="og:url" content="https://anime-gallery-b0a34.web.app/news.html">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أخبار الأنمي | ChicAnime</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* تنسيقات خاصة بصفحة الأخبار */
+    .news-page {
+      padding: 40px 0;
+    }
+    
+    .news-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 30px;
+      justify-content: center;
+    }
+    
+    .news-filter-btn {
+      background-color: var(--bg-light);
+      border: 1px solid var(--secondary-color);
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .news-filter-btn:hover,
+    .news-filter-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    
+    .news-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .news-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .news-thumb {
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .news-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    
+    .news-card:hover .news-thumb img {
+      transform: scale(1.05);
+    }
+    
+    .news-date {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+    }
+    
+    .news-content {
+      padding: 20px;
+    }
+    
+    .news-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text-color);
+    }
+    
+    .news-excerpt {
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    
+    .news-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .news-category {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+    
+    .read-more {
+      display: inline-block;
+      color: var(--primary-color);
+      font-weight: 600;
+      margin-top: 10px;
+      transition: color 0.3s;
+    }
+    
+    .read-more:hover {
+      color: var(--primary-dark);
+    }
+    
+    .featured-news {
+      margin-bottom: 50px;
+    }
+    
+    .featured-news-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+    }
+    
+    .featured-news-thumb {
+      height: 300px;
+    }
+    
+    .featured-news-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .featured-news-content {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .featured-news-title {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: var(--text-color);
+    }
+    
+    .featured-news-excerpt {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    
+    .news-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .news-tag {
+      background-color: var(--bg-light);
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    .newsletter-news {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 50px 0;
+      margin-top: 50px;
+    }
+    
+    .newsletter-content h2,
+    .newsletter-content p {
+      color: white;
+    }
+    
+    .no-results {
+      text-align: center;
+      grid-column: 1 / -1;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+    
+    @media (max-width: 768px) {
+      .featured-news-item {
+        grid-template-columns: 1fr;
+      }
+      
+      .featured-news-thumb {
+        height: 200px;
+      }
+      
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- زر القائمة للجوال -->
+  <div class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <header class="header">
+    <a href="index.html">
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime</span>
+      </div>
+      </a>
+      
+      <!-- شريط البحث -->
+      <div class="search-container">
+        <input type="text" id="search-bar" placeholder="ابحث عن أخبار أو أنمي...">
+        <button class="search-btn" onclick="searchNews()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      
+        <nav class="nav" id="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
+          <li><a href="news.html" class="nav-link  active "><i class="fas fa-newspaper"></i> أخبار الأنمي</a></li>
+          <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
+           <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image"></i> الخلفيات</a></li>
+          <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
+          <!-- <li><a href="anime-admin.html" class="nav-link admin-link"><i class="fas fa-cog"></i> الإدارة</a></li> -->
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">أحدث <span class="text-primary">أخبار الأنمي</span></h1>
+      <p class="hero-description">تابع آخر المستجدات في عالم الأنمي والمانغا والإعلانات عن أعمال جديدة</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="scrollToContent()">استكشف الأخبار</button>
+        <button class="btn btn-secondary" onclick="window.location.href='index.html'">العودة للرئيسية</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- محتوى صفحة الأخبار -->
+  <main class="news-page">
+    <div class="container">
+      <!-- أخبار مميزة -->
+      <section class="featured-news" id="featuredNews">
+        <h2 class="section-title">أخبار <span class="text-primary">مميزة</span></h2>
+        <!-- سيتم تعبئة الأخبار المميزة تلقائياً -->
+      </section>
+      
+      <!-- فلاتر الأخبار -->
+      <div class="news-filters">
+        <button class="news-filter-btn active" data-filter="all">الكل</button>
+        <button class="news-filter-btn" data-filter="أخبار">أخبار</button>
+        <button class="news-filter-btn" data-filter="عروض">عروض حصرية</button>
+        <button class="news-filter-btn" data-filter="مانغا">مانغا</button>
+        <button class="news-filter-btn" data-filter="أفلام">أفلام</button>
+        <button class="news-filter-btn" data-filter="ألعاب">ألعاب</button>
+      </div>
+      
+      <!-- شبكة الأخبار -->
+      <div class="news-grid" id="newsGrid">
+        <!-- سيتم تعبئة الأخبار تلقائياً -->
+      </div>
+      
+      <!-- زر تحميل المزيد -->
+      <div class="load-more-container">
+        <button class="btn btn-outline" id="loadMoreNewsBtn">تحميل المزيد</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- النشرة البريدية -->
+  <section class="newsletter-news">
+    <div class="container">
+      <div class="newsletter-content">
+        <h2>اشترك في نشرة الأخبار</h2>
+        <p>كن أول من يعرف عن آخر أخبار الأنمي والإعلانات الحصرية</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="بريدك الإلكتروني" required>
+          <button type="submit">اشتراك</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <button class="floating-btn scroll-top" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="logo">
+            <i class="fas fa-dragon"></i>
+            <span>ChicAnime</span>
+          </div>
+          <p>أكبر مصدر لأخبار الأنمي باللغة العربية، نقدم آخر المستجدات في عالم الأنمي والمانغا.</p>
+          <div class="social-links">
+            <a href="https://web.facebook.com/profile.php?id=61580828810174"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/ChicAnimeX"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/chicanimee/"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/channel/UCQudfTcDpWPJSorRM_f9dcw"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>روابط سريعة</h3>
+          <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="wallpapers.html">الخلفيات</a></li>
+            <li><a href="characters.html">الشخصيات</a></li>
+            <li><a href="news.html">أخبار الأنمي</a></li>
+            <li><a href="about.html">عن الموقع</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>أقسام الأخبار</h3>
+          <ul>
+            <li><a href="news.html?filter=أخبار">أخبار</a></li>
+            <li><a href="news.html?filter=عروض">عروض حصرية</a></li>
+            <li><a href="news.html?filter=مانغا">مانغا</a></li>
+            <li><a href="news.html?filter=أفلام">أفلام</a></li>
+            <li><a href="news.html?filter=ألعاب">ألعاب</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>معلومات التواصل</h3>
+          <ul>
+            <li><i class="fas fa-envelope"></i> news@chicanime.com</li>
+            <li><i class="fas fa-phone"></i> +212624280501</li>
+            <li><i class="fas fa-map-marker-alt"></i> المغرب MAROC</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة &copy; 2025 - ChicAnime</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- إضافة مكتبة Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+  <!-- ملفات JavaScript -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  
+  <script>
+    // متغيرات عامة
+    let allNews = [];
+    let filteredNews = [];
+    let currentFilter = 'all';
+    let displayedNewsCount = 6; // عدد الأخبار المعروضة في البداية
+
+    // دالة لتحميل الأخبار من Firebase
+    function loadNewsFromFirebase() {
+      const newsRef = firebase.database().ref('news');
+      
+      newsRef.orderByChild('date').once('value')
+        .then((snapshot) => {
+          allNews = [];
+          
+          if (!snapshot.exists()) {
+            renderNews([]);
+            renderFeaturedNews([]);
+            return;
+          }
+          
+          snapshot.forEach((childSnapshot) => {
+            const newsItem = childSnapshot.val();
+            newsItem.id = childSnapshot.key;
+            allNews.unshift(newsItem); // إضافة الأخبار بترتيب عكسي (الأحدث أولاً)
+          });
+          
+          filteredNews = [...allNews];
+          renderNews(filteredNews.slice(0, displayedNewsCount));
+          renderFeaturedNews(allNews.slice(0, 2)); // أول خبرين كأخبار مميزة
+        })
+        .catch((error) => {
+          console.error('Error loading news:', error);
+          showError('حدث خطأ في تحميل الأخبار');
+        });
+    }
+
+    // دالة لعرض الأخبار
+    function renderNews(news) {
+      const newsGrid = document.getElementById('newsGrid');
+      newsGrid.innerHTML = '';
+      
+      if (!news || news.length === 0) {
+        newsGrid.innerHTML = '<p class="no-results">لا توجد أخبار لعرضها</p>';
+        return;
+      }
+      
+      news.forEach(item => {
+        const newsCard = document.createElement('div');
+        newsCard.className = 'news-card';
+        
+        newsCard.innerHTML = `
+          <div class="news-thumb">
+            <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x250/6a55fa/ffffff?text=صورة+غير+متوفرة'">
+            <div class="news-date">${formatDate(item.date)}</div>
+          </div>
+          <div class="news-content">
+            <h3 class="news-title">${item.title}</h3>
+            <p class="news-excerpt">${item.excerpt}</p>
+            <div class="news-meta">
+              <span class="news-category">${item.category}</span>
+              <a href="news-single.html?id=${item.id}" class="read-more">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+            </div>
+          </div>
+        `;
+        
+        newsGrid.appendChild(newsCard);
+      });
+      
+      // إظهار أو إخفاء زر تحميل المزيد
+      const loadMoreBtn = document.getElementById('loadMoreNewsBtn');
+      if (filteredNews.length <= displayedNewsCount) {
+        loadMoreBtn.style.display = 'none';
+      } else {
+        loadMoreBtn.style.display = 'block';
+      }
+    }
+
+    // دالة لعرض الأخبار المميزة
+    function renderFeaturedNews(featuredNews) {
+      const featuredNewsContainer = document.getElementById('featuredNews');
+      
+      if (!featuredNews || featuredNews.length === 0) {
+        featuredNewsContainer.innerHTML = '<h2 class="section-title">أخبار <span class="text-primary">مميزة</span></h2>';
+        return;
+      }
+      
+      let featuredHTML = '<h2 class="section-title">أخبار <span class="text-primary">مميزة</span></h2>';
+      
+      featuredNews.forEach(item => {
+        featuredHTML += `
+          <div class="featured-news-item">
+            <div class="featured-news-thumb">
+              <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/600x400/6a55fa/ffffff?text=صورة+غير+متوفرة'">
+            </div>
+            <div class="featured-news-content">
+              <div class="news-date">${formatDate(item.date)}</div>
+              <h3 class="featured-news-title">${item.title}</h3>
+              <p class="featured-news-excerpt">${item.excerpt}</p>
+              <a href="news-single.html?id=${item.id}" class="read-more">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+              <div class="news-tags">
+                ${item.tags ? item.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('') : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      featuredNewsContainer.innerHTML = featuredHTML;
+    }
+
+    // دالة لتنسيق التاريخ
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('ar-EG', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    // دالة للبحث في الأخبار
+    function searchNews() {
+      const searchTerm = document.getElementById('search-bar').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        // إذا كان البحث فارغاً، عرض جميع الأخبار حسب التصفية الحالية
+        applyFilter(currentFilter);
+        return;
+      }
+      
+      filteredNews = allNews.filter(item => {
+        return item.title.toLowerCase().includes(searchTerm) || 
+               item.excerpt.toLowerCase().includes(searchTerm) || 
+               (item.tags && item.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
+      });
+      
+      displayedNewsCount = 6;
+      renderNews(filteredNews.slice(0, displayedNewsCount));
+    }
+
+    // دالة لتطبيق التصفية
+    function applyFilter(filter) {
+      currentFilter = filter;
+      
+      if (filter === 'all') {
+        filteredNews = [...allNews];
+      } else {
+        filteredNews = allNews.filter(item => item.category === filter);
+      }
+      
+      displayedNewsCount = 6;
+      renderNews(filteredNews.slice(0, displayedNewsCount));
+    }
+
+    // دالة للتصفية حسب الفئة
+    function setupNewsFilters() {
+      const filterButtons = document.querySelectorAll('.news-filter-btn');
+      
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // إزالة النشط من جميع الأزرار
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          // إضافة النشط للزر المحدد
+          this.classList.add('active');
+          
+          const filter = this.getAttribute('data-filter');
+          applyFilter(filter);
+        });
+      });
+    }
+
+    // دالة لتحميل المزيد من الأخبار
+    function loadMoreNews() {
+      displayedNewsCount += 6;
+      renderNews(filteredNews.slice(0, displayedNewsCount));
+    }
+
+    // دالة للتمرير إلى المحتوى
+    function scrollToContent() {
+      document.querySelector('.news-page').scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+
+    // دالة لعرض رسالة خطأ
+    function showError(message) {
+      const newsGrid = document.getElementById('newsGrid');
+      newsGrid.innerHTML = `<p class="no-results">${message}</p>`;
+    }
+
+    // تهيئة الصفحة عند التحميل
+    document.addEventListener('DOMContentLoaded', function() {
+      // تحميل الأخبار من Firebase
+      loadNewsFromFirebase();
+      
+      // إعداد فلاتر الأخبار
+      setupNewsFilters();
+      
+      // إعداد زر تحميل المزيد
+      document.getElementById('loadMoreNewsBtn').addEventListener('click', loadMoreNews);
+      
+      // إعداد زر العودة للأعلى
+      document.getElementById('scrollTopBtn').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      
+      // إخفاء شاشة التحميل
+      setTimeout(() => {
+        document.getElementById('loadingScreen').style.display = 'none';
+      }, 1000);
+      
+      // التحقق من وجود معامل التصفية في URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const filter = urlParams.get('filter');
+      if (filter) {
+        const filterButton = document.querySelector(`.news-filter-btn[data-filter="${filter}"]`);
+        if (filterButton) {
+          filterButton.click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
