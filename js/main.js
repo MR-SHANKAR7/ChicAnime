@@ -87,8 +87,8 @@ function searchCharacter() {
   // حفظ مصطلح البحث في localStorage للاستخدام في الصفحات الأخرى
   localStorage.setItem('searchTerm', searchTerm);
   
-  // توجيه المستخدم إلى صفحة نتائج البحث
-  window.location.href = `search.html?q=${encodeURIComponent(searchTerm)}`;
+  // توجيه المستخدم إلى الصفحة الرئيسية مع معامل البحث
+  window.location.href = `index.html?search=${encodeURIComponent(searchTerm)}`;
 }
 
 // تفعيل الفلاتر
@@ -109,16 +109,20 @@ document.querySelectorAll('.category-btn').forEach(btn => {
 });
 
 // تفعيل الفرز
-document.getElementById('sort-by').addEventListener('change', function() {
-  sortGallery(this.value);
-});
+const sortByEl = document.getElementById('sort-by');
+if (sortByEl) {
+  sortByEl.addEventListener('change', function() {
+    sortGallery(this.value);
+  });
+}
 
 // النشرة البريدية
-document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const email = this.querySelector('input').value;
-  
-  // هنا يمكنك إضافة كود لإرسال البريد الإلكتروني
-  alert(`شكراً لك على الاشتراك بالنشرة البريدية باستخدام: ${email}`);
-  this.reset();
-});
+const newsletterForm = document.querySelector('.newsletter-form');
+if (newsletterForm) {
+  newsletterForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = this.querySelector('input').value;
+    alert(`شكراً لك على الاشتراك بالنشرة البريدية باستخدام: ${email}`);
+    this.reset();
+  });
+}
