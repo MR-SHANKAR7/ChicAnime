@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
 
   <!-- أيقونة للأندرويد -->
-  <link rel="manifest" href="images/ChicAnime.png">
+  <link rel="manifest" href="manifest.json">
 
   <!-- SEO Meta -->
   <meta name="description" content="ChicAnime - مكتبة صور أنمي مع تفاصيل دقيقة وخلفيات عالية الجودة">
@@ -541,6 +541,15 @@
     let currentAnime = null;
     let searchTimeout = null;
 
+    // دالة لإغلاق مشغل الفيديو
+    function closeVideoPlayer() {
+      const player = document.getElementById('videoPlayer');
+      if (player) {
+        player.style.display = 'none';
+        document.getElementById('videoFrame').src = '';
+      }
+    }
+
     // دالة للتمرير إلى المحتوى
     function scrollToContent() {
       document.querySelector('.anime-page').scrollIntoView({
@@ -764,10 +773,7 @@
         }
       });
       
-      // إعداد زر العودة للأعلى
-      document.getElementById('scrollTopBtn').addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+      // إعداد زر العودة للأعلى (مُعالج بالفعل في main.js)
 
   
     });

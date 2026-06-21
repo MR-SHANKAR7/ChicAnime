@@ -1,0 +1,23 @@
+{
+  "name": "ChicAnime",
+  "short_name": "ChicAnime",
+  "description": "منصة متخصصة لعرض ومشاهدة أفضل مقاطع الأنمي",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#2A2522",
+  "theme_color": "#C7372C",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "images/ChicAnime.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/ChicAnime.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
