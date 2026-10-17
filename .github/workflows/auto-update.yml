@@ -1,0 +1,32 @@
+name: تحديث المحتوى تلقائيًا
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # كل 6 ساعات
+  workflow_dispatch:
+
+concurrency:
+  group: auto-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: automation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: automation/package-lock.json
+      - run: npm ci
+      - run: npm run update
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NEWS_PER_RUN: "5"
+          CHARACTERS_PER_RUN: "6"
+          ANIME_COUNT: "20"

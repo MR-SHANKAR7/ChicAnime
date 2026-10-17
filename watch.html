@@ -151,6 +151,46 @@
       height: 100%;
       border: none;
     }
+
+    .official-source {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      padding: 20px;
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+    }
+
+    .official-source::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+    }
+
+    .official-source > * { position: relative; }
+
+    .official-source p { margin: 0; font-size: 1rem; opacity: 0.9; }
+
+    .official-source a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 30px;
+      background: #ff6b6b;
+      color: #fff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .official-source a:hover { background: #ff5252; }
     
     .navigation-buttons {
       display: flex;
@@ -579,6 +619,12 @@
           <div class="video-main-container">
             <div class="video-container">
               <iframe id="videoFrame" src="" allowfullscreen style="border: 0;"></iframe>
+              <div class="official-source" id="officialSource">
+                <p>هذه الحلقة متاحة بترجمة عربية على المنصة الرسمية</p>
+                <a id="officialLink" href="#" target="_blank" rel="noopener">
+                  <i class="fas fa-external-link-alt"></i> شاهد على المصدر الرسمي
+                </a>
+              </div>
             </div>
           </div>
 
@@ -813,7 +859,8 @@
         'witanime': 'Witanime',
         'okru': 'Ok.ru',
         'uqload': 'Uqload',
-        'other': 'خادم آخر'
+        'other': 'خادم آخر',
+        'official': 'المصدر الرسمي'
       };
       
       return serverNames[serverKey] || serverKey;
@@ -860,6 +907,25 @@
       return qualityNames[qualityKey] || qualityKey;
     }
 
+    // المنصات الرسمية تمنع التشغيل داخل إطار، فنعرض زر الانتقال إليها بدل الإطار
+    const OFFICIAL_HOSTS = ['crunchyroll.com', 'netflix.com', 'hidive.com', 'disneyplus.com', 'primevideo.com', 'bilibili.tv', 'hulu.com'];
+
+    function showVideo(url) {
+      const frame = document.getElementById('videoFrame');
+      const overlay = document.getElementById('officialSource');
+      const isOfficial = OFFICIAL_HOSTS.some(host => url.includes(host));
+
+      if (isOfficial) {
+        frame.src = '';
+        document.getElementById('officialLink').href = url;
+        overlay.style.backgroundImage = currentEpisode && currentEpisode.thumbnail ? `url('${currentEpisode.thumbnail}')` : '';
+        overlay.style.display = 'flex';
+      } else {
+        overlay.style.display = 'none';
+        frame.src = url;
+      }
+    }
+
     // دالة لتحميل الفيديو المحدد
     function loadSelectedVideo() {
       const serverSelect = document.getElementById('serverSelect');
@@ -891,7 +957,7 @@
       }
       
       // تحديث الإطار بالفيديو
-      document.getElementById('videoFrame').src = finalUrl;
+      showVideo(finalUrl);
     }
 
     // دالة لعرض الاقتراحات
@@ -972,7 +1038,7 @@
         
         // تحديث الإطار بالفيديو
         if (videoUrl) {
-          document.getElementById('videoFrame').src = videoUrl;
+          showVideo(videoUrl);
         }
       }
     }
