@@ -1,23 +1,35 @@
 import { runNews } from "./jobs/news.js";
 import { runCharacters } from "./jobs/characters.js";
+import { runAnimeCharacters } from "./jobs/anime-characters.js";
 import { runWallpapers } from "./jobs/wallpapers.js";
-import { runEpisodes } from "./jobs/episodes.js";
-import { runCleanup } from "./jobs/cleanup.js";
+import { runCatalog } from "./jobs/catalog.js";
+import { runDigest } from "./jobs/digest.js";
 import { close } from "./lib/db.js";
 
-const jobs = { news: runNews, characters: runCharacters, wallpapers: runWallpapers, episodes: runEpisodes, cleanup: runCleanup };
-const selected = (process.env.JOBS || "news,characters,wallpapers,episodes").split(",").map((s) => s.trim()).filter(Boolean);
+const jobs = {
+  news: runNews,
+  catalog: runCatalog,
+  "anime-characters": runAnimeCharacters,
+  characters: runCharacters,
+  wallpapers: runWallpapers,
+  digest: runDigest,
+};
+export const DEFAULT_JOBS = "news,catalog,anime-characters,characters,wallpapers,digest";
+const selected = (process.env.JOBS || DEFAULT_JOBS).split(",").map((s) => s.trim()).filter(Boolean);
 
-let failed = false;
+const failures = [];
 for (const name of selected) {
   console.log(`\n===== ${name} =====`);
   try {
     if (!jobs[name]) throw new Error("مهمة غير معروفة");
     await jobs[name]();
   } catch (err) {
-    failed = true;
+    failures.push(`${name}: ${err.message}`);
     console.error(`فشلت مهمة ${name}:`, err);
   }
 }
 await close();
-process.exit(failed ? 1 : 0);
+if (failures.length) {
+  console.error("\nمهام فاشلة:\n" + failures.join("\n"));
+  process.exit(1);
+}
