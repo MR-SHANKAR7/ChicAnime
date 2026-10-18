@@ -3,7 +3,7 @@
 //  - galleryDb: الشخصيات والخلفيات والأخبار
 // مفتاح Web Push (VAPID) من Firebase Console → Project settings → Cloud Messaging → Web Push certificates
 // اتركه فارغًا لتعطيل إشعارات Push؛ تبقى إشعارات الموقع والجرس تعمل.
-window.CHIC_VAPID_KEY = "";
+window.CHIC_VAPID_KEY = "BGFFHmcPK3vJ0BiR9A82labnoxtOBgBbSWZ9GSGTGwu3UuePy3xjOeWWOEDL9lkW14Lh6lAwHjGA2_2gjAAHd6I";
 
 window.CHIC_FIREBASE_VIDEOS = {
   apiKey: "AIzaSyCyx5DUHCK7tzSrwIB_DF33xExfCh0EbCo",
