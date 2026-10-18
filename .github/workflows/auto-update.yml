@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "0 */6 * * *"   # كل 6 ساعات
   workflow_dispatch:
+    inputs:
+      jobs:
+        description: "المهام (news,characters,wallpapers,episodes أو cleanup)"
+        default: "news,characters,wallpapers,episodes"
+        required: false
 
 concurrency:
   group: auto-update
@@ -27,6 +32,9 @@ jobs:
       - run: npm run update
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_SERVICE_ACCOUNT_VIDEOS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_VIDEOS }}
+          JOBS: ${{ inputs.jobs || 'news,characters,wallpapers,episodes' }}
           NEWS_PER_RUN: "5"
           CHARACTERS_PER_RUN: "6"
+          WALLPAPERS_PER_RUN: "6"
           ANIME_COUNT: "20"

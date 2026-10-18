@@ -1,11 +1,12 @@
 import { readAll, push } from "../lib/db.js";
 import { latestNews, fetchArticle } from "../lib/ann.js";
 import { toArabic } from "../lib/translate.js";
+import { cdnImage } from "../lib/images.js";
 
 const MAX_PER_RUN = Number(process.env.NEWS_PER_RUN || 5);
 
 export async function runNews() {
-  const existing = new Set((await readAll("news")).map((n) => n.sourceId).filter(Boolean));
+  const existing = new Set((await readAll("gallery", "news")).map((n) => n.sourceId).filter(Boolean));
   const items = (await latestNews(20)).filter((it) => !existing.has(it.guid)).slice(0, MAX_PER_RUN);
   console.log(`الأخبار: ${items.length} خبر جديد`);
 
@@ -19,13 +20,13 @@ export async function runNews() {
       toArabic(article.text || it.excerpt || it.title),
     ]);
 
-    await push("news", {
+    await push("gallery", "news", {
       title,
       excerpt,
       content: `${content}\n\nالمصدر: ${it.link}`,
       category: "أخبار",
       tags: ["أنمي", "أخبار"],
-      imageUrl: article.image,
+      imageUrl: cdnImage(article.image),
       date: it.isoDate,
       author: "auto",
       sourceId: it.guid,

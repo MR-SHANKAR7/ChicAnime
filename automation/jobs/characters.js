@@ -23,7 +23,7 @@ query ($page: Int) {
 const MONTHS_AR = ["", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
 
 export async function runCharacters() {
-  const existing = new Set((await readAll("images")).map((i) => i.sourceId).filter(Boolean));
+  const existing = new Set((await readAll("gallery", "images")).map((i) => i.sourceId).filter(Boolean));
   const picked = [];
 
   // نتصفح الشخصيات الأكثر شعبية حتى نجد العدد المطلوب من الشخصيات غير المنشورة
@@ -47,7 +47,7 @@ export async function runCharacters() {
     ]);
     const birthdate = c.dateOfBirth?.month ? `${c.dateOfBirth.day || ""} ${MONTHS_AR[c.dateOfBirth.month]}`.trim() : "غير معروف";
 
-    await push("images", {
+    await push("gallery", "images", {
       title: `${nameAr} - ${c.name.full}`,
       anime: animeTitle,
       type: "character",
