@@ -106,6 +106,7 @@
         <div class="meta-row" id="metaRow"></div>
         <div class="genre-row" id="genres"></div>
         <div id="nextEp"></div>
+        <div id="followBox" style="margin-top:15px"></div>
       </div>
     </div>
   </section>
@@ -243,6 +244,8 @@
       document.getElementById('title').textContent = a.title_ar || a.title;
       document.getElementById('enTitle').textContent = a.title_ar ? a.title : (a.titleRomaji || '');
       document.getElementById('description').textContent = a.description || 'لا يوجد وصف متاح.';
+      document.getElementById('followBox').innerHTML = ChicFollow.button(a.id, { title: a.title_ar || a.title, thumbnail: a.thumbnail }, 'with-text');
+      ChicFollow.paintAll();
 
       const chips = [];
       if (a.score) chips.push(`<span class="meta-chip score"><i class="fas fa-star"></i> ${(a.score / 10).toFixed(1)} / 10</span>`);
@@ -314,5 +317,6 @@
       return `بعد ${m} دقيقة`;
     }
   </script>
+  <script src="js/follow.js"></script>
 </body>
 </html>

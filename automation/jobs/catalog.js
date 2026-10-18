@@ -1,6 +1,7 @@
 import { readAll, push, update, remove } from "../lib/db.js";
 import { gql, MEDIA_FIELDS, toAnimeRecord, currentSeason, sleep } from "../lib/anilist.js";
 import { toArabic, toArabicMany, stripHtml } from "../lib/translate.js";
+import { notifyFollowers } from "../lib/push.js";
 
 const DB = "videos";
 const CATALOG_SIZE = Number(process.env.CATALOG_SIZE || 150);      // أشهر الأنميات عمومًا
@@ -73,6 +74,11 @@ export async function runCatalog() {
     if (anime) {
       // تحديث الحقول المتغيرة فقط، دون لمس العنوان/الوصف/الصورة التي قد يكون المستخدم عدّلها
       const { title, thumbnail, category, ...dynamic } = rec;
+      const release = detectRelease(anime, rec);
+      if (release) {
+        dynamic.lastReleased = release;
+        try { await notifyFollowers({ ...anime, ...rec }, release.episode); } catch (err) { console.warn("تعذر إرسال Push:", err.message); }
+      }
       await update(DB, `anime/${anime.id}`, { ...dynamic, updatedAt: now });
       updated++;
     } else {
@@ -126,4 +132,15 @@ async function purgeExcluded(excludedMedia, animeList) {
     await remove(DB, `anime/${a.id}`);
     console.log("حُذف (نوع مستبعد):", a.title);
   }
+}
+
+// حلقة صدرت منذ آخر تشغيل: موعد الحلقة المخزّن سابقًا قد مضى، أو رقم الحلقة القادمة تقدّم
+function detectRelease(prev, next) {
+  const was = prev.nextAiring;
+  if (!was) return null;
+  const advanced = next.nextAiring ? next.nextAiring.episode > was.episode : next.status === "completed";
+  const aired = was.airingAt <= Date.now();
+  if (!(advanced || aired)) return null;
+  if (prev.lastReleased?.episode >= was.episode) return null;
+  return { episode: was.episode, at: was.airingAt };
 }

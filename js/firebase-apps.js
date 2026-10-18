@@ -1,14 +1,22 @@
 // تهيئة مشروعَي Firebase اللذين يعتمد عليهما الموقع (تُستخدم في الصفحات الجديدة)
 //  - videosDb : الأنميات والحلقات
 //  - galleryDb: الشخصيات والخلفيات والأخبار
+// مفتاح Web Push (VAPID) من Firebase Console → Project settings → Cloud Messaging → Web Push certificates
+// اتركه فارغًا لتعطيل إشعارات Push؛ تبقى إشعارات الموقع والجرس تعمل.
+window.CHIC_VAPID_KEY = "";
+
+window.CHIC_FIREBASE_VIDEOS = {
+  apiKey: "AIzaSyCyx5DUHCK7tzSrwIB_DF33xExfCh0EbCo",
+  authDomain: "anime-studio-videos.firebaseapp.com",
+  databaseURL: "https://anime-studio-videos-default-rtdb.firebaseio.com",
+  projectId: "anime-studio-videos",
+  messagingSenderId: "593166797912",
+  appId: "1:593166797912:web:b5bcdab817f1baecb70e2d",
+};
+
 (function () {
-  const videosApp = firebase.initializeApp({
-    apiKey: "AIzaSyCyx5DUHCK7tzSrwIB_DF33xExfCh0EbCo",
-    authDomain: "anime-studio-videos.firebaseapp.com",
-    databaseURL: "https://anime-studio-videos-default-rtdb.firebaseio.com",
-    projectId: "anime-studio-videos",
-    appId: "1:593166797912:web:b5bcdab817f1baecb70e2d",
-  }, "videos");
+  if (typeof firebase === "undefined") return;
+  const videosApp = firebase.initializeApp(window.CHIC_FIREBASE_VIDEOS, "videos");
 
   const galleryApp = firebase.initializeApp({
     apiKey: "AIzaSyDPSXK02S0Em-0ZLl2zhH6M6loW3VYpReA",

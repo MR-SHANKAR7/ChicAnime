@@ -684,6 +684,7 @@
             <img src="${anime.thumbnail || 'https://via.placeholder.com/300x200?text=صورة+الأنمي'}" alt="${anime.title}" loading="lazy">
             ${anime.score ? `<span class="anime-score"><i class="fas fa-star"></i> ${(anime.score / 10).toFixed(1)}</span>` : ''}
             ${anime.status === 'upcoming' ? '<span class="anime-status upcoming">قريباً</span>' : anime.status === 'completed' ? '<span class="anime-status completed">مكتمل</span>' : '<span class="anime-status">مستمر</span>'}
+            ${ChicFollow.button(anime.id, { title: anime.title_ar || anime.title, thumbnail: anime.thumbnail }, 'card-follow')}
           </div>
           <div class="anime-info">
             <h3 class="anime-title">${anime.title_ar || anime.title}</h3>
@@ -701,6 +702,7 @@
         
         animeGrid.appendChild(animeCard);
       });
+      if (window.ChicFollow) ChicFollow.paintAll();
     }
 
     // جدول الحلقات القادمة خلال 7 أيام مع عدّ تنازلي
@@ -856,5 +858,7 @@
   
     });
   </script>
+  <script src="js/firebase-apps.js"></script>
+  <script src="js/follow.js"></script>
 </body>
 </html>
