@@ -1,4 +1,4 @@
-import { readAll, push, update } from "../lib/db.js";
+import { readAll, push, update, remove } from "../lib/db.js";
 import { gql, MEDIA_FIELDS, toAnimeRecord, currentSeason, sleep } from "../lib/anilist.js";
 import { toArabic, toArabicMany, stripHtml } from "../lib/translate.js";
 
@@ -13,6 +13,10 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $status: MediaStatus, $sea
     media(type: ANIME, isAdult: false, sort: $sort, status: $status, season: $season, seasonYear: $seasonYear) { ${MEDIA_FIELDS} }
   }
 }`;
+
+// أنواع مستبعدة من الموقع (محتوى غير مناسب للجمهور العام)
+const EXCLUDED_GENRES = new Set(["Ecchi", "Hentai"]);
+const isExcluded = (m) => (m.genres || []).some((g) => EXCLUDED_GENRES.has(g));
 
 const norm = (t = "") => t.toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]+/g, " ").trim();
 const episodeNumber = (title = "", fallback) => Number(title.match(/Episode\s+(\d+)/i)?.[1] || fallback);
@@ -43,10 +47,12 @@ async function collectMedia() {
 }
 
 export async function runCatalog() {
-  const media = await collectMedia();
-  console.log(`الكتالوج: ${media.length} أنمي من AniList`);
+  const allMedia = await collectMedia();
+  const media = allMedia.filter((m) => !isExcluded(m));
+  console.log(`الكتالوج: ${media.length} أنمي من AniList (${allMedia.length - media.length} مستبعد)`);
 
   const animeList = await readAll(DB, "anime");
+  await purgeExcluded(allMedia.filter(isExcluded), animeList);
   const bySource = new Map(animeList.filter((a) => a.sourceId).map((a) => [a.sourceId, a]));
   const byTitle = new Map(animeList.map((a) => [norm(a.title), a]));
   const episodeKeys = new Set((await readAll(DB, "episodes")).map((e) => e.sourceId).filter(Boolean));
@@ -107,4 +113,17 @@ export async function runCatalog() {
     }
   }
   console.log(`الكتالوج: ${created} أنمي جديد، ${updated} محدّث، ${episodesAdded} حلقة جديدة`);
+}
+
+// حذف أي أنمي (وحلقاته) أُضيف تلقائيًا ثم تبيّن أنه من الأنواع المستبعدة
+async function purgeExcluded(excludedMedia, animeList) {
+  const ids = new Set(excludedMedia.map((m) => `anilist-anime:${m.id}`));
+  const victims = animeList.filter((a) => ids.has(a.sourceId));
+  if (!victims.length) return;
+  const episodes = await readAll(DB, "episodes");
+  for (const a of victims) {
+    for (const ep of episodes.filter((e) => e.animeId === a.id)) await remove(DB, `episodes/${ep.id}`);
+    await remove(DB, `anime/${a.id}`);
+    console.log("حُذف (نوع مستبعد):", a.title);
+  }
 }

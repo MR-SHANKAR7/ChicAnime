@@ -207,6 +207,7 @@
   <script src="js/firebase-apps.js"></script>
   <script src="js/main.js"></script>
   <script>
+    function hideLoading() { const l = document.getElementById('loadingScreen'); if (l) l.style.display = 'none'; }
     function goSearch() {
       const q = document.getElementById('search-bar').value.trim();
       if (q) location.href = `index.html?search=${encodeURIComponent(q)}`;
@@ -222,11 +223,13 @@
         if (!snap.exists()) throw new Error('not found');
         const a = { id: snap.key, ...snap.val() };
         renderAnime(a);
+        hideLoading();
         return Promise.all([
           videosDb.ref('episodes').orderByChild('animeId').equalTo(animeId).once('value').then(snapToList),
           galleryDb.ref('images').once('value').then(snapToList).then(list => list.filter(c => c.type === 'character' && (c.animeId === animeId || (c.anime || '').toLowerCase() === (a.title || '').toLowerCase()))),
         ]).then(([episodes, characters]) => { renderEpisodes(a, episodes); renderCharacters(characters); });
       }).catch(() => {
+        hideLoading();
         document.querySelector('main .container').innerHTML = '<div class="error-box"><h2>الأنمي غير موجود</h2><a class="btn btn-primary" href="index.html">العودة للرئيسية</a></div>';
       });
     }

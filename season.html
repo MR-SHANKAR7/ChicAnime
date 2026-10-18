@@ -169,6 +169,7 @@
   <script src="js/firebase-apps.js"></script>
   <script src="js/main.js"></script>
   <script>
+    function hideLoading() { const l = document.getElementById('loadingScreen'); if (l) l.style.display = 'none'; }
     function goSearch() {
       const q = document.getElementById('search-bar').value.trim();
       if (q) location.href = `index.html?search=${encodeURIComponent(q)}`;
@@ -190,6 +191,7 @@
 
     videosDb.ref('anime').once('value').then(snap => {
       all = snapToList(snap);
+        hideLoading();
       render();
     });
 
