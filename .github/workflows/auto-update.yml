@@ -2,7 +2,7 @@ name: تحديث المحتوى تلقائيًا
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # كل 6 ساعات
+    - cron: "23 */6 * * *"   # كل 6 ساعات (دقيقة غير مزدحمة لتقليل تأخير GitHub)
   workflow_dispatch:
     inputs:
       jobs:
