@@ -62,6 +62,7 @@
     .bell-item .s { font-size: .8rem; opacity: .75; }
     .bell-item.new .s { color: var(--primary-color, #e53935); opacity: 1; font-weight: 600; }
     .bell-empty { padding: 25px; text-align: center; opacity: .7; font-size: .9rem; }
+    @media (max-width: 1150px) { .nav-list { gap: 8px; } .nav-link { padding: 8px 9px; font-size: .95rem; } }
     @media (max-width: 768px) { .bell-panel { left: auto; right: 0; } }
   `;
   document.head.appendChild(style);
