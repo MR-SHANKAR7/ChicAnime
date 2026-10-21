@@ -1,124 +1,151 @@
-// إخفاء شاشة التحميل بعد تحميل الصفحة
-window.addEventListener('load', function() {
-  setTimeout(function() {
-    document.getElementById('loadingScreen').style.opacity = '0';
-    setTimeout(function() {
-      document.getElementById('loadingScreen').style.display = 'none';
+// تهيئة آمنة لعناصر الواجهة المشتركة
+// تُحمى جميع العناصر الاختيارية حتى لا تتوقف بقية الصفحة عند غياب عنصر في صفحة أخرى.
+
+window.addEventListener('load', function () {
+  const loadingScreen = document.getElementById('loadingScreen');
+  if (!loadingScreen) return;
+
+  window.setTimeout(function () {
+    loadingScreen.style.opacity = '0';
+    window.setTimeout(function () {
+      loadingScreen.style.display = 'none';
     }, 500);
   }, 1000);
 });
 
-// تبديل وضع الظلام/الفاتح
+// تبديل الوضع الداكن/الفاتح
 const themeToggle = document.getElementById('themeToggle');
-const themeIcon = themeToggle.querySelector('i');
+const themeIcon = themeToggle ? themeToggle.querySelector('i') : null;
 
-// التحقق من الوضع الحالي
-if (localStorage.getItem('theme') === 'light-mode') {
-  document.body.classList.add('light-mode');
-  themeIcon.classList.remove('fa-moon');
-  themeIcon.classList.add('fa-sun');
+function updateThemeIcon(isLight) {
+  if (!themeIcon) return;
+  themeIcon.classList.toggle('fa-sun', isLight);
+  themeIcon.classList.toggle('fa-moon', !isLight);
 }
 
-themeToggle.addEventListener('click', function() {
-  document.body.classList.toggle('light-mode');
-  
-  if (document.body.classList.contains('light-mode')) {
-    themeIcon.classList.remove('fa-moon');
-    themeIcon.classList.add('fa-sun');
-    localStorage.setItem('theme', 'light-mode');
-  } else {
-    themeIcon.classList.remove('fa-sun');
-    themeIcon.classList.add('fa-moon');
-    localStorage.setItem('theme', 'dark-mode');
+function readStoredTheme() {
+  try {
+    return window.localStorage.getItem('theme');
+  } catch (error) {
+    console.warn('تعذر قراءة إعداد المظهر من التخزين المحلي:', error);
+    return null;
   }
-});
+}
 
-// التمرير إلى الأعلى
+function storeTheme(theme) {
+  try {
+    window.localStorage.setItem('theme', theme);
+  } catch (error) {
+    // يعمل تبديل المظهر حتى إذا منع المتصفح التخزين المحلي.
+    console.warn('تعذر حفظ إعداد المظهر:', error);
+  }
+}
+
+if (readStoredTheme() === 'light-mode') {
+  document.body.classList.add('light-mode');
+  updateThemeIcon(true);
+}
+
+if (themeToggle) {
+  themeToggle.addEventListener('click', function () {
+    const isLight = document.body.classList.toggle('light-mode');
+    updateThemeIcon(isLight);
+    storeTheme(isLight ? 'light-mode' : 'dark-mode');
+  });
+}
+
+// زر العودة إلى الأعلى
 const scrollTopBtn = document.getElementById('scrollTopBtn');
 
-window.addEventListener('scroll', function() {
-  if (window.pageYOffset > 300) {
-    scrollTopBtn.style.opacity = '1';
-    scrollTopBtn.style.visibility = 'visible';
-  } else {
-    scrollTopBtn.style.opacity = '0';
-    scrollTopBtn.style.visibility = 'hidden';
-  }
-});
+if (scrollTopBtn) {
+  const updateScrollTopVisibility = function () {
+    const isVisible = window.pageYOffset > 300;
+    scrollTopBtn.style.opacity = isVisible ? '1' : '0';
+    scrollTopBtn.style.visibility = isVisible ? 'visible' : 'hidden';
+  };
 
-scrollTopBtn.addEventListener('click', function() {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
+  window.addEventListener('scroll', updateScrollTopVisibility, { passive: true });
+  updateScrollTopVisibility();
+
+  scrollTopBtn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
-});
+}
 
-// القائمة الجوال
+// قائمة الجوال
 const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 const nav = document.getElementById('nav');
 
-mobileMenuBtn.addEventListener('click', function() {
-  nav.classList.toggle('active');
-});
-
-// إغلاق القائمة عند النقر على رابط
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', function() {
-    nav.classList.remove('active');
+if (mobileMenuBtn && nav) {
+  mobileMenuBtn.addEventListener('click', function () {
+    nav.classList.toggle('active');
   });
-});
+
+  nav.querySelectorAll('.nav-link').forEach(function (link) {
+    link.addEventListener('click', function () {
+      nav.classList.remove('active');
+    });
+  });
+}
 
 // التمرير إلى المعرض
 function scrollToGallery() {
-  document.getElementById('gallery').scrollIntoView({
-    behavior: 'smooth'
-  });
+  const gallery = document.getElementById('gallery');
+  if (gallery) {
+    gallery.scrollIntoView({ behavior: 'smooth' });
+  }
 }
 
-// البحث
+// البحث في صفحة الأنمي الرئيسية
 function searchCharacter() {
-  const searchTerm = document.getElementById('search-bar').value.toLowerCase().trim();
-  
+  const searchInput = document.getElementById('search-bar');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
   if (!searchTerm) {
-    alert('يرجى إدخال مصطلح للبحث');
+    window.alert('يرجى إدخال مصطلح للبحث');
+    if (searchInput) searchInput.focus();
     return;
   }
-  
-  // حفظ مصطلح البحث في localStorage للاستخدام في الصفحات الأخرى
-  localStorage.setItem('searchTerm', searchTerm);
-  
-  // توجيه المستخدم إلى صفحة نتائج البحث
-  window.location.href = `search.html?q=${encodeURIComponent(searchTerm)}`;
+
+  try {
+    window.localStorage.setItem('searchTerm', searchTerm);
+  } catch (error) {
+    // يعتمد البحث على معامل URL، لذلك لا يتوقف إذا تعذر التخزين المحلي.
+    console.warn('تعذر حفظ مصطلح البحث محليًا:', error);
+  }
+
+  window.location.href = `index.html?search=${encodeURIComponent(searchTerm)}`;
 }
 
-// تفعيل الفلاتر
-document.querySelectorAll('.category-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    // إزالة النشاط من جميع الأزرار
-    document.querySelectorAll('.category-btn').forEach(b => {
-      b.classList.remove('active');
+// تفعيل فلاتر المعرض عند توفرها
+document.querySelectorAll('.category-btn').forEach(function (button) {
+  button.addEventListener('click', function () {
+    document.querySelectorAll('.category-btn').forEach(function (item) {
+      item.classList.remove('active');
     });
-    
-    // إضافة النشاط للزر الحالي
-    this.classList.add('active');
-    
-    // تطبيق التصفية
-    const filter = this.getAttribute('data-filter');
-    filterGallery(filter);
+    button.classList.add('active');
+
+    if (typeof window.filterGallery === 'function') {
+      window.filterGallery(button.getAttribute('data-filter'));
+    }
   });
 });
 
-// تفعيل الفرز
-document.getElementById('sort-by').addEventListener('change', function() {
-  sortGallery(this.value);
-});
+// تفعيل الفرز عند وجود عنصر الفرز والدالة المطلوبة
+const sortByEl = document.getElementById('sort-by');
+if (sortByEl) {
+  sortByEl.addEventListener('change', function () {
+    if (typeof window.sortGallery === 'function') {
+      window.sortGallery(this.value);
+    }
+  });
+}
 
-// النشرة البريدية
-document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const email = this.querySelector('input').value;
-  
-  // هنا يمكنك إضافة كود لإرسال البريد الإلكتروني
-  alert(`شكراً لك على الاشتراك بالنشرة البريدية باستخدام: ${email}`);
-  this.reset();
-});
+// نموذج النشرة البريدية: لا ندّعي الاشتراك لأن خدمة الإرسال غير مهيأة بعد.
+const newsletterForm = document.querySelector('.newsletter-form');
+if (newsletterForm) {
+  newsletterForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+    window.alert('ميزة الاشتراك بالبريد الإلكتروني غير مفعّلة حاليًا؛ لم يتم إرسال أي بريد.');
+  });
+}

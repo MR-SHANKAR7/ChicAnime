@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="images/ChicAnime.png">
 
   <!-- أيقونة للأندرويد -->
-  <link rel="manifest" href="images/ChicAnime.png">
+  <link rel="manifest" href="manifest.json">
 
   <!-- SEO Meta -->
   <meta name="description" content="ChicAnime - مكتبة صور أنمي مع تفاصيل دقيقة وخلفيات عالية الجودة">
@@ -21,7 +21,7 @@
   <meta property="og:description" content="شاهد أفضل مقاطع الأنمي مجاناً وبجودة عالية">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://anime-gallery-b0a34.web.app/preview.jpg">
-  <meta property="og:url" content="https://anime-gallery-b0a34.web.app/anime-studio.html">
+  <meta property="og:url" content="https://mr-shankar7.github.io/ChicAnime/index.html">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -326,7 +326,7 @@
       color: white;
     }
 
-    .nav-list a[href="anime-studio.html"] {
+    .nav-list a[href="index.html"] {
       color: var(--primary-color);
       background-color: rgba(199, 55, 44, 0.1);
     }
@@ -432,13 +432,13 @@
         </div>
         
         <div class="filter-options">
-          <button class="filter-btn active" onclick="setFilter('all')">الكل</button>
-          <button class="filter-btn" onclick="setFilter('أكشن')">أكشن</button>
-          <button class="filter-btn" onclick="setFilter('مغامرة')">مغامرة</button>
-          <button class="filter-btn" onclick="setFilter('كوميدي')">كوميدي</button>
-          <button class="filter-btn" onclick="setFilter('دراما')">دراما</button>
-          <button class="filter-btn" onclick="setFilter('فانتازيا')">فانتازيا</button>
-          <button class="filter-btn" onclick="setFilter('رومانسي')">رومانسي</button>
+          <button class="filter-btn active" onclick="setFilter('all', event)">الكل</button>
+          <button class="filter-btn" onclick="setFilter('أكشن', event)">أكشن</button>
+          <button class="filter-btn" onclick="setFilter('مغامرة', event)">مغامرة</button>
+          <button class="filter-btn" onclick="setFilter('كوميدي', event)">كوميدي</button>
+          <button class="filter-btn" onclick="setFilter('دراما', event)">دراما</button>
+          <button class="filter-btn" onclick="setFilter('فانتازيا', event)">فانتازيا</button>
+          <button class="filter-btn" onclick="setFilter('رومانسي', event)">رومانسي</button>
         </div>
       </div>
 
@@ -572,6 +572,15 @@
     let currentAnime = null;
     let searchTimeout = null;
 
+    // دالة لإغلاق مشغل الفيديو
+    function closeVideoPlayer() {
+      const player = document.getElementById('videoPlayer');
+      if (player) {
+        player.style.display = 'none';
+        document.getElementById('videoFrame').src = '';
+      }
+    }
+
     // دالة للتمرير إلى المحتوى
     function scrollToContent() {
       document.querySelector('.anime-page').scrollIntoView({
@@ -590,14 +599,15 @@
     }
 
     // دالة تعيين الفلتر
-    function setFilter(filter) {
+    function setFilter(filter, event) {
       currentFilter = filter;
       
       // تحديث الأزرار النشطة
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
       });
-      event.target.classList.add('active');
+      const activeButton = event && event.currentTarget ? event.currentTarget : null;
+      if (activeButton) activeButton.classList.add('active');
       
       // تصفية وعرض الأنمي
       filterAnime();
@@ -850,10 +860,7 @@
         }
       });
       
-      // إعداد زر العودة للأعلى
-      document.getElementById('scrollTopBtn').addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+      // إعداد زر العودة للأعلى (مُعالج بالفعل في main.js)
 
   
     });
