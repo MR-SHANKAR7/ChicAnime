@@ -631,6 +631,25 @@
     }
 
     // دالة لعرض اقتراحات البحث
+    // تعامل مع بيانات Firebase كنص غير موثوق قبل إدراجها داخل HTML.
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch {
+        return '';
+      }
+    }
     function showSearchSuggestions(searchTerm) {
       const suggestionsContainer = document.getElementById('searchSuggestions');
       
@@ -655,10 +674,10 @@
         const suggestionItem = document.createElement('div');
         suggestionItem.className = 'suggestion-item';
         suggestionItem.innerHTML = `
-          <img src="${anime.thumbnail || 'https://via.placeholder.com/40x40?text=صورة'}" alt="${anime.title}">
+          <img src="${escapeHtml(safeHttpUrl(anime.thumbnail) || 'https://via.placeholder.com/40x40?text=صورة')}" alt="${escapeHtml(anime.title)}">
           <div class="suggestion-info">
-            <h4>${anime.title_ar || anime.title}</h4>
-            <p>${anime.category || 'غير مصنف'}</p>
+            <h4>${escapeHtml(anime.title_ar || anime.title)}</h4>
+            <p>${escapeHtml(anime.category || 'غير مصنف')}</p>
           </div>
         `;
         
@@ -691,25 +710,31 @@
         animeCard.className = 'anime-card';
         animeCard.innerHTML = `
           <div class="anime-thumb">
-            <img src="${anime.thumbnail || 'https://via.placeholder.com/300x200?text=صورة+الأنمي'}" alt="${anime.title}" loading="lazy">
+            <img src="${escapeHtml(safeHttpUrl(anime.thumbnail) || 'https://via.placeholder.com/300x200?text=صورة+الأنمي')}" alt="${escapeHtml(anime.title)}" loading="lazy">
             ${anime.score ? `<span class="anime-score"><i class="fas fa-star"></i> ${(anime.score / 10).toFixed(1)}</span>` : ''}
             ${anime.status === 'upcoming' ? '<span class="anime-status upcoming">قريباً</span>' : anime.status === 'completed' ? '<span class="anime-status completed">مكتمل</span>' : '<span class="anime-status">مستمر</span>'}
             ${ChicFollow.button(anime.id, { title: anime.title_ar || anime.title, thumbnail: anime.thumbnail }, 'card-follow')}
           </div>
           <div class="anime-info">
-            <h3 class="anime-title">${anime.title_ar || anime.title}</h3>
+            <h3 class="anime-title">${escapeHtml(anime.title_ar || anime.title)}</h3>
             <div class="anime-meta">
-              <span>${anime.category || 'غير مصنف'}</span>
+              <span>${escapeHtml(anime.category || 'غير مصنف')}</span>
               <span class="episode-count">${episodesCount || anime.episodesTotal || 0} حلقة</span>
             </div>
-            <p>${anime.description ? anime.description.substring(0, 60) + '...' : 'لا يوجد وصف متاح'}</p>
+            <p>${escapeHtml(typeof anime.description === 'string' && anime.description ? anime.description.substring(0, 60) + '...' : 'لا يوجد وصف متاح')}</p>
             <div class="card-actions">
-              ${episodesCount ? `<button class="watch-btn" onclick="viewAnime('${anime.id}')"><i class="fas fa-play"></i> مشاهدة</button>` : ''}
-              <button class="details-btn" onclick="location.href='anime.html?id=${anime.id}'"><i class="fas fa-info-circle"></i> التفاصيل</button>
+              ${episodesCount ? '<button class="watch-btn" data-action="watch"><i class="fas fa-play"></i> مشاهدة</button>' : ''}
+              <button class="details-btn" data-action="details"><i class="fas fa-info-circle"></i> التفاصيل</button>
             </div>
           </div>
         `;
         
+        const watchButton = animeCard.querySelector('[data-action="watch"]');
+        if (watchButton) watchButton.addEventListener('click', () => viewAnime(anime.id));
+        const detailsButton = animeCard.querySelector('[data-action="details"]');
+        if (detailsButton) detailsButton.addEventListener('click', () => {
+          window.location.href = `anime.html?id=${encodeURIComponent(anime.id)}`;
+        });
         animeGrid.appendChild(animeCard);
       });
       if (window.ChicFollow) ChicFollow.paintAll();
