@@ -154,28 +154,6 @@
       margin-bottom: 40px;
     }
 
-    /* أحدث الحلقات المضافة */
-    .latest-episodes-section { margin: 0 0 30px; }
-    .latest-episodes-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
-    .latest-episodes-heading h2 { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; margin-bottom: 4px; }
-    .latest-episodes-heading h2 i { color: var(--primary-color); }
-    .latest-episodes-heading p { color: var(--text-muted); font-size: .9rem; }
-    .latest-episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
-    .latest-episode-card { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px; background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow); border: 1px solid transparent; transition: transform .2s, border-color .2s; }
-    .latest-episode-card:hover, .latest-episode-card:focus-visible { transform: translateY(-3px); border-color: var(--primary-color); outline: none; }
-    .latest-episode-card img { width: 76px; height: 96px; flex: 0 0 76px; object-fit: cover; border-radius: 6px; background: var(--bg-light); }
-    .latest-episode-info { min-width: 0; flex: 1; }
-    .latest-episode-title { font-size: .98rem; font-weight: 700; margin-bottom: 5px; overflow-wrap: anywhere; }
-    .latest-episode-number { color: var(--primary-color); font-size: .88rem; font-weight: 700; margin-bottom: 5px; }
-    .latest-episode-date { color: var(--text-muted); font-size: .78rem; }
-    .latest-episode-watch { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 10px; border-radius: 20px; color: #fff; background: var(--primary-color); font: inherit; font-size: .82rem; border: 0; cursor: pointer; }
-    .latest-episode-watch:hover { background: var(--primary-dark); }
-    @media (max-width: 480px) {
-      .latest-episodes-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-      .latest-episode-card img { width: 68px; height: 86px; flex-basis: 68px; }
-      .latest-episodes-heading h2 { font-size: 1.2rem; }
-    }
-
     /* جدول حلقات الأسبوع */
     .schedule-section { margin-bottom: 30px; }
     .schedule-section h2 { font-size: 1.5rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
@@ -432,6 +410,7 @@
            <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
           <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image"></i> الخلفيات</a></li>
           <li><a href="season.html" class="nav-link"><i class="fas fa-calendar-alt"></i> الموسم</a></li>
+          <li><a href="episodes.html" class="nav-link"><i class="fas fa-play-circle"></i> أحدث الحلقات</a></li>
           <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
           <!-- <li><a href="anime-admin.html" class="nav-link admin-link"><i class="fas fa-cog"></i> الإدارة</a></li> -->
         </ul>
@@ -480,17 +459,6 @@
         <h2><i class="fas fa-calendar-week"></i> حلقات هذا الأسبوع</h2>
         <div class="schedule-strip" id="scheduleStrip"></div>
       </div>
-
-      <!-- أحدث الحلقات المضافة إلى الموقع -->
-      <section class="latest-episodes-section" id="latestEpisodesSection" aria-labelledby="latestEpisodesTitle" hidden>
-        <div class="latest-episodes-heading">
-          <div>
-            <h2 id="latestEpisodesTitle"><i class="fas fa-clock" aria-hidden="true"></i> أحدث الحلقات المضافة</h2>
-            <p>آخر الحلقات المتوفرة للمشاهدة على ChicAnime</p>
-          </div>
-        </div>
-        <div class="latest-episodes-grid" id="latestEpisodesGrid" aria-live="polite"></div>
-      </section>
 
       <!-- مشغل الفيديو (يظهر عند اختيار حلقة) -->
       <div class="video-player-container" id="videoPlayer">
@@ -790,79 +758,6 @@
       if (window.ChicFollow) ChicFollow.paintAll();
     }
 
-    // عرض أحدث الحلقات التي أُضيفت إلى قاعدة البيانات.
-    function episodeDateValue(episode) {
-      const keys = ['uploadedAt', 'createdAt', 'addedAt', 'publishedAt', 'updatedAt', 'date', 'timestamp', 'created_at'];
-      for (const key of keys) {
-        const value = episode && episode[key];
-        if (value === undefined || value === null || value === '') continue;
-        if (typeof value === 'number' || /^[0-9]+$/.test(String(value))) {
-          const numeric = Number(value);
-          if (!Number.isFinite(numeric) || numeric <= 0) continue;
-          return numeric < 100000000000 ? numeric * 1000 : numeric;
-        }
-        const parsed = Date.parse(value);
-        if (Number.isFinite(parsed)) return parsed;
-      }
-      return 0;
-    }
-
-    function renderLatestEpisodes() {
-      const section = document.getElementById('latestEpisodesSection');
-      const grid = document.getElementById('latestEpisodesGrid');
-      if (!section || !grid) return;
-
-      const animeById = new Map(allAnime.map(anime => [String(anime.id), anime]));
-      const recentEpisodes = allEpisodes
-        .filter(episode => episode && episode.animeId != null && animeById.has(String(episode.animeId)))
-        .map(episode => ({ episode, anime: animeById.get(String(episode.animeId)), addedAt: episodeDateValue(episode) }))
-        .sort((a, b) => {
-          if (a.addedAt && b.addedAt && a.addedAt !== b.addedAt) return b.addedAt - a.addedAt;
-          if (a.addedAt !== b.addedAt) return b.addedAt - a.addedAt;
-          return (Number(b.episode.number) || 0) - (Number(a.episode.number) || 0);
-        })
-        .slice(0, 12);
-
-      if (!recentEpisodes.length) {
-        section.hidden = true;
-        return;
-      }
-
-      grid.innerHTML = recentEpisodes.map(({ episode, anime, addedAt }) => {
-        const animeTitle = anime.title_ar || anime.title || 'أنمي بدون عنوان';
-        const episodeNumber = Number(episode.number);
-        const episodeLabel = Number.isFinite(episodeNumber) && episodeNumber > 0
-          ? 'الحلقة ' + episodeNumber
-          : (episode.title || 'حلقة جديدة');
-        const thumbnail = safeHttpUrl(anime.thumbnail) || 'https://via.placeholder.com/100x130?text=Anime';
-        const dateLabel = addedAt
-          ? new Intl.DateTimeFormat('ar', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(addedAt))
-          : 'متاحة الآن';
-        return `
-          <article class="latest-episode-card">
-            <img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(animeTitle)}" loading="lazy">
-            <div class="latest-episode-info">
-              <h3 class="latest-episode-title">${escapeHtml(animeTitle)}</h3>
-              <div class="latest-episode-number">${escapeHtml(episodeLabel)}</div>
-              <div class="latest-episode-date">${escapeHtml(dateLabel)}</div>
-              <button class="latest-episode-watch" type="button" data-anime-id="${escapeHtml(anime.id)}" data-episode-id="${escapeHtml(episode.id)}">
-                <i class="fas fa-play" aria-hidden="true"></i> مشاهدة الحلقة
-              </button>
-            </div>
-          </article>`;
-      }).join('');
-
-      grid.querySelectorAll('.latest-episode-watch').forEach(button => {
-        button.addEventListener('click', () => {
-          const animeId = button.dataset.animeId;
-          const episodeId = button.dataset.episodeId;
-          if (!animeId || !episodeId) return;
-          window.location.href = `watch.html?anime=${encodeURIComponent(animeId)}&episode=${encodeURIComponent(episodeId)}`;
-        });
-      });
-      section.hidden = false;
-    }
-
     // جدول الحلقات القادمة خلال 7 أيام مع عدّ تنازلي
     const DAYS_AR = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     function renderSchedule() {
@@ -971,7 +866,6 @@
           // عرض الأنمي وجدول الأسبوع
           filterAnime();
           renderSchedule();
-          renderLatestEpisodes();
         })
         .catch(error => {
           console.error('Error loading data:', error);
