@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark-mode">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أحدث الحلقات | ChicAnime</title>
+  <meta name="description" content="تابع أحدث حلقة متوفرة لكل أنمي على ChicAnime، مرتبة حسب تاريخ الإضافة إلى الموقع.">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .episodes-hero { padding: 140px 0 35px; text-align: center; background: var(--bg-light); }
+    .episodes-hero h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin-bottom: 8px; }
+    .episodes-hero p { color: var(--text-muted); max-width: 720px; margin: auto; }
+    .episodes-main { padding: 30px 0 55px; min-height: 45vh; }
+    .episodes-status { text-align: center; padding: 35px 15px; color: var(--text-muted); }
+    .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
+    .episode-card { display: flex; gap: 13px; align-items: center; min-width: 0; padding: 13px; background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow); border: 1px solid transparent; transition: transform .2s, border-color .2s; }
+    .episode-card:hover { transform: translateY(-3px); border-color: var(--primary-color); }
+    .episode-card img { width: 88px; height: 116px; flex: 0 0 88px; object-fit: cover; border-radius: 7px; background: var(--bg-light); }
+    .episode-info { min-width: 0; flex: 1; }
+    .episode-title { font-size: 1rem; font-weight: 700; line-height: 1.5; margin: 0 0 5px; overflow-wrap: anywhere; }
+    .episode-number { color: var(--primary-color); font-weight: 700; margin-bottom: 5px; }
+    .episode-studio, .episode-date { color: var(--text-muted); font-size: .8rem; margin-top: 3px; overflow-wrap: anywhere; }
+    .episode-watch { display: inline-flex; gap: 7px; align-items: center; margin-top: 10px; padding: 7px 12px; border-radius: 20px; color: #fff; background: var(--primary-color); font: inherit; font-size: .82rem; text-decoration: none; }
+    .episode-watch:hover { background: var(--primary-dark); color: #fff; }
+    @media (max-width: 480px) { .episodes-grid { grid-template-columns: 1fr; gap: 11px; } .episode-card img { width: 76px; height: 100px; flex-basis: 76px; } }
+  </style>
+</head>
+<body>
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader"><div class="loader-spinner"></div><p>جاري تحميل أحدث الحلقات...</p></div>
+  </div>
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="فتح القائمة"><i class="fas fa-bars"></i></button>
+  <header class="header">
+    <a href="index.html" aria-label="ChicAnime الرئيسية">
+      <div class="container header-container">
+        <div class="logo"><i class="fas fa-dragon"></i><span>ChicAnime</span></div>
+    </a>
+        <div class="search-container">
+          <input type="text" id="search-bar" placeholder="ابحث عن أنمي..." aria-label="ابحث عن أنمي">
+          <button class="search-btn" type="button" id="searchButton" aria-label="بحث"><i class="fas fa-search"></i></button>
+        </div>
+        <nav class="nav" id="nav" aria-label="القائمة الرئيسية">
+          <ul class="nav-list">
+            <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
+            <li><a href="news.html" class="nav-link"><i class="fas fa-newspaper"></i> أخبار الأنمي</a></li>
+            <li><a href="episodes.html" class="nav-link active" aria-current="page"><i class="fas fa-play-circle"></i> أحدث الحلقات</a></li>
+            <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
+            <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image"></i> الخلفيات</a></li>
+            <li><a href="season.html" class="nav-link"><i class="fas fa-calendar-alt"></i> الموسم</a></li>
+            <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
+          </ul>
+        </nav>
+      </div>
+  </header>
+  <section class="episodes-hero">
+    <div class="container">
+      <h1><i class="fas fa-play-circle" aria-hidden="true"></i> أحدث الحلقات</h1>
+      <p>حلقة واحدة فقط، وهي الأحدث المتوفرة لكل أنمي. الترتيب يعتمد على بيانات الحلقات الموجودة في ChicAnime.</p>
+    </div>
+  </section>
+  <main class="episodes-main">
+    <div class="container">
+      <div id="episodesStatus" class="episodes-status" role="status">جاري تحميل بيانات الحلقات...</div>
+      <div id="episodesGrid" class="episodes-grid" aria-live="polite"></div>
+    </div>
+  </main>
+  <button class="floating-btn scroll-top" id="scrollTopBtn" aria-label="العودة إلى الأعلى"><i class="fas fa-arrow-up"></i></button>
+  <button class="theme-toggle" id="themeToggle" aria-label="تغيير المظهر"><i class="fas fa-moon"></i></button>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="logo"><i class="fas fa-dragon"></i><span>ChicAnime</span></div>
+          <p>منصة متخصصة لعرض ومشاهدة أفضل مقاطع الأنمي مجاناً وبجودة عالية.</p>
+          <div class="social-links">
+            <a href="https://web.facebook.com/profile.php?id=61580828810174" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/ChicAnimeX" aria-label="X"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/chicanimee/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/channel/UCQudfTcDpWPJSorRM_f9dcw" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>© ChicAnime</p></div>
+    </div>
+  </footer>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyx5DUHCK7tzSrwIB_DF33xExfCh0EbCo",
+      authDomain: "anime-studio-videos.firebaseapp.com",
+      databaseURL: "https://anime-studio-videos-default-rtdb.firebaseio.com",
+      projectId: "anime-studio-videos",
+      storageBucket: "anime-studio-videos.firebasestorage.app",
+      messagingSenderId: "593166797912",
+      appId: "1:593166797912:web:b5bcdab817f1baecb70e2d",
+      measurementId: "G-LS4NSXW208"
+    };
+
+    const statusEl = document.getElementById('episodesStatus');
+    const gridEl = document.getElementById('episodesGrid');
+
+    function escapeEpisodeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[char]));
+    }
+
+    function safeEpisodeImage(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return ['https:', 'http:'].includes(url.protocol) ? url.href : 'images/ChicAnime.png';
+      } catch (_) {
+        return 'images/ChicAnime.png';
+      }
+    }
+
+    function episodeTimestamp(episode) {
+      const keys = ['releasedAt', 'releaseDate', 'uploadedAt', 'createdAt', 'addedAt', 'publishedAt', 'updatedAt', 'date', 'timestamp', 'created_at'];
+      for (const key of keys) {
+        const value = episode && episode[key];
+        if (value == null || value === '') continue;
+        if (typeof value === 'number' || /^[0-9]+$/.test(String(value))) {
+          const number = Number(value);
+          if (Number.isFinite(number) && number > 0) return number < 100000000000 ? number * 1000 : number;
+        } else {
+          const parsed = Date.parse(value);
+          if (Number.isFinite(parsed)) return parsed;
+        }
+      }
+      return 0;
+    }
+
+    function episodeNumber(episode) {
+      const number = Number(episode && episode.number);
+      return Number.isFinite(number) && number >= 0 ? number : -1;
+    }
+
+    function renderLatestEpisodes(anime, episodes) {
+      const animeById = new Map(anime.map(item => [String(item.id), item]));
+      const latestByAnime = new Map();
+
+      episodes.forEach(episode => {
+        if (!episode || episode.animeId == null) return;
+        const relatedAnime = animeById.get(String(episode.animeId));
+        if (!relatedAnime) return;
+        const previous = latestByAnime.get(String(episode.animeId));
+        const currentNumber = episodeNumber(episode);
+        const previousNumber = previous ? episodeNumber(previous.episode) : -1;
+        const currentDate = episodeTimestamp(episode);
+        const previousDate = previous ? episodeTimestamp(previous.episode) : 0;
+
+        // رقم الحلقة هو معيار تحديد أحدث حلقة؛ التاريخ يكسر التعادل عند تكرار الرقم.
+        if (!previous || currentNumber > previousNumber || (currentNumber === previousNumber && currentDate > previousDate)) {
+          latestByAnime.set(String(episode.animeId), { episode, anime: relatedAnime, timestamp: currentDate });
+        }
+      });
+
+      const items = Array.from(latestByAnime.values()).sort((a, b) => {
+        if (a.timestamp && b.timestamp && a.timestamp !== b.timestamp) return b.timestamp - a.timestamp;
+        if (a.timestamp !== b.timestamp) return b.timestamp - a.timestamp;
+        return episodeNumber(b.episode) - episodeNumber(a.episode);
+      });
+
+      if (!items.length) {
+        statusEl.textContent = 'لا توجد حلقات متاحة لعرضها حالياً.';
+        statusEl.hidden = false;
+        return;
+      }
+
+      statusEl.hidden = true;
+      gridEl.innerHTML = items.map(({ episode, anime: item, timestamp }) => {
+        const title = item.title_ar || item.title || 'أنمي بدون عنوان';
+        const number = episodeNumber(episode);
+        const label = number >= 0 ? 'الحلقة ' + number : (episode.title || 'أحدث حلقة');
+        const studio = item.studio || item.studioName || item.studio_name || '';
+        const date = timestamp
+          ? new Intl.DateTimeFormat('ar', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(timestamp))
+          : 'تاريخ الإصدار غير متوفر';
+        const image = safeEpisodeImage(item.thumbnail || item.image || item.poster);
+        const watchUrl = 'watch.html?anime=' + encodeURIComponent(item.id) + '&episode=' + encodeURIComponent(episode.id);
+        return '<article class="episode-card">' +
+          '<img src="' + escapeEpisodeHtml(image) + '" alt="' + escapeEpisodeHtml(title) + '" loading="lazy">' +
+          '<div class="episode-info"><h2 class="episode-title">' + escapeEpisodeHtml(title) + '</h2>' +
+          '<div class="episode-number">' + escapeEpisodeHtml(label) + '</div>' +
+          (studio ? '<div class="episode-studio">الاستديو: ' + escapeEpisodeHtml(studio) + '</div>' : '') +
+          '<div class="episode-date">' + escapeEpisodeHtml(date) + '</div>' +
+          '<a class="episode-watch" href="' + escapeEpisodeHtml(watchUrl) + '"><i class="fas fa-play" aria-hidden="true"></i> مشاهدة الحلقة</a>' +
+          '</div></article>';
+      }).join('');
+    }
+
+    document.getElementById('searchButton').addEventListener('click', () => {
+      const query = document.getElementById('search-bar').value.trim();
+      window.location.href = query ? 'index.html?search=' + encodeURIComponent(query) : 'index.html';
+    });
+    document.getElementById('search-bar').addEventListener('keydown', event => {
+      if (event.key === 'Enter') document.getElementById('searchButton').click();
+    });
+
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      Promise.all([
+        firebase.database().ref('anime').once('value'),
+        firebase.database().ref('episodes').once('value')
+      ]).then(([animeSnapshot, episodeSnapshot]) => {
+        const anime = [];
+        const episodes = [];
+        animeSnapshot.forEach(child => anime.push({ id: child.key, ...child.val() }));
+        episodeSnapshot.forEach(child => episodes.push({ id: child.key, ...child.val() }));
+        renderLatestEpisodes(anime, episodes);
+      }).catch(error => {
+        console.error('Unable to load latest episodes:', error);
+        statusEl.textContent = 'تعذر تحميل الحلقات. تحقق من الاتصال بالإنترنت ثم أعد المحاولة.';
+      }).finally(() => {
+        const loading = document.getElementById('loadingScreen');
+        if (loading) loading.style.display = 'none';
+      });
+    } catch (error) {
+      console.error('Firebase initialization failed:', error);
+      statusEl.textContent = 'تعذر الاتصال بقاعدة البيانات حالياً.';
+      const loading = document.getElementById('loadingScreen');
+      if (loading) loading.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
