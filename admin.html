@@ -1154,6 +1154,12 @@
     }
 
     // تحميل آخر الرفوعات
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch { return ''; }
+    }
     function loadRecentUploads() {
       database.ref('images').orderByChild('uploadedAt').limitToLast(5).once('value')
         .then((snapshot) => {
@@ -1185,13 +1191,21 @@
               day: 'numeric'
             });
             
-            uploadItem.innerHTML = `
-              <img src="${image.image}" alt="${image.title}" class="upload-thumb" onerror="this.src='https://via.placeholder.com/50x50/3A3532/94938F?text=صورة'">
-              <div class="upload-info">
-                <div class="upload-title">${image.title}</div>
-                <div class="upload-date">${formattedDate}</div>
-              </div>
-            `;
+            const thumbnail = document.createElement('img');
+            thumbnail.className = 'upload-thumb';
+            thumbnail.src = safeHttpUrl(image.image) || 'https://via.placeholder.com/50x50/3A3532/94938F?text=صورة';
+            thumbnail.alt = image.title || '';
+            thumbnail.onerror = () => { thumbnail.onerror = null; thumbnail.src = 'https://via.placeholder.com/50x50/3A3532/94938F?text=صورة'; };
+            const info = document.createElement('div');
+            info.className = 'upload-info';
+            const title = document.createElement('div');
+            title.className = 'upload-title';
+            title.textContent = image.title || 'بدون عنوان';
+            const dateLabel = document.createElement('div');
+            dateLabel.className = 'upload-date';
+            dateLabel.textContent = formattedDate;
+            info.append(title, dateLabel);
+            uploadItem.append(thumbnail, info);
             
             recentUploadsList.appendChild(uploadItem);
           });
