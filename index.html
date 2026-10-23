@@ -756,18 +756,28 @@
         const d = new Date(a.nextAiring.airingAt);
         const isToday = d.toDateString() === new Date().toDateString();
         return `
-          <div class="schedule-card" onclick="location.href='anime.html?id=${a.id}'">
+          <div class="schedule-card" data-anime-id="${escapeHtml(a.id)}" tabindex="0" role="link">
             <div class="sc-thumb">
-              <img src="${a.thumbnail}" alt="${a.title}" loading="lazy">
+              <img src="${escapeHtml(safeHttpUrl(a.thumbnail))}" alt="${escapeHtml(a.title)}" loading="lazy">
               <span class="sc-day">${isToday ? 'اليوم' : DAYS_AR[d.getDay()]}</span>
             </div>
             <div class="sc-body">
-              <div class="sc-title" title="${a.title}">${a.title_ar || a.title}</div>
-              <div class="sc-ep">الحلقة ${a.nextAiring.episode}</div>
-              <div class="sc-time" data-at="${a.nextAiring.airingAt}">${countdown(a.nextAiring.airingAt)}</div>
+              <div class="sc-title" title="${escapeHtml(a.title)}">${escapeHtml(a.title_ar || a.title)}</div>
+              <div class="sc-ep">الحلقة ${Number(a.nextAiring.episode) || 0}</div>
+              <div class="sc-time" data-at="${Number(a.nextAiring.airingAt)}">${countdown(Number(a.nextAiring.airingAt))}</div>
             </div>
           </div>`;
       }).join('');
+      document.querySelectorAll('#scheduleStrip .schedule-card').forEach(card => {
+        const openAnime = () => { window.location.href = `anime.html?id=${encodeURIComponent(card.dataset.animeId)}`; };
+        card.addEventListener('click', openAnime);
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openAnime();
+          }
+        });
+      });
       setInterval(() => {
         document.querySelectorAll('.sc-time').forEach(el => { el.textContent = countdown(Number(el.dataset.at)); });
       }, 60000);
