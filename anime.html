@@ -242,7 +242,8 @@
     function renderAnime(a) {
       document.title = `${a.title_ar || a.title} | ChicAnime`;
       const hero = document.getElementById('animeHero');
-      const bannerUrl = safeHttpUrl(a.banner);\n      hero.style.backgroundImage = bannerUrl ? `url("${bannerUrl}")` : '';
+      const bannerUrl = safeHttpUrl(a.banner);
+      hero.style.backgroundImage = bannerUrl ? `url("${bannerUrl}")` : '';
       document.getElementById('cover').src = safeHttpUrl(a.thumbnail);
       document.getElementById('cover').alt = a.title;
       document.getElementById('title').textContent = a.title_ar || a.title;
@@ -253,7 +254,8 @@
 
       const chips = [];
       if (a.score) chips.push(`<span class="meta-chip score"><i class="fas fa-star"></i> ${(a.score / 10).toFixed(1)} / 10</span>`);
-      const safeStatus = ['completed', 'upcoming', 'ongoing'].includes(a.status) ? a.status : 'ongoing';\n      chips.push(`<span class="meta-chip status-${safeStatus}">${STATUS_AR[safeStatus] || 'مستمر'}</span>`);
+      const safeStatus = ['completed', 'upcoming', 'ongoing'].includes(a.status) ? a.status : 'ongoing';
+      chips.push(`<span class="meta-chip status-${safeStatus}">${STATUS_AR[safeStatus] || 'مستمر'}</span>`);
       if (a.format) chips.push(`<span class="meta-chip"><i class="fas fa-tv"></i> ${esc(a.format)}</span>`);
       if (a.season) chips.push(`<span class="meta-chip"><i class="fas fa-calendar-alt"></i> ${esc(a.season)}</span>`);
       if (a.episodesTotal) chips.push(`<span class="meta-chip"><i class="fas fa-film"></i> ${a.episodesTotal} حلقة</span>`);
@@ -268,7 +270,7 @@
         tick(); setInterval(tick, 30000);
       }
 
-      if (a.trailer) {
+      if (typeof a.trailer === 'string' && /^[\w-]{11}$/.test(a.trailer)) {
         document.getElementById('trailerPanel').style.display = 'block';
         document.getElementById('trailerFrame').src = `https://www.youtube-nocookie.com/embed/${a.trailer}`;
       }
