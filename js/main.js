@@ -81,8 +81,13 @@ if (mobileMenuBtn && nav) {
     nav.classList.toggle('active', isOpen);
     mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
     mobileMenuBtn.setAttribute('aria-label', isOpen ? 'إغلاق القائمة' : 'فتح القائمة');
-    if (isOpen) nav.removeAttribute('inert');
-    else nav.setAttribute('inert', '');
+    if (isOpen) {
+      nav.removeAttribute('inert');
+    } else if (window.matchMedia('(max-width: 768px)').matches) {
+      nav.setAttribute('inert', '');
+    } else {
+      nav.removeAttribute('inert');
+    }
   };
 
   setMenuOpen(false);
