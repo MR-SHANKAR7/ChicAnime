@@ -505,15 +505,17 @@
       if (image) {
         // حفظ البيانات مؤقتاً للوصول إليها في صفحة التفاصيل
         sessionStorage.setItem('currentImage', JSON.stringify(image));
-        window.location.href = `details.html?id=${image.id || id}`;
+        window.location.href = `details.html?id=${encodeURIComponent(image.id || id)}`;
       }
     }
 
     // دالة لتحميل الصورة
     function downloadImage(url, name) {
+      const safeUrl = safeHttpUrl(url);
+      if (!safeUrl) return;
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${name.replace(/\s+/g, '_')}.jpg`;
+      a.href = safeUrl;
+      a.download = `${String(name || 'anime_image').replace(/\s+/g, '_')}.jpg`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
