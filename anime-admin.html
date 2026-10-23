@@ -1051,8 +1051,9 @@
               <option value="360p" ${quality === '360p' ? 'selected' : ''}>360p</option>
               <option value="auto" ${quality === 'auto' ? 'selected' : ''}>تلقائي</option>
             </select>
-                        <input type="url" class="quality-url" value="${url}" placeholder="رابط الفيديو لهذه الجودة" required>
+            <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
           `;
+          qualityRow.querySelector('.quality-url').value = String(url ?? '');
           qualitiesContainer.appendChild(qualityRow);
         }
       }
