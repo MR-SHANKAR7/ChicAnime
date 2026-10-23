@@ -889,6 +889,25 @@
     }
 
     // دالة لتحديث التصنيفات المحددة في الواجهة
+    // تعامل مع بيانات Firebase كنص غير موثوق قبل إدراجها داخل HTML.
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch {
+        return '';
+      }
+    }
     function updateSelectedCategories() {
       const container = document.getElementById('selectedCategories');
       const hiddenInput = document.getElementById('animeCategory');
@@ -910,10 +929,20 @@
       selectedCategories.forEach(category => {
         const tag = document.createElement('div');
         tag.className = 'selected-tag';
-        tag.innerHTML = `
-          ${category}
-          <i class="fas fa-times" onclick="removeCategory('${category}')"></i>
-        `;
+        tag.textContent = category;
+        const removeIcon = document.createElement('i');
+        removeIcon.className = 'fas fa-times';
+        removeIcon.setAttribute('role', 'button');
+        removeIcon.setAttribute('tabindex', '0');
+        removeIcon.setAttribute('aria-label', `إزالة ${category}`);
+        removeIcon.addEventListener('click', () => removeCategory(category));
+        removeIcon.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            removeCategory(category);
+          }
+        });
+        tag.appendChild(removeIcon);
         container.appendChild(tag);
       });
       
@@ -1022,8 +1051,9 @@
               <option value="360p" ${quality === '360p' ? 'selected' : ''}>360p</option>
               <option value="auto" ${quality === 'auto' ? 'selected' : ''}>تلقائي</option>
             </select>
-                        <input type="url" class="quality-url" value="${url}" placeholder="رابط الفيديو لهذه الجودة" required>
+            <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
           `;
+          qualityRow.querySelector('.quality-url').value = String(url ?? '');
           qualitiesContainer.appendChild(qualityRow);
         }
       }
@@ -1119,15 +1149,17 @@
             
             const row = document.createElement("tr");
             row.innerHTML = `
-              <td>${anime.title}</td>
-              <td>${categories}</td>
+              <td>${escapeHtml(anime.title)}</td>
+              <td>${escapeHtml(categories)}</td>
               <td>${statusBadge}</td>
               <td>${episodesCount}</td>
               <td>
-                <button class="action-btn edit-btn" onclick="editAnime('${anime.id}')">تعديل</button>
-                <button class="action-btn delete-btn" onclick="deleteAnime('${anime.id}')">حذف</button>
+                <button type="button" class="action-btn edit-btn">تعديل</button>
+                <button type="button" class="action-btn delete-btn">حذف</button>
               </td>
             `;
+            row.querySelector('.edit-btn').addEventListener('click', () => editAnime(anime.id));
+            row.querySelector('.delete-btn').addEventListener('click', () => deleteAnime(anime.id));
             
             animeList.appendChild(row);
           });
@@ -1265,15 +1297,17 @@
         
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${animeTitle}</td>
-          <td>${episode.number}</td>
-          <td>${episode.title || `الحلقة ${episode.number}`}</td>
+          <td>${escapeHtml(animeTitle)}</td>
+          <td>${Number(episode.number) || 0}</td>
+          <td>${escapeHtml(episode.title || `الحلقة ${episode.number}`)}</td>
           <td>${serversCount}</td>
           <td>
-            <button class="action-btn edit-btn" onclick="editEpisode('${episode.id}')">تعديل</button>
-            <button class="action-btn delete-btn" onclick="deleteEpisode('${episode.id}')">حذف</button>
+            <button type="button" class="action-btn edit-btn">تعديل</button>
+            <button type="button" class="action-btn delete-btn">حذف</button>
           </td>
         `;
+        row.querySelector('.edit-btn').addEventListener('click', () => editEpisode(episode.id));
+        row.querySelector('.delete-btn').addEventListener('click', () => deleteEpisode(episode.id));
         
         episodeList.appendChild(row);
       });
