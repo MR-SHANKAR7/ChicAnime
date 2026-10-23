@@ -628,7 +628,11 @@
     // دالة لعرض رسالة خطأ
     function showError(message) {
       const newsGrid = document.getElementById('newsGrid');
-      newsGrid.innerHTML = `<p class="no-results">${message}</p>`;
+      newsGrid.textContent = '';
+      const errorMessage = document.createElement('p');
+      errorMessage.className = 'no-results';
+      errorMessage.textContent = String(message || 'حدث خطأ في تحميل الأخبار');
+      newsGrid.appendChild(errorMessage);
     }
 
     // تهيئة الصفحة عند التحميل
