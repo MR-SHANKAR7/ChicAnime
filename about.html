@@ -837,7 +837,12 @@
       const searchTerm = document.getElementById('search-bar').value.trim();
       if (searchTerm) {
         // حفظ مصطلح البحث وتوجيه المستخدم إلى صفحة البحث
-        localStorage.setItem('searchTerm', searchTerm);
+        try {
+          localStorage.setItem('searchTerm', searchTerm);
+        } catch (error) {
+          // يعتمد البحث على معامل URL، لذا لا يتوقف عند منع التخزين المحلي.
+          console.warn('تعذر حفظ مصطلح البحث محليًا:', error);
+        }
         window.location.href = `index.html?search=${encodeURIComponent(searchTerm)}`;
       }
     }
