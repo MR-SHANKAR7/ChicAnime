@@ -798,6 +798,25 @@
     }
     
     // دالة تحميل الأخبار
+    // تعامل مع بيانات Firebase كنص غير موثوق قبل إدراجها داخل HTML.
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch {
+        return '';
+      }
+    }
     function loadNews() {
       const newsRef = firebase.database().ref('news');
       
@@ -825,14 +844,14 @@
         });
         
         newsItem.innerHTML = `
-          <img src="${news.imageUrl}" alt="${news.title}" class="news-item-img">
+          <img src="${escapeHtml(safeHttpUrl(news.imageUrl))}" alt="${escapeHtml(news.title)}" class="news-item-img">
           <div class="news-item-content">
-            <div class="news-item-title">${news.title}</div>
+            <div class="news-item-title">${escapeHtml(news.title)}</div>
             <div class="news-item-date">${formattedDate}</div>
           </div>
           <div class="news-item-actions">
-            <button class="action-btn btn-edit" data-id="${newsId}">تعديل</button>
-            <button class="action-btn btn-delete" data-id="${newsId}">حذف</button>
+            <button class="action-btn btn-edit" data-id="${escapeHtml(newsId)}">تعديل</button>
+            <button class="action-btn btn-delete" data-id="${escapeHtml(newsId)}">حذف</button>
           </div>
         `;
         
