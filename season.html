@@ -176,7 +176,11 @@
     }
     const SEASON_AR = { WINTER: 'شتاء', SPRING: 'ربيع', SUMMER: 'صيف', FALL: 'خريف' };
     const ORDER = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
-    const esc = (s = '') => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const esc = (s = '') => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    function safeHttpUrl(value) {
+      try { const url = new URL(String(value || ''), window.location.href); return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : ''; }
+      catch { return ''; }
+    }
 
     function seasonOf(date) {
       const season = ORDER[Math.floor(date.getMonth() / 3)];
@@ -220,16 +224,21 @@
       const grid = document.getElementById('grid');
       if (!list.length) { grid.innerHTML = '<div class="empty">لا توجد أنميات في هذا القسم بعد، تتحدث القائمة تلقائياً.</div>'; return; }
       grid.innerHTML = list.map(a => `
-        <div class="s-card" onclick="location.href='anime.html?id=${a.id}'">
-          <img src="${a.thumbnail}" alt="${esc(a.title)}" loading="lazy">
-          ${a.score ? `<span class="s-score"><i class="fas fa-star"></i> ${(a.score / 10).toFixed(1)}</span>` : ''}
+        <div class="s-card" data-anime-id="${esc(a.id)}" tabindex="0" role="link">
+          <img src="${esc(safeHttpUrl(a.thumbnail))}" alt="${esc(a.title)}" loading="lazy">
+          ${a.score ? `<span class="s-score"><i class="fas fa-star"></i> ${(Number(a.score) / 10).toFixed(1)}</span>` : ''}
           ${a.studio ? `<span class="s-studio">${esc(a.studio)}</span>` : ''}
           <div class="s-body">
             <div class="s-title" title="${esc(a.title)}">${esc(a.title_ar || a.title)}</div>
-            <div class="s-meta"><span>${esc(a.format || '')}</span><span>${a.episodesTotal ? a.episodesTotal + ' حلقة' : (a.status === 'upcoming' ? 'قريباً' : '')}</span></div>
-            ${a.nextAiring && a.nextAiring.airingAt > Date.now() ? `<div class="s-next"><i class="fas fa-clock"></i> الحلقة ${a.nextAiring.episode} ${countdown(a.nextAiring.airingAt)}</div>` : (a.startDate && a.status === 'upcoming' ? `<div class="s-next"><i class="fas fa-calendar"></i> ${a.startDate}</div>` : '')}
+            <div class="s-meta"><span>${esc(a.format || '')}</span><span>${Number(a.episodesTotal) ? Number(a.episodesTotal) + ' حلقة' : (a.status === 'upcoming' ? 'قريباً' : '')}</span></div>
+            ${a.nextAiring && a.nextAiring.airingAt > Date.now() ? `<div class="s-next"><i class="fas fa-clock"></i> الحلقة ${Number(a.nextAiring.episode) || 0} ${countdown(a.nextAiring.airingAt)}</div>` : (a.startDate && a.status === 'upcoming' ? `<div class="s-next"><i class="fas fa-calendar"></i> ${esc(a.startDate)}</div>` : '')}
           </div>
         </div>`).join('');
+      grid.querySelectorAll('.s-card[data-anime-id]').forEach(card => {
+        const openAnime = () => { window.location.href = `anime.html?id=${encodeURIComponent(card.dataset.animeId)}`; };
+        card.addEventListener('click', openAnime);
+        card.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openAnime(); } });
+      });
     }
 
     function countdown(at) {
