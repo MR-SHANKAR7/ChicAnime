@@ -211,8 +211,12 @@
       ]).then(([animeSnapshot, episodeSnapshot]) => {
         const anime = [];
         const episodes = [];
-        animeSnapshot.forEach(child => anime.push({ id: child.key, ...child.val() }));
-        episodeSnapshot.forEach(child => episodes.push({ id: child.key, ...child.val() }));
+        animeSnapshot.forEach(child => {
+          anime.push({ id: child.key, ...child.val() });
+        });
+        episodeSnapshot.forEach(child => {
+          episodes.push({ id: child.key, ...child.val() });
+        });
         renderLatestEpisodes(anime, episodes);
       }).catch(error => {
         console.error('Unable to load latest episodes:', error);
@@ -242,3 +246,4 @@
   </script>
 </body>
 </html>
+
