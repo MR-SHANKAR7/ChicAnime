@@ -36,24 +36,24 @@
   <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="فتح القائمة"><i class="fas fa-bars"></i></button>
   <header class="header">
     <div class="container header-container">
-      <a href="index.html" aria-label="ChicAnime الرئيسية">
-        <div class="logo"><i class="fas fa-dragon"></i><span>ChicAnime</span></div>
+      <a href="index.html" class="logo-link" aria-label="ChicAnime - الرئيسية">
+        <div class="logo"><i class="fas fa-dragon" aria-hidden="true"></i><span>ChicAnime</span></div>
       </a>
-      <div class="search-container">
-          <input type="text" id="search-bar" placeholder="ابحث عن أنمي..." aria-label="ابحث عن أنمي">
-          <button class="search-btn" type="button" id="searchButton" aria-label="بحث"><i class="fas fa-search"></i></button>
-        </div>
-        <nav class="nav" id="nav" aria-label="القائمة الرئيسية">
-          <ul class="nav-list">
-            <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a></li>
-            <li><a href="news.html" class="nav-link"><i class="fas fa-newspaper"></i> أخبار الأنمي</a></li>
-            <li><a href="episodes.html" class="nav-link active" aria-current="page"><i class="fas fa-play-circle"></i> أحدث الحلقات</a></li>
-            <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
-            <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image"></i> الخلفيات</a></li>
-            <li><a href="season.html" class="nav-link"><i class="fas fa-calendar-alt"></i> الموسم</a></li>
-            <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
-          </ul>
-        </nav>
+      <div class="search-container" role="search">
+        <input type="search" id="search-bar" placeholder="ابحث عن أنمي..." aria-label="ابحث عن أنمي..." autocomplete="off">
+        <button class="search-btn" id="searchButton" type="button" aria-label="تنفيذ البحث"><i class="fas fa-search" aria-hidden="true"></i></button>
+      </div>
+      <nav class="nav" id="nav" aria-label="القائمة الرئيسية">
+        <ul class="nav-list">
+            <li><a href="index.html" class="nav-link"><i class="fas fa-home" aria-hidden="true"></i> الرئيسية</a></li>
+            <li><a href="news.html" class="nav-link"><i class="fas fa-newspaper" aria-hidden="true"></i> أخبار الأنمي</a></li>
+            <li><a href="characters.html" class="nav-link"><i class="fas fa-user" aria-hidden="true"></i> الشخصيات</a></li>
+            <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image" aria-hidden="true"></i> الخلفيات</a></li>
+            <li><a href="season.html" class="nav-link"><i class="fas fa-calendar-alt" aria-hidden="true"></i> الموسم</a></li>
+            <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle" aria-hidden="true"></i> عن الموقع</a></li>
+            <li><a href="episodes.html" class="nav-link active" aria-current="page"><i class="fas fa-play-circle" aria-hidden="true"></i> أحدث الحلقات</a></li>
+        </ul>
+      </nav>
     </div>
   </header>
   <section class="episodes-hero">
@@ -227,6 +227,18 @@
       const loading = document.getElementById('loadingScreen');
       if (loading) loading.style.display = 'none';
     }
+  </script>
+
+  <script>
+    (function () {
+      const searchInput = document.getElementById('search-bar');
+      const searchButton = document.getElementById('searchButton');
+      if (searchInput && searchButton) {
+        searchInput.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter') { event.preventDefault(); searchButton.click(); }
+        });
+      }
+    })();
   </script>
 </body>
 </html>
