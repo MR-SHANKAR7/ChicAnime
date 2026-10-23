@@ -526,7 +526,7 @@
       
       const imageUrl = image.image || image.url || image.secure_url;
       const imgElement = document.getElementById('image-detail');
-      imgElement.src = imageUrl;
+      imgElement.src = safeHttpUrl(imageUrl) || 'https://via.placeholder.com/900x600?text=صورة+غير+متوفرة';
       imgElement.alt = image.title || 'صورة أنمي';
       
       document.getElementById('image-details').textContent = image.details || 'لا توجد تفاصيل متاحة';
@@ -560,14 +560,28 @@
       updateNavigationButtons();
     }
 
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[char]));
+    }
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch { return ''; }
+    }
     // دالة لإضافة عنصر معلومات
     function addInfoItem(container, label, value) {
       const item = document.createElement('div');
       item.className = 'info-item';
-      item.innerHTML = `
-        <span class="info-label">${label}:</span>
-        <span class="info-value">${value}</span>
-      `;
+      const labelElement = document.createElement('span');
+      labelElement.className = 'info-label';
+      labelElement.textContent = `${label}:`;
+      const valueElement = document.createElement('span');
+      valueElement.className = 'info-value';
+      valueElement.textContent = String(value ?? '');
+      item.append(labelElement, valueElement);
       container.appendChild(item);
     }
 

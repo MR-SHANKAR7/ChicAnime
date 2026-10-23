@@ -907,22 +907,40 @@
       return qualityNames[qualityKey] || qualityKey;
     }
 
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[char]));
+    }
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch { return ''; }
+    }
     // المنصات الرسمية تمنع التشغيل داخل إطار، فنعرض زر الانتقال إليها بدل الإطار
     const OFFICIAL_HOSTS = ['crunchyroll.com', 'netflix.com', 'hidive.com', 'disneyplus.com', 'primevideo.com', 'bilibili.tv', 'hulu.com'];
 
     function showVideo(url) {
       const frame = document.getElementById('videoFrame');
       const overlay = document.getElementById('officialSource');
-      const isOfficial = OFFICIAL_HOSTS.some(host => url.includes(host));
-
+      let parsed;
+      try { parsed = new URL(String(url || ''), window.location.href); } catch { parsed = null; }
+      if (!parsed || parsed.protocol !== 'https:') {
+        frame.src = 'about:blank';
+        overlay.style.display = 'none';
+        return;
+      }
+      const isOfficial = OFFICIAL_HOSTS.some(host => parsed.hostname === host || parsed.hostname.endsWith('.' + host));
       if (isOfficial) {
-        frame.src = '';
-        document.getElementById('officialLink').href = url;
-        overlay.style.backgroundImage = currentEpisode && currentEpisode.thumbnail ? `url('${currentEpisode.thumbnail}')` : '';
+        frame.src = 'about:blank';
+        document.getElementById('officialLink').href = parsed.href;
+        const thumbnail = safeHttpUrl(currentEpisode && currentEpisode.thumbnail);
+        overlay.style.backgroundImage = thumbnail ? `url("${thumbnail}")` : '';
         overlay.style.display = 'flex';
       } else {
         overlay.style.display = 'none';
-        frame.src = url;
+        frame.src = parsed.href;
       }
     }
 
@@ -987,17 +1005,17 @@
         const animeCard = document.createElement('div');
         animeCard.className = 'anime-suggestion';
         animeCard.onclick = () => {
-          window.location.href = `watch.html?anime=${anime.id}`;
+          window.location.href = `watch.html?anime=${encodeURIComponent(anime.id)}`;
         };
         
         animeCard.innerHTML = `
           <div class="suggestion-thumb">
             
-            <img src="${anime.thumbnail || 'https://via.placeholder.com/200x150?text=صورة+الأنمي'}" alt="${anime.title}">
+            <img src="${escapeHtml(safeHttpUrl(anime.thumbnail) || 'https://via.placeholder.com/200x150?text=صورة+الأنمي')}" alt="${escapeHtml(anime.title)}">
           </div>
           <div class="suggestion-info">
-            <div class="suggestion-title">${anime.title}</div>
-            <div class="suggestion-category">${anime.category || 'غير محدد'}</div>
+            <div class="suggestion-title">${escapeHtml(anime.title)}</div>
+            <div class="suggestion-category">${escapeHtml(anime.category || 'غير محدد')}</div>
           </div>
         `;
         
@@ -1011,7 +1029,7 @@
       
       // تحديث عنوان الحلقة
       document.getElementById('episodeTitle').textContent = 
-        `الحلقة ${currentEpisode.number}: ${currentEpisode.title}`;
+        `الحلقة ${Number(currentEpisode.number) || 0}: ${String(currentEpisode.title || '')}`;
       
       // عرض خيارات الخوادم والجودة
       displayServerOptions();
@@ -1063,8 +1081,8 @@
         // استخدام أيقونة بدلاً من الصورة
         episodeItem.innerHTML = `
           <div class="episode-icon">EP</div>
-          <div class="episode-num">${episode.number}</div>
-          <div class="episode-item-title">${episode.title || `الحلقة ${episode.number}`}</div>
+          <div class="episode-num">${Number(episode.number) || 0}</div>
+          <div class="episode-item-title">${escapeHtml(episode.title || `الحلقة ${episode.number}`)}</div>
         `;
         
         episodesList.appendChild(episodeItem);
@@ -1074,7 +1092,7 @@
     // دالة تشغيل حلقة محددة
     function playEpisode(episodeId) {
       // تحديث URL بدون إعادة تحميل الصفحة
-      const newUrl = `${window.location.pathname}?anime=${currentAnime.id}&episode=${episodeId}`;
+      const newUrl = `${window.location.pathname}?anime=${encodeURIComponent(currentAnime.id)}&episode=${encodeURIComponent(episodeId)}`;
       window.history.replaceState({}, '', newUrl);
       
       // العثور على الحلقة المحددة
