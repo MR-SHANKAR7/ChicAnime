@@ -1130,8 +1130,8 @@ button:hover {
 
   .nav {
     width: min(86vw, 360px);
-    height: 100dvh;
     height: 100vh;
+    height: 100dvh;
     padding: max(76px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
     visibility: hidden;
     pointer-events: none;
