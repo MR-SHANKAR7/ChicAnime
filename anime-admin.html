@@ -1131,12 +1131,17 @@
             animeFilter.appendChild(option);
           });
           
+          // احسب أعداد الحلقات مرة واحدة لتحسين أداء جدول الإدارة.
+          const episodeCounts = new Map();
+          allEpisodes.forEach(ep => {
+            episodeCounts.set(ep.animeId, (episodeCounts.get(ep.animeId) || 0) + 1);
+          });
           // تعبئة جدول الأنمي
           const animeList = document.getElementById("animeList");
           animeList.innerHTML = "";
           
           allAnime.forEach(anime => {
-            const episodesCount = allEpisodes.filter(ep => ep.animeId === anime.id).length;
+            const episodesCount = episodeCounts.get(anime.id) || 0;
             
             // عرض الحالة والتصنيفات
             const statusBadge = anime.status === 'completed' ? 

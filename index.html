@@ -703,8 +703,14 @@
         return;
       }
       
+      // احسب أعداد الحلقات مرة واحدة بدل إعادة فحص القائمة لكل بطاقة.
+      const episodeCounts = new Map();
+      allEpisodes.forEach(ep => {
+        episodeCounts.set(ep.animeId, (episodeCounts.get(ep.animeId) || 0) + 1);
+      });
+
       animeList.forEach(anime => {
-        const episodesCount = allEpisodes.filter(ep => ep.animeId === anime.id).length;
+        const episodesCount = episodeCounts.get(anime.id) || 0;
         
         const animeCard = document.createElement('div');
         animeCard.className = 'anime-card';
