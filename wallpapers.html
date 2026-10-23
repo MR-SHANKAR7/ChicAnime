@@ -368,6 +368,17 @@
     }
 
     // دالة لعرض أحدث الإضافات
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[char]));
+    }
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch { return ''; }
+    }
     function renderLatestGrid(data, gridElement) {
       gridElement.innerHTML = '';
       
@@ -395,20 +406,21 @@
         
         latestItem.innerHTML = `
           <div class="latest-img-container">
-            <img src="${imageUrl}" alt="${image.title || 'خلفية أنمي'}" class="latest-img" loading="lazy">
+            <img src="${escapeHtml(safeHttpUrl(imageUrl))}" alt="${escapeHtml(image.title || 'خلفية أنمي')}" class="latest-img" loading="lazy">
             <div class="latest-overlay">
-              <button class="btn btn-primary" onclick="viewImageDetails('${image.id}')">عرض الصورة</button>
+              <button type="button" class="btn btn-primary">عرض الصورة</button>
             </div>
           </div>
           <div class="latest-content">
-            <h3 class="latest-title">${image.title || 'بدون عنوان'}</h3>
-            <p class="latest-anime">${image.anime || 'غير معروف'}</p>
+            <h3 class="latest-title">${escapeHtml(image.title || 'بدون عنوان')}</h3>
+            <p class="latest-anime">${escapeHtml(image.anime || 'غير معروف')}</p>
             <div class="latest-meta">
-              <span><i class="far fa-clock"></i> ${formattedDate}</span>
-              <span><i class="far fa-eye"></i> ${image.views || 0}</span>
+              <span><i class="far fa-clock"></i> ${escapeHtml(formattedDate)}</span>
+              <span><i class="far fa-eye"></i> ${Number(image.views) || 0}</span>
             </div>
           </div>
         `;
+        latestItem.querySelector('.btn-primary').addEventListener('click', () => viewImageDetails(image.id));
         
         gridElement.appendChild(latestItem);
       });
@@ -462,19 +474,21 @@
         
         card.innerHTML = `
           <div class="card-img">
-            <img src="${imageUrl}" alt="${image.title || 'خلفية أنمي'}" loading="lazy">
+            <img src="${escapeHtml(safeHttpUrl(imageUrl))}" alt="${escapeHtml(image.title || 'خلفية أنمي')}" loading="lazy">
           </div>
           <div class="card-content">
-            <h3>${image.title || 'بدون عنوان'}</h3>
-            <p>${image.anime || 'غير معروف'}</p>
+            <h3>${escapeHtml(image.title || 'بدون عنوان')}</h3>
+            <p>${escapeHtml(image.anime || 'غير معروف')}</p>
             <div class="card-actions">
-              <button class="btn-view" onclick="viewDetails('${image.id || index}')">عرض التفاصيل</button>
-              <button class="btn-download" onclick="downloadImage('${imageUrl}', '${image.title || 'anime_wallpaper'}')">
+              <button type="button" class="btn-view">عرض التفاصيل</button>
+              <button type="button" class="btn-download" aria-label="تحميل الصورة">
                 <i class="fas fa-download"></i>
               </button>
             </div>
           </div>
         `;
+        card.querySelector('.btn-view').addEventListener('click', () => viewDetails(image.id || index));
+        card.querySelector('.btn-download').addEventListener('click', () => downloadImage(safeHttpUrl(imageUrl), image.title || 'anime_wallpaper'));
         
         galleryElement.appendChild(card);
       });
@@ -491,15 +505,17 @@
       if (image) {
         // حفظ البيانات مؤقتاً للوصول إليها في صفحة التفاصيل
         sessionStorage.setItem('currentImage', JSON.stringify(image));
-        window.location.href = `details.html?id=${image.id || id}`;
+        window.location.href = `details.html?id=${encodeURIComponent(image.id || id)}`;
       }
     }
 
     // دالة لتحميل الصورة
     function downloadImage(url, name) {
+      const safeUrl = safeHttpUrl(url);
+      if (!safeUrl) return;
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${name.replace(/\s+/g, '_')}.jpg`;
+      a.href = safeUrl;
+      a.download = `${String(name || 'anime_image').replace(/\s+/g, '_')}.jpg`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
