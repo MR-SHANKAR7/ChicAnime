@@ -1,0 +1,171 @@
+{
+  "title": "دانزو شيمورا - Danzō Shimura",
+  "anime": "Naruto Shippuden",
+  "birthdate": "6 يناير",
+  "seasons": "Naruto Shippuden",
+  "start_date": "2007",
+  "type": "character",
+  "details": "دانزو شيمورا كان أحد كبار مستشاري كونوها وقائد فرع الجذر (Root) التابع للأنبو. اشتهر بأساليبه المتطرفة وطبيعته المتلاعبة، حيث سعى لحماية القرية عبر السيطرة والسرية واتخاذ قرارات قاسية. امتلك عدة شاريغان مزروعة في ذراعه واستخدم تقنية إيزاناغي المحرمة، مما جعله خصمًا خطيرًا. رغم أساليبه المثيرة للجدل، كان يؤمن بأنه الحامي الحقيقي لكونوها وأن أفعاله ضرورية لبقاء القرية."
+}
+
+{
+  "title": "عودة لوفي في مواجهة كايدو!",
+  "excerpt": "في الحلقة الأخيرة من One Piece، عاد لوفي لمواجهة كايدو بعد غياب طويل وسط أحداث مثيرة ومفاجآت غير متوقعة.",
+  "content": "بدأت الحلقة بظهور لوفي وهو يتعافى من إصاباته السابقة، ثم توجه لمواجهة كايدو في ساحة المعركة الكبرى. تخللت الأحداث لحظات مليئة بالتشويق مع تدخل الشخصيات الثانوية مثل زورو ونامي. وفي النهاية، تمكن لوفي من صد هجوم كايدو المفاجئ، مما أعطى لمحة عن قوة جديدة سيكتسبها في الحلقات القادمة.",
+  "category": "أخبار",
+  "tags": ["One Piece", "لوفي", "كايدو", "معركة", "أنمي"]
+}
+
+
+[
+{
+  "id": 2,
+  "title": "Nami",
+  "anime": "One Piece",
+  "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1753230160/nami_9_mtcxzc.jpg",
+  "birthdate": "3 July",
+  "seasons": "20+",
+  "start_date": "1999",
+  "type": "character",
+  "details": "Nami is the navigator of the Straw Hat Pirates in the anime One Piece. She is a brilliant cartographer and meteorologist with a deep passion for drawing a complete map of the world. Initially introduced as a thief who distrusted pirates, Nami eventually joined Luffy's crew after being freed from the control of the Arlong Pirates. Her intelligence, strategic mind, and ability to manipulate the weather in battle make her an essential part of the crew. Despite her love of money and treasure, she has a kind heart and would do anything to protect her friends."
+},
+{
+  "id": 2,
+  "title": "Nami",
+  "anime": "One Piece",
+  "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1753230158/nami_4_q9plwa.jpg",
+  "birthdate": "3 July",
+  "seasons": "20+",
+  "start_date": "1999",
+  "type": "character",
+  "details": "Nami is the navigator of the Straw Hat Pirates in the anime One Piece. She is a brilliant cartographer and meteorologist with a deep passion for drawing a complete map of the world. Initially introduced as a thief who distrusted pirates, Nami eventually joined Luffy's crew after being freed from the control of the Arlong Pirates. Her intelligence, strategic mind, and ability to manipulate the weather in battle make her an essential part of the crew. Despite her love of money and treasure, she has a kind heart and would do anything to protect her friends."
+},
+{
+  "id": 2,
+  "title": "Nami",
+  "anime": "One Piece",
+  "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1753230158/nami_8_jlpn4m.jpg",
+  "birthdate": "3 July",
+  "seasons": "20+",
+  "start_date": "1999",
+  "type": "character",
+  "details": "Nami is the navigator of the Straw Hat Pirates in the anime One Piece. She is a brilliant cartographer and meteorologist with a deep passion for drawing a complete map of the world. Initially introduced as a thief who distrusted pirates, Nami eventually joined Luffy's crew after being freed from the control of the Arlong Pirates. Her intelligence, strategic mind, and ability to manipulate the weather in battle make her an essential part of the crew. Despite her love of money and treasure, she has a kind heart and would do anything to protect her friends."
+},
+  {
+     "id": 2,
+    "title": "Naruto Sage Mode",
+    "anime": "Naruto",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1752946893/Roronoa_Zoro_31_ihgbk4.jpg",
+     "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+    "type": "wallpaper",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  },
+  {
+     "id": 3,
+    "title": "Goku Ultra Instinct",
+    "anime": "Dragon Ball Super",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/fl_preserve_transparency/v1752945064/photo_2025-07-06_12-38-50_vvi8wa.jpg",
+    "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+    "type": "character",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  },
+{
+   "id": 4,
+    "title": "Goku Ultra Instinct",
+    "anime": "Dragon Ball Super",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/fl_preserve_transparency/v1752945064/photo_2025-07-06_12-38-50_vvi8wa.jpg",
+    "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+    "type": "character",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  },
+  {
+     "id": 5,
+    "title": "Naruto Sage Mode",
+    "anime": "Naruto",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1752946893/Roronoa_Zoro_31_ihgbk4.jpg",
+     "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+    "type": "character",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  },
+
+  {
+  "id": 1,
+  "title": "Monkey D. Luffy",
+  "anime": "One Piece",
+  "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1753314307/photo_1_2025-07-15_17-17-30_bk18pv.jpg",
+  "birthdate": "5 May",
+  "seasons": "20+",
+  "start_date": "1999",
+  "type": "character",
+  "details": "Monkey D. Luffy is the cheerful and fearless captain of the Straw Hat Pirates in the anime One Piece. After eating the Gum-Gum Fruit, he gained rubber-like powers and set off on a grand adventure to become the Pirate King. Luffy is known for his unshakable will, deep loyalty to his friends, and a heart full of freedom. He often appears carefree, but he is fiercely determined when it comes to protecting his crew or chasing his dream."
+},
+
+  {
+    "title": "Naruto Sage Mode",
+    "anime": "Naruto",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1752946893/Roronoa_Zoro_31_ihgbk4.jpg",
+     "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+    "type": "character",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  },
+  {
+    "title": "Naruto Sage Mode",
+    "anime": "Naruto",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1752946893/Roronoa_Zoro_31_ihgbk4.jpg",
+     "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+    "type": "character",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  },
+  {
+    "title": "Naruto Sage Mode",
+    "anime": "Naruto",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1752946893/Roronoa_Zoro_31_ihgbk4.jpg",
+     "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+    "type": "character",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  },
+  {
+    "title": "Naruto Sage Mode",
+    "anime": "Naruto",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1752946891/Roronoa_Zoro_32_flr3or.jpg",
+     "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+     "type": "wallpaper",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  },
+  {
+    "title": "Naruto Sage Mode",
+    "anime": "Naruto",
+    "image": "https://res.cloudinary.com/dcq3dq2dq/image/upload/v1752946892/Roronoa_Zoro_30_xmnlxj.jpg",
+     "birthdate": "10 October",
+    "seasons": "10+",
+    "start_date": "2002",
+     "type": "wallpaper",
+    "details": "Naruto Uzumaki is a ninja from the Hidden Leaf Village who seeks to become Hokage."
+
+  }
+]
+

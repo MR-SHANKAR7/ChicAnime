@@ -1,0 +1,13 @@
+{
+  "name": "chicanime-automation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "update": "node index.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.4.0",
+    "google-translate-api-x": "^10.7.2",
+    "rss-parser": "^3.13.0"
+  }
+}

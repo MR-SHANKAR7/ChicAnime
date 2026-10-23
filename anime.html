@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل الأنمي | ChicAnime</title>
+  <meta name="description" content="تفاصيل الأنمي: القصة، التقييم، الإعلان الترويجي، الشخصيات والحلقات">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .anime-hero { position: relative; min-height: 320px; background: var(--bg-light) center/cover no-repeat; }
+    .anime-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-color) 0%, rgba(25,18,17,.75) 60%, rgba(25,18,17,.4) 100%); }
+    .anime-hero .container { position: relative; display: flex; gap: 30px; align-items: flex-end; padding-top: 120px; padding-bottom: 30px; flex-wrap: wrap; }
+    .anime-cover { width: 220px; border-radius: var(--border-radius); box-shadow: var(--shadow-hover); flex-shrink: 0; }
+    .anime-head { flex: 1; min-width: 260px; }
+    .anime-head h1 { font-size: 2.2rem; margin-bottom: 6px; }
+    .anime-head .en-title { color: var(--text-muted); margin-bottom: 15px; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+    .meta-chip { background: var(--card-bg); padding: 6px 14px; border-radius: 20px; font-size: .9rem; display: inline-flex; align-items: center; gap: 6px; }
+    .meta-chip.score { color: #FFD166; font-weight: 700; }
+    .meta-chip.status-ongoing { background: #2e7d32; color: #fff; }
+    .meta-chip.status-upcoming { background: #1565c0; color: #fff; }
+    .meta-chip.status-completed { background: #6d4c41; color: #fff; }
+    .genre-row a { display: inline-block; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 4px 12px; border-radius: 15px; margin: 0 0 8px 8px; font-size: .85rem; text-decoration: none; }
+    .next-ep { background: var(--primary-color); color: #fff; padding: 12px 18px; border-radius: var(--border-radius); display: inline-flex; gap: 10px; align-items: center; margin-top: 10px; font-weight: 700; }
+    .anime-body { padding: 40px 0; }
+    .anime-grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+    @media (max-width: 900px) { .anime-grid-2 { grid-template-columns: 1fr; } .anime-cover { width: 160px; } }
+    .panel { background: var(--card-bg); border-radius: var(--border-radius); padding: 20px; margin-bottom: 25px; box-shadow: var(--shadow); }
+    .panel h2 { font-size: 1.3rem; margin-bottom: 15px; color: var(--primary-color); display: flex; align-items: center; gap: 8px; }
+    .description { line-height: 1.9; white-space: pre-line; }
+    .trailer { position: relative; padding-bottom: 56.25%; height: 0; border-radius: var(--border-radius); overflow: hidden; }
+    .trailer iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .chars-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+    .char-card { text-align: center; cursor: pointer; }
+    .char-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: var(--border-radius); transition: transform .3s; }
+    .char-card:hover img { transform: scale(1.05); }
+    .char-card .name { font-size: .85rem; margin-top: 6px; font-weight: 600; }
+    .char-card .role { font-size: .75rem; color: var(--text-muted); }
+    .ep-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; max-height: 620px; overflow-y: auto; padding-left: 5px; }
+    .ep-card { display: flex; gap: 10px; background: var(--bg-light); border-radius: var(--border-radius); overflow: hidden; text-decoration: none; color: inherit; transition: background .3s; }
+    .ep-card:hover { background: var(--primary-color); color: #fff; }
+    .ep-card img { width: 90px; height: 60px; object-fit: cover; flex-shrink: 0; }
+    .ep-card .ep-info { padding: 6px 8px 6px 0; font-size: .85rem; overflow: hidden; }
+    .ep-card .ep-num { font-weight: 700; }
+    .ep-card .ep-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: .85; }
+    .info-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .info-list li span:last-child { color: var(--text-muted); text-align: left; }
+    .empty { color: var(--text-muted); text-align: center; padding: 20px; }
+    .error-box { text-align: center; padding: 120px 20px; }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- زر القائمة للجوال -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <header class="header">
+    <a href="index.html">
+    <div class="container header-container">
+      <div class="logo">
+        <i class="fas fa-dragon"></i>
+        <span>ChicAnime</span>
+      </div>
+      </a>
+      <!-- شريط البحث -->
+      <div class="search-container">
+        <input type="text" id="search-bar" placeholder="ابحث عن أنمي...">
+        <button class="search-btn" onclick="goSearch()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      
+      <nav class="nav" id="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link active"><i class="fas fa-home"></i> الرئيسية</a></li>
+          <li><a href="news.html" class="nav-link "><i class="fas fa-newspaper"></i> أخبار الأنمي</a></li>
+           <li><a href="characters.html" class="nav-link"><i class="fas fa-user"></i> الشخصيات</a></li>
+          <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image"></i> الخلفيات</a></li>
+          <li><a href="season.html" class="nav-link"><i class="fas fa-calendar-alt"></i> الموسم</a></li>
+          <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> عن الموقع</a></li>
+          <!-- <li><a href="anime-admin.html" class="nav-link admin-link"><i class="fas fa-cog"></i> الإدارة</a></li> -->
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="anime-hero" id="animeHero">
+    <div class="container">
+      <img class="anime-cover" id="cover" src="" alt="">
+      <div class="anime-head">
+        <h1 id="title">...</h1>
+        <div class="en-title" id="enTitle"></div>
+        <div class="meta-row" id="metaRow"></div>
+        <div class="genre-row" id="genres"></div>
+        <div id="nextEp"></div>
+        <div id="followBox" style="margin-top:15px"></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="anime-body">
+    <div class="container">
+      <div class="anime-grid-2">
+        <div>
+          <div class="panel">
+            <h2><i class="fas fa-align-right"></i> القصة</h2>
+            <p class="description" id="description">جاري التحميل...</p>
+          </div>
+          <div class="panel" id="trailerPanel" style="display:none">
+            <h2><i class="fab fa-youtube"></i> الإعلان الترويجي</h2>
+            <div class="trailer"><iframe id="trailerFrame" src="" allowfullscreen allow="accelerometer; autoplay; encrypted-media; picture-in-picture"></iframe></div>
+          </div>
+          <div class="panel">
+            <h2><i class="fas fa-list-ol"></i> الحلقات <span id="epCount" style="font-size:.9rem;color:var(--text-muted)"></span></h2>
+            <div class="ep-list" id="episodes"><div class="empty">جاري التحميل...</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <h2><i class="fas fa-info-circle"></i> معلومات</h2>
+            <ul class="info-list" id="infoList"></ul>
+          </div>
+          <div class="panel">
+            <h2><i class="fas fa-users"></i> الشخصيات</h2>
+            <div class="chars-grid" id="characters"><div class="empty">جاري التحميل...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <button class="floating-btn scroll-top" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="logo">
+            <i class="fas fa-dragon"></i>
+            <span>ChicAnime</span>
+          </div>
+          <p>منصة متخصصة لعرض ومشاهدة أفضل مقاطع الأنمي مجاناً وبجودة عالية.</p>
+          <div class="social-links">
+            <a href="https://web.facebook.com/profile.php?id=61580828810174"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/ChicAnimeX"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/chicanimee/"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/channel/UCQudfTcDpWPJSorRM_f9dcw"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>روابط سريعة</h3>
+          <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="wallpapers.html">الخلفيات</a></li>
+            <li><a href="characters.html">الشخصيات</a></li>
+            <li><a href="news.html">الأخبار</a></li>
+            <li><a href="about.html">عن الموقع</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>أنمي شائع</h3>
+          <ul>
+            <li><a href="#" onclick="setFilter('ون بيس')">ون بيس</a></li>
+            <li><a href="#" onclick="setFilter('ناروتو')">ناروتو</a></li>
+            <li><a href="#" onclick="setFilter('أتاك على تيتان')">أتاك على تيتان</a></li>
+            <li><a href="#" onclick="setFilter('بليتش')">بليتش</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>معلومات التواصل</h3>
+          <ul>
+            <li><i class="fas fa-envelope"></i> info@anime-studio.com</li>
+            <li><i class="fas fa-phone"></i> +212624280501</li>
+            <li><i class="fas fa-map-marker-alt"></i>المغرب MARCO</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة &copy; 2025 - ChicAnime</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="js/firebase-apps.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function hideLoading() { const l = document.getElementById('loadingScreen'); if (l) l.style.display = 'none'; }
+    function goSearch() {
+      const q = document.getElementById('search-bar').value.trim();
+      if (q) location.href = `index.html?search=${encodeURIComponent(q)}`;
+    }
+    const animeId = new URLSearchParams(location.search).get('id');
+    const STATUS_AR = { ongoing: 'مستمر', completed: 'مكتمل', upcoming: 'قريباً' };
+    const esc = (s = '') => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    function safeHttpUrl(value) {
+      try { const url = new URL(String(value || ''), window.location.href); return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : ''; }
+      catch { return ''; }
+    }
+
+    if (!animeId) {
+      document.querySelector('main .container').innerHTML = '<div class="error-box"><h2>لم يتم تحديد الأنمي</h2><a class="btn btn-primary" href="index.html">العودة للرئيسية</a></div>';
+    } else {
+      videosDb.ref('anime/' + animeId).once('value').then(snap => {
+        if (!snap.exists()) throw new Error('not found');
+        const a = { id: snap.key, ...snap.val() };
+        renderAnime(a);
+        hideLoading();
+        return Promise.all([
+          videosDb.ref('episodes').orderByChild('animeId').equalTo(animeId).once('value').then(snapToList),
+          galleryDb.ref('images').once('value').then(snapToList).then(list => list.filter(c => c.type === 'character' && (c.animeId === animeId || (c.anime || '').toLowerCase() === (a.title || '').toLowerCase()))),
+        ]).then(([episodes, characters]) => { renderEpisodes(a, episodes); renderCharacters(characters); });
+      }).catch(() => {
+        hideLoading();
+        document.querySelector('main .container').innerHTML = '<div class="error-box"><h2>الأنمي غير موجود</h2><a class="btn btn-primary" href="index.html">العودة للرئيسية</a></div>';
+      });
+    }
+
+    function renderAnime(a) {
+      document.title = `${a.title_ar || a.title} | ChicAnime`;
+      const hero = document.getElementById('animeHero');
+      const bannerUrl = safeHttpUrl(a.banner);
+      hero.style.backgroundImage = bannerUrl ? `url("${bannerUrl}")` : '';
+      document.getElementById('cover').src = safeHttpUrl(a.thumbnail);
+      document.getElementById('cover').alt = a.title;
+      document.getElementById('title').textContent = a.title_ar || a.title;
+      document.getElementById('enTitle').textContent = a.title_ar ? a.title : (a.titleRomaji || '');
+      document.getElementById('description').textContent = a.description || 'لا يوجد وصف متاح.';
+      document.getElementById('followBox').innerHTML = ChicFollow.button(a.id, { title: a.title_ar || a.title, thumbnail: a.thumbnail }, 'with-text');
+      ChicFollow.paintAll();
+
+      const chips = [];
+      if (a.score) chips.push(`<span class="meta-chip score"><i class="fas fa-star"></i> ${(a.score / 10).toFixed(1)} / 10</span>`);
+      const safeStatus = ['completed', 'upcoming', 'ongoing'].includes(a.status) ? a.status : 'ongoing';
+      chips.push(`<span class="meta-chip status-${safeStatus}">${STATUS_AR[safeStatus] || 'مستمر'}</span>`);
+      if (a.format) chips.push(`<span class="meta-chip"><i class="fas fa-tv"></i> ${esc(a.format)}</span>`);
+      if (a.season) chips.push(`<span class="meta-chip"><i class="fas fa-calendar-alt"></i> ${esc(a.season)}</span>`);
+      if (a.episodesTotal) chips.push(`<span class="meta-chip"><i class="fas fa-film"></i> ${a.episodesTotal} حلقة</span>`);
+      document.getElementById('metaRow').innerHTML = chips.join('');
+
+      const genres = Array.isArray(a.category) ? a.category : String(a.category || '').split(',').filter(Boolean);
+      document.getElementById('genres').innerHTML = genres.map(g => `<a href="index.html?filter=${encodeURIComponent(g)}">${esc(g)}</a>`).join('');
+
+      if (a.nextAiring && a.nextAiring.airingAt > Date.now()) {
+        const el = document.getElementById('nextEp');
+        const tick = () => { el.textContent = `الحلقة ${Number(a.nextAiring.episode) || 0} ${countdown(a.nextAiring.airingAt)}`; };
+        tick(); setInterval(tick, 30000);
+      }
+
+      if (typeof a.trailer === 'string' && /^[\w-]{11}$/.test(a.trailer)) {
+        document.getElementById('trailerPanel').style.display = 'block';
+        document.getElementById('trailerFrame').src = `https://www.youtube-nocookie.com/embed/${a.trailer}`;
+      }
+
+      const info = [
+        ['الاسم الأصلي', a.titleRomaji], ['الاستوديو', a.studio], ['النوع', a.format], ['الموسم', a.season],
+        ['تاريخ البدء', a.startDate], ['عدد الحلقات', a.episodesTotal], ['الحالة', STATUS_AR[a.status]],
+        ['الشعبية', a.popularity ? a.popularity.toLocaleString('ar-MA') + ' متابع' : ''],
+      ].filter(([, v]) => v);
+      document.getElementById('infoList').innerHTML = info.map(([k, v]) => `<li><span>${k}</span><span>${esc(v)}</span></li>`).join('');
+    }
+
+    function renderEpisodes(a, episodes) {
+      episodes.sort((x, y) => (y.number || 0) - (x.number || 0));
+      document.getElementById('epCount').textContent = episodes.length ? `(${episodes.length})` : '';
+      const box = document.getElementById('episodes');
+      if (!episodes.length) {
+        box.innerHTML = `<div class="empty">${a.status === 'upcoming' ? 'لم يبدأ عرض هذا الأنمي بعد.' : 'لا توجد حلقات متاحة حالياً.'}</div>`;
+        return;
+      }
+      box.innerHTML = episodes.map(ep => `
+        <a class="ep-card" href="watch.html?anime=${encodeURIComponent(a.id)}&episode=${encodeURIComponent(ep.id)}">
+          <img src="${esc(safeHttpUrl(ep.thumbnail || a.thumbnail))}" alt="" loading="lazy">
+          <div class="ep-info">
+            <div class="ep-num">الحلقة ${ep.number}</div>
+            <div class="ep-title" title="${esc(ep.title)}">${esc(ep.title || '')}</div>
+          </div>
+        </a>`).join('');
+    }
+
+    function renderCharacters(chars) {
+      const box = document.getElementById('characters');
+      if (!chars.length) { box.innerHTML = '<div class="empty">لا توجد شخصيات مضافة بعد.</div>'; return; }
+      const order = { 'رئيسية': 0, 'مساندة': 1 };
+      chars.sort((x, y) => (order[x.role] ?? 2) - (order[y.role] ?? 2));
+      box.innerHTML = chars.slice(0, 12).map(c => `
+        <div class="char-card" data-image-id="${esc(c.id)}" tabindex="0" role="link">
+          <img src="${esc(safeHttpUrl(c.image))}" alt="${esc(c.title)}" loading="lazy">
+          <div class="name">${esc((c.title || '').split(' - ')[0])}</div>
+          ${c.role ? `<div class="role">${esc(c.role)}</div>` : ''}
+        </div>`).join('');
+      box.querySelectorAll('.char-card[data-image-id]').forEach(card => {
+        const openDetails = () => { window.location.href = `details.html?id=${encodeURIComponent(card.dataset.imageId)}`; };
+        card.addEventListener('click', openDetails);
+        card.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDetails(); } });
+      });
+    }
+
+    function countdown(at) {
+      const diff = at - Date.now();
+      if (diff <= 0) return 'صدرت الآن';
+      const d = Math.floor(diff / 86400000), h = Math.floor(diff % 86400000 / 3600000), m = Math.floor(diff % 3600000 / 60000);
+      if (d > 0) return `بعد ${d} يوم و ${h} ساعة`;
+      if (h > 0) return `بعد ${h} ساعة و ${m} دقيقة`;
+      return `بعد ${m} دقيقة`;
+    }
+  </script>
+  <script src="js/follow.js"></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>موسم الأنمي | ChicAnime</title>
+  <meta name="description" content="أنميات الموسم الحالي والقادم مع التقييمات ومواعيد الحلقات">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/ChicAnime.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .season-hero { padding: 140px 0 40px; text-align: center; background: var(--bg-light); }
+    .season-hero h1 { font-size: 2.4rem; margin-bottom: 8px; }
+    .season-hero p { color: var(--text-muted); }
+    .tabs { display: flex; justify-content: center; gap: 12px; margin: 30px 0; flex-wrap: wrap; }
+    .tab { background: var(--card-bg); border: 1px solid transparent; color: inherit; padding: 10px 22px; border-radius: 25px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all .3s; }
+    .tab.active, .tab:hover { background: var(--primary-color); color: #fff; }
+    .sort-row { display: flex; justify-content: flex-end; margin-bottom: 15px; gap: 10px; align-items: center; color: var(--text-muted); }
+    .sort-row select { background: var(--card-bg); color: inherit; border: 1px solid var(--card-bg); border-radius: 8px; padding: 6px 10px; font-family: inherit; }
+    .s-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; padding-bottom: 50px; }
+    .s-card { background: var(--card-bg); border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; transition: transform .3s; position: relative; }
+    .s-card:hover { transform: translateY(-5px); }
+    .s-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
+    .s-card .s-body { padding: 10px 12px 14px; }
+    .s-card .s-title { font-weight: 700; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .s-card .s-meta { font-size: .8rem; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; }
+    .s-card .s-next { font-size: .8rem; color: var(--primary-color); margin-top: 6px; font-weight: 600; }
+    .s-score { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,.75); color: #FFD166; font-weight: 700; font-size: .8rem; padding: 3px 8px; border-radius: 12px; }
+    .s-studio { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.6); color: #fff; font-size: .7rem; padding: 3px 8px; border-radius: 12px; max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .empty { grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px; }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- زر القائمة للجوال -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="فتح القائمة" aria-controls="nav" aria-expanded="false">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo-link" aria-label="ChicAnime - الرئيسية">
+        <div class="logo"><i class="fas fa-dragon" aria-hidden="true"></i><span>ChicAnime</span></div>
+      </a>
+      <div class="search-container" role="search">
+        <input type="search" id="search-bar" placeholder="ابحث عن أنمي الموسم..." aria-label="ابحث عن أنمي الموسم..." autocomplete="off">
+        <button class="search-btn" id="searchButton" type="button" aria-label="تنفيذ البحث" onclick="goSearch()"><i class="fas fa-search" aria-hidden="true"></i></button>
+      </div>
+      <nav class="nav" id="nav" aria-label="القائمة الرئيسية">
+        <ul class="nav-list">
+            <li><a href="index.html" class="nav-link"><i class="fas fa-home" aria-hidden="true"></i> الرئيسية</a></li>
+            <li><a href="news.html" class="nav-link"><i class="fas fa-newspaper" aria-hidden="true"></i> أخبار الأنمي</a></li>
+            <li><a href="characters.html" class="nav-link"><i class="fas fa-user" aria-hidden="true"></i> الشخصيات</a></li>
+            <li><a href="wallpapers.html" class="nav-link"><i class="fas fa-image" aria-hidden="true"></i> الخلفيات</a></li>
+            <li><a href="season.html" class="nav-link active" aria-current="page"><i class="fas fa-calendar-alt" aria-hidden="true"></i> الموسم</a></li>
+            <li><a href="about.html" class="nav-link"><i class="fas fa-info-circle" aria-hidden="true"></i> عن الموقع</a></li>
+            <li><a href="episodes.html" class="nav-link"><i class="fas fa-play-circle" aria-hidden="true"></i> أحدث الحلقات</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="season-hero">
+    <div class="container">
+      <h1 id="seasonTitle">موسم الأنمي</h1>
+      <p>كل أنميات الموسم في مكان واحد، تتحدث تلقائياً</p>
+    </div>
+  </section>
+  <main>
+    <div class="container">
+      <div class="tabs">
+        <button class="tab active" data-tab="current">الموسم الحالي</button>
+        <button class="tab" data-tab="next">الموسم القادم</button>
+        <button class="tab" data-tab="airing">يُعرض حالياً</button>
+        <button class="tab" data-tab="top">الأعلى تقييماً</button>
+      </div>
+      <div class="sort-row">
+        <label for="sort">ترتيب حسب</label>
+        <select id="sort">
+          <option value="popularity">الشعبية</option>
+          <option value="score">التقييم</option>
+          <option value="next">أقرب حلقة</option>
+          <option value="title">الاسم</option>
+        </select>
+      </div>
+      <div class="s-grid" id="grid"><div class="empty">جاري التحميل...</div></div>
+    </div>
+  </main>
+  <button class="floating-btn scroll-top" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="logo">
+            <i class="fas fa-dragon"></i>
+            <span>ChicAnime</span>
+          </div>
+          <p>منصة متخصصة لعرض ومشاهدة أفضل مقاطع الأنمي مجاناً وبجودة عالية.</p>
+          <div class="social-links">
+            <a href="https://web.facebook.com/profile.php?id=61580828810174"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/ChicAnimeX"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/chicanimee/"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/channel/UCQudfTcDpWPJSorRM_f9dcw"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h3>روابط سريعة</h3>
+          <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="wallpapers.html">الخلفيات</a></li>
+            <li><a href="characters.html">الشخصيات</a></li>
+            <li><a href="news.html">الأخبار</a></li>
+            <li><a href="about.html">عن الموقع</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>أنمي شائع</h3>
+          <ul>
+            <li><a href="#" onclick="setFilter('ون بيس')">ون بيس</a></li>
+            <li><a href="#" onclick="setFilter('ناروتو')">ناروتو</a></li>
+            <li><a href="#" onclick="setFilter('أتاك على تيتان')">أتاك على تيتان</a></li>
+            <li><a href="#" onclick="setFilter('بليتش')">بليتش</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>معلومات التواصل</h3>
+          <ul>
+            <li><i class="fas fa-envelope"></i> info@anime-studio.com</li>
+            <li><i class="fas fa-phone"></i> +212624280501</li>
+            <li><i class="fas fa-map-marker-alt"></i>المغرب MARCO</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>جميع الحقوق محفوظة &copy; 2025 - ChicAnime</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="js/firebase-apps.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function hideLoading() { const l = document.getElementById('loadingScreen'); if (l) l.style.display = 'none'; }
+    function goSearch() {
+      const q = document.getElementById('search-bar').value.trim();
+      if (q) location.href = `index.html?search=${encodeURIComponent(q)}`;
+    }
+    const SEASON_AR = { WINTER: 'شتاء', SPRING: 'ربيع', SUMMER: 'صيف', FALL: 'خريف' };
+    const ORDER = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
+    const esc = (s = '') => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    function safeHttpUrl(value) {
+      try { const url = new URL(String(value || ''), window.location.href); return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : ''; }
+      catch { return ''; }
+    }
+
+    function seasonOf(date) {
+      const season = ORDER[Math.floor(date.getMonth() / 3)];
+      const year = date.getFullYear();
+      const ni = (ORDER.indexOf(season) + 1) % 4;
+      return { key: `${year}-${season}`, label: `${SEASON_AR[season]} ${year}`, nextKey: `${ni === 0 ? year + 1 : year}-${ORDER[ni]}`, nextLabel: `${SEASON_AR[ORDER[ni]]} ${ni === 0 ? year + 1 : year}` };
+    }
+    const S = seasonOf(new Date());
+    let all = [], tab = 'current';
+
+    document.getElementById('seasonTitle').textContent = `موسم ${S.label}`;
+
+    videosDb.ref('anime').once('value').then(snap => {
+      all = snapToList(snap);
+        hideLoading();
+      render();
+    });
+
+    document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      b.classList.add('active'); tab = b.dataset.tab;
+      document.getElementById('seasonTitle').textContent = tab === 'next' ? `القادم: ${S.nextLabel}` : tab === 'current' ? `موسم ${S.label}` : b.textContent;
+      render();
+    }));
+    document.getElementById('sort').addEventListener('change', render);
+
+    function render() {
+      let list = all.filter(a => {
+        if (tab === 'current') return a.seasonKey === S.key;
+        if (tab === 'next') return a.seasonKey === S.nextKey || a.status === 'upcoming';
+        if (tab === 'airing') return a.status === 'ongoing' && a.nextAiring;
+        return a.score >= 80;
+      });
+      const sort = document.getElementById('sort').value;
+      list.sort((x, y) => {
+        if (sort === 'score') return (y.score || 0) - (x.score || 0);
+        if (sort === 'next') return ((x.nextAiring && x.nextAiring.airingAt) || Infinity) - ((y.nextAiring && y.nextAiring.airingAt) || Infinity);
+        if (sort === 'title') return (x.title_ar || x.title).localeCompare(y.title_ar || y.title, 'ar');
+        return (y.popularity || 0) - (x.popularity || 0);
+      });
+      const grid = document.getElementById('grid');
+      if (!list.length) { grid.innerHTML = '<div class="empty">لا توجد أنميات في هذا القسم بعد، تتحدث القائمة تلقائياً.</div>'; return; }
+      grid.innerHTML = list.map(a => `
+        <div class="s-card" data-anime-id="${esc(a.id)}" tabindex="0" role="link">
+          <img src="${esc(safeHttpUrl(a.thumbnail))}" alt="${esc(a.title)}" loading="lazy">
+          ${a.score ? `<span class="s-score"><i class="fas fa-star"></i> ${(Number(a.score) / 10).toFixed(1)}</span>` : ''}
+          ${a.studio ? `<span class="s-studio">${esc(a.studio)}</span>` : ''}
+          <div class="s-body">
+            <div class="s-title" title="${esc(a.title)}">${esc(a.title_ar || a.title)}</div>
+            <div class="s-meta"><span>${esc(a.format || '')}</span><span>${Number(a.episodesTotal) ? Number(a.episodesTotal) + ' حلقة' : (a.status === 'upcoming' ? 'قريباً' : '')}</span></div>
+            ${a.nextAiring && a.nextAiring.airingAt > Date.now() ? `<div class="s-next"><i class="fas fa-clock"></i> الحلقة ${Number(a.nextAiring.episode) || 0} ${countdown(a.nextAiring.airingAt)}</div>` : (a.startDate && a.status === 'upcoming' ? `<div class="s-next"><i class="fas fa-calendar"></i> ${esc(a.startDate)}</div>` : '')}
+          </div>
+        </div>`).join('');
+      grid.querySelectorAll('.s-card[data-anime-id]').forEach(card => {
+        const openAnime = () => { window.location.href = `anime.html?id=${encodeURIComponent(card.dataset.animeId)}`; };
+        card.addEventListener('click', openAnime);
+        card.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openAnime(); } });
+      });
+    }
+
+    function countdown(at) {
+      const diff = at - Date.now();
+      if (diff <= 0) return 'صدرت الآن';
+      const d = Math.floor(diff / 86400000), h = Math.floor(diff % 86400000 / 3600000);
+      return d > 0 ? `بعد ${d} يوم` : `بعد ${h} ساعة`;
+    }
+  </script>
+  <script src="js/follow.js"></script>
+
+  <script>
+    (function () {
+      const searchInput = document.getElementById('search-bar');
+      const searchButton = document.getElementById('searchButton');
+      if (searchInput && searchButton) {
+        searchInput.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter') { event.preventDefault(); searchButton.click(); }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

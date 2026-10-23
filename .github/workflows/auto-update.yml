@@ -1,0 +1,87 @@
+name: تحديث المحتوى تلقائيًا
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"   # كل 6 ساعات (دقيقة غير مزدحمة لتقليل تأخير GitHub)
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: "المهام: news,catalog,anime-characters,characters,wallpapers,digest"
+        default: "news,catalog,anime-characters,characters,wallpapers,digest"
+        required: false
+
+concurrency:
+  group: auto-update
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: automation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: automation/package-lock.json
+      - run: npm ci
+
+      - name: تشغيل التحديث
+        id: update
+        run: npm run update 2>&1 | tee update.log
+        shell: bash -o pipefail {0}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_SERVICE_ACCOUNT_VIDEOS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_VIDEOS }}
+          JOBS: ${{ inputs.jobs || 'news,catalog,anime-characters,characters,wallpapers,digest' }}
+          NEWS_PER_RUN: "5"
+          CHARACTERS_PER_RUN: "6"
+          WALLPAPERS_PER_RUN: "6"
+          CATALOG_SIZE: "150"
+          NEW_ANIME_PER_RUN: "25"
+          ANIME_CHARACTERS_PER_RUN: "5"
+
+      # ===== مراقبة الأخطاء =====
+      - name: فتح Issue عند الفشل
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          TAIL=$(tail -n 60 update.log 2>/dev/null || echo "لا يوجد سجل")
+          BODY=$(printf 'فشل التحديث التلقائي للمحتوى.\n\n**التشغيل:** %s\n**الوقت:** %s\n\n<details><summary>آخر سطور السجل</summary>\n\n```\n%s\n```\n</details>\n\nسيُغلق هذا التقرير تلقائيًا عند نجاح التشغيل التالي.' "$RUN_URL" "$(date -u +'%Y-%m-%d %H:%M UTC')" "$TAIL")
+          EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --label auto-update-failure --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --repo "$GITHUB_REPOSITORY" --body "$BODY"
+          else
+            gh label create auto-update-failure --repo "$GITHUB_REPOSITORY" --color B60205 --description "فشل التحديث التلقائي" --force
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "⚠️ فشل التحديث التلقائي للمحتوى" --label auto-update-failure --body "$BODY"
+          fi
+
+      - name: تنبيه Telegram عند الفشل (اختياري)
+        if: failure() && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" -d parse_mode=HTML \
+            --data-urlencode text="⚠️ <b>ChicAnime</b>: فشل التحديث التلقائي للمحتوى.%0A${RUN_URL}" > /dev/null
+
+      - name: إغلاق تقارير الفشل السابقة عند النجاح
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for n in $(gh issue list --repo "$GITHUB_REPOSITORY" --label auto-update-failure --state open --json number --jq '.[].number'); do
+            gh issue close "$n" --repo "$GITHUB_REPOSITORY" --comment "عاد التحديث التلقائي للعمل بنجاح ✅"
+          done
