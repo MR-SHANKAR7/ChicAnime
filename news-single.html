@@ -603,6 +603,17 @@
     }
     
     // تحديث تفاصيل الخبر في الصفحة
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[char]));
+    }
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch { return ''; }
+    }
     function updateNewsDetails(news) {
       document.getElementById('newsTitle').textContent = news.title || 'بدون عنوان';
       document.getElementById('newsDate').textContent = formatDate(news.date);
@@ -612,7 +623,7 @@
       // معالجة صورة الخبر
       const newsImage = document.getElementById('newsImage');
       if (news.imageUrl) {
-        newsImage.src = news.imageUrl;
+        newsImage.src = safeHttpUrl(news.imageUrl) || 'https://via.placeholder.com/900x400/6a55fa/ffffff?text=صورة+غير+متوفرة';
         newsImage.alt = news.title || 'صورة الخبر';
       } else {
         newsImage.src = 'https://via.placeholder.com/900x400/6a55fa/ffffff?text=صورة+غير+متوفرة';
@@ -620,12 +631,13 @@
       
       // معالجة محتوى الخبر
       const newsContent = document.getElementById('newsContent');
-      if (news.content) {
-        newsContent.innerHTML = news.content;
-      } else if (news.excerpt) {
-        newsContent.innerHTML = `<p>${news.excerpt}</p>`;
+      if (news.content || news.excerpt) {
+        const paragraph = document.createElement('p');
+        paragraph.textContent = news.content || news.excerpt;
+        paragraph.style.whiteSpace = 'pre-line';
+        newsContent.replaceChildren(paragraph);
       } else {
-        newsContent.innerHTML = '<p>لا يوجد محتوى متاح لهذا الخبر.</p>';
+        newsContent.textContent = 'لا يوجد محتوى متاح لهذا الخبر.';
       }
       
       // تحديث الكلمات المفتاحية
@@ -716,20 +728,25 @@
           
           relatedNews.forEach(news => {
             const newsCard = document.createElement('a');
-            newsCard.href = `news-single.html?id=${news.id}`;
+            newsCard.href = `news-single.html?id=${encodeURIComponent(news.id)}`;
             newsCard.className = 'related-news-card';
-            
-            const imageUrl = news.imageUrl || 'https://via.placeholder.com/400x200/6a55fa/ffffff?text=صورة+غير+متوفرة';
-            
-            newsCard.innerHTML = `
-              <div class="related-news-thumb">
-                <img src="${imageUrl}" alt="${news.title}" onerror="this.src='https://via.placeholder.com/400x200/6a55fa/ffffff?text=صورة+غير+متوفرة'">
-              </div>
-              <div class="related-news-content">
-                <h3 class="related-news-title">${news.title}</h3>
-                <div class="related-news-date">${formatDate(news.date)}</div>
-              </div>
-            `;
+            const thumb = document.createElement('div');
+            thumb.className = 'related-news-thumb';
+            const image = document.createElement('img');
+            image.src = safeHttpUrl(news.imageUrl) || 'https://via.placeholder.com/400x200/6a55fa/ffffff?text=صورة+غير+متوفرة';
+            image.alt = news.title || '';
+            image.onerror = () => { image.onerror = null; image.src = 'https://via.placeholder.com/400x200/6a55fa/ffffff?text=صورة+غير+متوفرة'; };
+            thumb.appendChild(image);
+            const content = document.createElement('div');
+            content.className = 'related-news-content';
+            const title = document.createElement('h3');
+            title.className = 'related-news-title';
+            title.textContent = news.title || 'بدون عنوان';
+            const date = document.createElement('div');
+            date.className = 'related-news-date';
+            date.textContent = formatDate(news.date);
+            content.append(title, date);
+            newsCard.append(thumb, content);
             
             relatedNewsContainer.appendChild(newsCard);
           });
@@ -777,13 +794,21 @@
     
     // عرض رسالة الخطأ
     function showError(message) {
-      document.querySelector('.news-single-container').innerHTML = `
-        <div class="no-results">
-          <h2>حدث خطأ</h2>
-          <p>${message}</p>
-          <a href="news.html" class="btn btn-primary" style="margin-top: 20px;">العودة إلى الأخبار</a>
-        </div>
-      `;
+      const container = document.querySelector('.news-single-container');
+      container.textContent = '';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'no-results';
+      const heading = document.createElement('h2');
+      heading.textContent = 'حدث خطأ';
+      const paragraph = document.createElement('p');
+      paragraph.textContent = message;
+      const link = document.createElement('a');
+      link.href = 'news.html';
+      link.className = 'btn btn-primary';
+      link.style.marginTop = '20px';
+      link.textContent = 'العودة إلى الأخبار';
+      wrapper.append(heading, paragraph, link);
+      container.appendChild(wrapper);
       hideLoadingScreen();
     }
     
