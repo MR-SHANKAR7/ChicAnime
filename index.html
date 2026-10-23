@@ -796,7 +796,7 @@
       for (const key of keys) {
         const value = episode && episode[key];
         if (value === undefined || value === null || value === '') continue;
-        if (typeof value === 'number' || /^\\d+$/.test(String(value))) {
+        if (typeof value === 'number' || /^[0-9]+$/.test(String(value))) {
           const numeric = Number(value);
           if (!Number.isFinite(numeric) || numeric <= 0) continue;
           return numeric < 100000000000 ? numeric * 1000 : numeric;
