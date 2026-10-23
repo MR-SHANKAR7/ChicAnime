@@ -215,7 +215,11 @@
     }
     const animeId = new URLSearchParams(location.search).get('id');
     const STATUS_AR = { ongoing: 'مستمر', completed: 'مكتمل', upcoming: 'قريباً' };
-    const esc = (s = '') => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const esc = (s = '') => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    function safeHttpUrl(value) {
+      try { const url = new URL(String(value || ''), window.location.href); return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : ''; }
+      catch { return ''; }
+    }
 
     if (!animeId) {
       document.querySelector('main .container').innerHTML = '<div class="error-box"><h2>لم يتم تحديد الأنمي</h2><a class="btn btn-primary" href="index.html">العودة للرئيسية</a></div>';
@@ -238,8 +242,9 @@
     function renderAnime(a) {
       document.title = `${a.title_ar || a.title} | ChicAnime`;
       const hero = document.getElementById('animeHero');
-      if (a.banner) hero.style.backgroundImage = `url('${a.banner}')`;
-      document.getElementById('cover').src = a.thumbnail || '';
+      const bannerUrl = safeHttpUrl(a.banner);
+      hero.style.backgroundImage = bannerUrl ? `url("${bannerUrl}")` : '';
+      document.getElementById('cover').src = safeHttpUrl(a.thumbnail);
       document.getElementById('cover').alt = a.title;
       document.getElementById('title').textContent = a.title_ar || a.title;
       document.getElementById('enTitle').textContent = a.title_ar ? a.title : (a.titleRomaji || '');
@@ -249,7 +254,8 @@
 
       const chips = [];
       if (a.score) chips.push(`<span class="meta-chip score"><i class="fas fa-star"></i> ${(a.score / 10).toFixed(1)} / 10</span>`);
-      chips.push(`<span class="meta-chip status-${a.status || 'ongoing'}">${STATUS_AR[a.status] || 'مستمر'}</span>`);
+      const safeStatus = ['completed', 'upcoming', 'ongoing'].includes(a.status) ? a.status : 'ongoing';
+      chips.push(`<span class="meta-chip status-${safeStatus}">${STATUS_AR[safeStatus] || 'مستمر'}</span>`);
       if (a.format) chips.push(`<span class="meta-chip"><i class="fas fa-tv"></i> ${esc(a.format)}</span>`);
       if (a.season) chips.push(`<span class="meta-chip"><i class="fas fa-calendar-alt"></i> ${esc(a.season)}</span>`);
       if (a.episodesTotal) chips.push(`<span class="meta-chip"><i class="fas fa-film"></i> ${a.episodesTotal} حلقة</span>`);
@@ -260,11 +266,11 @@
 
       if (a.nextAiring && a.nextAiring.airingAt > Date.now()) {
         const el = document.getElementById('nextEp');
-        const tick = () => { el.innerHTML = `<div class="next-ep"><i class="fas fa-clock"></i> الحلقة ${a.nextAiring.episode} ${countdown(a.nextAiring.airingAt)}</div>`; };
+        const tick = () => { el.textContent = `الحلقة ${Number(a.nextAiring.episode) || 0} ${countdown(a.nextAiring.airingAt)}`; };
         tick(); setInterval(tick, 30000);
       }
 
-      if (a.trailer) {
+      if (typeof a.trailer === 'string' && /^[\w-]{11}$/.test(a.trailer)) {
         document.getElementById('trailerPanel').style.display = 'block';
         document.getElementById('trailerFrame').src = `https://www.youtube-nocookie.com/embed/${a.trailer}`;
       }
@@ -286,8 +292,8 @@
         return;
       }
       box.innerHTML = episodes.map(ep => `
-        <a class="ep-card" href="watch.html?anime=${a.id}&episode=${ep.id}">
-          <img src="${ep.thumbnail || a.thumbnail}" alt="" loading="lazy">
+        <a class="ep-card" href="watch.html?anime=${encodeURIComponent(a.id)}&episode=${encodeURIComponent(ep.id)}">
+          <img src="${esc(safeHttpUrl(ep.thumbnail || a.thumbnail))}" alt="" loading="lazy">
           <div class="ep-info">
             <div class="ep-num">الحلقة ${ep.number}</div>
             <div class="ep-title" title="${esc(ep.title)}">${esc(ep.title || '')}</div>
@@ -301,11 +307,16 @@
       const order = { 'رئيسية': 0, 'مساندة': 1 };
       chars.sort((x, y) => (order[x.role] ?? 2) - (order[y.role] ?? 2));
       box.innerHTML = chars.slice(0, 12).map(c => `
-        <div class="char-card" onclick="location.href='details.html?id=${c.id}'">
-          <img src="${c.image}" alt="${esc(c.title)}" loading="lazy">
+        <div class="char-card" data-image-id="${esc(c.id)}" tabindex="0" role="link">
+          <img src="${esc(safeHttpUrl(c.image))}" alt="${esc(c.title)}" loading="lazy">
           <div class="name">${esc((c.title || '').split(' - ')[0])}</div>
-          ${c.role ? `<div class="role">${c.role}</div>` : ''}
+          ${c.role ? `<div class="role">${esc(c.role)}</div>` : ''}
         </div>`).join('');
+      box.querySelectorAll('.char-card[data-image-id]').forEach(card => {
+        const openDetails = () => { window.location.href = `details.html?id=${encodeURIComponent(card.dataset.imageId)}`; };
+        card.addEventListener('click', openDetails);
+        card.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDetails(); } });
+      });
     }
 
     function countdown(at) {
