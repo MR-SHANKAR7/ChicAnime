@@ -9,8 +9,13 @@
 
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
   const save = (f) => localStorage.setItem(KEY, JSON.stringify(f));
-  const esc = (s = '') => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-
+  const esc = (s = '') => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const safeHttpUrl = (value) => {
+    try {
+      const url = new URL(String(value || ''), window.location.href);
+      return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+    } catch { return ''; }
+  };
   const api = {
     isFollowing: (id) => Boolean(load()[id]),
     list: () => load(),
@@ -18,7 +23,7 @@
       const f = load();
       if (f[id]) delete f[id]; else f[id] = { title: meta.title || '', thumbnail: meta.thumbnail || '', seenAt: Date.now() };
       save(f);
-      document.querySelectorAll(`[data-follow="${id}"]`).forEach(paint);
+      document.querySelectorAll('[data-follow]').forEach((btn) => { if (btn.dataset.follow === String(id)) paint(btn); });
       refresh();
       if (f[id]) requestPermission();
       syncPush();
@@ -26,11 +31,20 @@
     },
     // زر متابعة جاهز للإدراج في أي بطاقة
     button: (id, meta = {}, cls = '') =>
-      `<button class="follow-btn ${cls}" data-follow="${id}" data-title="${esc(meta.title)}" data-thumb="${esc(meta.thumbnail)}" onclick="event.stopPropagation(); ChicFollow.toggle('${id}', this.dataset.title ? { title: this.dataset.title, thumbnail: this.dataset.thumb } : {})" title="متابعة"><i class="fas fa-heart"></i><span></span></button>`,
-    paintAll: () => document.querySelectorAll('[data-follow]').forEach(paint),
+      `<button type="button" class="follow-btn ${esc(cls)}" data-follow="${esc(id)}" data-title="${esc(meta.title)}" data-thumb="${esc(safeHttpUrl(meta.thumbnail))}" title="متابعة"><i class="fas fa-heart"></i><span></span></button>`,
+    paintAll: () => document.querySelectorAll('[data-follow]').forEach((btn) => { bindButton(btn); paint(btn); }),
     refresh,
   };
   window.ChicFollow = api;
+
+  function bindButton(btn) {
+    if (btn.dataset.followBound === 'true') return;
+    btn.dataset.followBound = 'true';
+    btn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      api.toggle(btn.dataset.follow, btn.dataset.title ? { title: btn.dataset.title, thumbnail: btn.dataset.thumb } : {});
+    });
+  }
 
   function paint(btn) {
     const on = api.isFollowing(btn.dataset.follow);
@@ -117,9 +131,9 @@
     }).sort((x, y) => (y.isNew - x.isNew) || (y.at - x.at));
 
     list.innerHTML = items.map(({ id, a, f, isNew, status }) => `
-      <a class="bell-item ${isNew ? 'new' : ''}" href="anime.html?id=${id}">
-        <img src="${esc(a.thumbnail || f.thumbnail)}" alt="">
-        <div><div class="t">${esc(a.title_ar || a.title || f.title)}</div><div class="s">${status}</div></div>
+      <a class="bell-item ${isNew ? 'new' : ''}" href="anime.html?id=${encodeURIComponent(id)}">
+        <img src="${esc(safeHttpUrl(a.thumbnail || f.thumbnail))}" alt="">
+        <div><div class="t">${esc(a.title_ar || a.title || f.title)}</div><div class="s">${esc(status)}</div></div>
       </a>`).join('');
     badge.textContent = unread;
     badge.classList.toggle('show', unread > 0);
@@ -149,7 +163,7 @@
     const notified = JSON.parse(sessionStorage.getItem('chic_notified') || '[]');
     newItems.filter((i) => !notified.includes(i.id)).slice(0, 3).forEach((i) => {
       new Notification(i.a.title_ar || i.a.title, { body: i.status, icon: i.a.thumbnail, tag: `chic-${i.id}` })
-        .onclick = () => { location.href = `anime.html?id=${i.id}`; };
+        .onclick = () => { location.href = `anime.html?id=${encodeURIComponent(i.id)}`; };
       notified.push(i.id);
     });
     sessionStorage.setItem('chic_notified', JSON.stringify(notified));
