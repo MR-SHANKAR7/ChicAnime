@@ -459,6 +459,25 @@
     }
 
     // دالة لعرض الأخبار
+    // تعامل مع بيانات Firebase كنص غير موثوق قبل إدراجها داخل HTML.
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(String(value || ''), window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+      } catch {
+        return '';
+      }
+    }
     function renderNews(news) {
       const newsGrid = document.getElementById('newsGrid');
       newsGrid.innerHTML = '';
@@ -474,15 +493,15 @@
         
         newsCard.innerHTML = `
           <div class="news-thumb">
-            <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x250/6a55fa/ffffff?text=صورة+غير+متوفرة'">
+            <img src="${escapeHtml(safeHttpUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}" onerror="this.src='https://via.placeholder.com/400x250/6a55fa/ffffff?text=صورة+غير+متوفرة'">
             <div class="news-date">${formatDate(item.date)}</div>
           </div>
           <div class="news-content">
-            <h3 class="news-title">${item.title}</h3>
-            <p class="news-excerpt">${item.excerpt}</p>
+            <h3 class="news-title">${escapeHtml(item.title)}</h3>
+            <p class="news-excerpt">${escapeHtml(item.excerpt)}</p>
             <div class="news-meta">
-              <span class="news-category">${item.category}</span>
-              <a href="news-single.html?id=${item.id}" class="read-more">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+              <span class="news-category">${escapeHtml(item.category)}</span>
+              <a href="news-single.html?id=${encodeURIComponent(item.id)}" class="read-more">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
             </div>
           </div>
         `;
@@ -514,15 +533,15 @@
         featuredHTML += `
           <div class="featured-news-item">
             <div class="featured-news-thumb">
-              <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/600x400/6a55fa/ffffff?text=صورة+غير+متوفرة'">
+              <img src="${escapeHtml(safeHttpUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}" onerror="this.src='https://via.placeholder.com/600x400/6a55fa/ffffff?text=صورة+غير+متوفرة'">
             </div>
             <div class="featured-news-content">
               <div class="news-date">${formatDate(item.date)}</div>
-              <h3 class="featured-news-title">${item.title}</h3>
-              <p class="featured-news-excerpt">${item.excerpt}</p>
-              <a href="news-single.html?id=${item.id}" class="read-more">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+              <h3 class="featured-news-title">${escapeHtml(item.title)}</h3>
+              <p class="featured-news-excerpt">${escapeHtml(item.excerpt)}</p>
+              <a href="news-single.html?id=${encodeURIComponent(item.id)}" class="read-more">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
               <div class="news-tags">
-                ${item.tags ? item.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('') : ''}
+                ${Array.isArray(item.tags) ? item.tags.map(tag => `<span class="news-tag">${escapeHtml(tag)}</span>`).join('') : ''}
               </div>
             </div>
           </div>
