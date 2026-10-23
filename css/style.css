@@ -1069,3 +1069,135 @@ button:hover {
   margin: 0;
 }
 
+
+
+/* Mobile UX and accessibility improvements — ChicAnime */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 3px;
+}
+
+.mobile-menu-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.nav {
+  max-width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.gallery-grid,
+.featured-gallery {
+  align-items: stretch;
+}
+
+.gallery-grid > *,
+.featured-gallery > * {
+  min-width: 0;
+}
+
+.card-img {
+  aspect-ratio: 16 / 10;
+  height: auto;
+  background: var(--bg-light);
+}
+
+.card-img img { display: block; }
+.card-content { overflow-wrap: anywhere; }
+
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-filter .category-btn,
+.sort-filter select,
+.search-container input,
+.search-container .search-btn {
+  min-height: 44px;
+}
+
+@media (max-width: 768px) {
+  .header-container { width: 100%; gap: 12px; }
+
+  .nav {
+    width: min(86vw, 360px);
+    height: 100vh;
+    height: 100dvh;
+    padding: max(76px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .nav.active {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .nav-list { align-items: stretch; }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .gallery-grid .card-content { padding: 12px 10px; }
+  .gallery-grid .card-content h3 { font-size: 1rem; line-height: 1.5; }
+
+  .featured-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .hero { padding-inline: 16px; }
+  .hero-title { line-height: 1.45; overflow-wrap: anywhere; }
+  .hero-description { line-height: 1.8; }
+  .hero-buttons .btn { width: 100%; min-height: 44px; }
+  .category-filter .category-btn { flex: 1 1 auto; min-width: 90px; }
+  .sort-filter select { width: 100%; }
+
+  .theme-toggle {
+    width: 48px;
+    height: 48px;
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .floating-btn {
+    width: 44px;
+    height: 44px;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 359px) {
+  .gallery-grid,
+  .featured-gallery { grid-template-columns: minmax(0, 1fr); }
+  .gallery-grid { gap: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .card, .card:hover { transform: none !important; }
+}

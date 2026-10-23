@@ -72,20 +72,52 @@ if (scrollTopBtn) {
   });
 }
 
-// قائمة الجوال
+// قائمة الجوال: دعم لوحة المفاتيح وإغلاق القائمة بعد الاختيار أو خارجها.
 const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 const nav = document.getElementById('nav');
 
 if (mobileMenuBtn && nav) {
+  const setMenuOpen = function (isOpen) {
+    nav.classList.toggle('active', isOpen);
+    mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+    mobileMenuBtn.setAttribute('aria-label', isOpen ? 'إغلاق القائمة' : 'فتح القائمة');
+    if (isOpen) {
+      nav.removeAttribute('inert');
+    } else if (window.matchMedia('(max-width: 768px)').matches) {
+      nav.setAttribute('inert', '');
+    } else {
+      nav.removeAttribute('inert');
+    }
+  };
+
+  setMenuOpen(false);
   mobileMenuBtn.addEventListener('click', function () {
-    nav.classList.toggle('active');
+    setMenuOpen(!nav.classList.contains('active'));
   });
 
   nav.querySelectorAll('.nav-link').forEach(function (link) {
-    link.addEventListener('click', function () {
-      nav.classList.remove('active');
-    });
+    link.addEventListener('click', function () { setMenuOpen(false); });
   });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && nav.classList.contains('active')) {
+      setMenuOpen(false);
+      mobileMenuBtn.focus();
+    }
+  });
+
+  document.addEventListener('click', function (event) {
+    if (nav.classList.contains('active') &&
+        !nav.contains(event.target) &&
+        !mobileMenuBtn.contains(event.target)) setMenuOpen(false);
+  });
+
+  const desktopQuery = window.matchMedia('(min-width: 769px)');
+  const resetMenuOnResize = function (event) {
+    if (event.matches) setMenuOpen(false);
+  };
+  if (desktopQuery.addEventListener) desktopQuery.addEventListener('change', resetMenuOnResize);
+  else if (desktopQuery.addListener) desktopQuery.addListener(resetMenuOnResize);
 }
 
 // التمرير إلى المعرض
