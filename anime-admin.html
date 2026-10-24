@@ -265,19 +265,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
       margin-bottom: 15px;
-    }
-
-    .server-header .server-name {
-      flex: 1;
-      min-width: 0;
-      padding: 10px;
-      border: 1px solid var(--secondary-color);
-      border-radius: var(--border-radius);
-      background: var(--bg-light);
-      color: var(--text-color);
-      font: inherit;
     }
 
     .quality-inputs {
@@ -1008,13 +996,18 @@
       const serverHeader = document.createElement('div');
       serverHeader.className = 'server-header';
       
-      const serverNameSelect = document.createElement('input');
-      serverNameSelect.type = 'text';
+      const serverNameSelect = document.createElement('select');
       serverNameSelect.className = 'server-name';
-      serverNameSelect.placeholder = 'اسم الخادم (مثال: Server 1)';
-      serverNameSelect.setAttribute('aria-label', 'اسم خادم التشغيل');
-      serverNameSelect.required = true;
-      serverNameSelect.value = serverData && serverData.name ? String(serverData.name) : `Server ${serverCounter}`;
+      serverNameSelect.innerHTML = `
+        <option value="witanime">Witanime</option>
+        <option value="okru">Ok.ru</option>
+        <option value="uqload">Uqload</option>
+        <option value="other">خادم آخر</option>
+      `;
+      
+      if (serverData && serverData.name) {
+        serverNameSelect.value = serverData.name;
+      }
       
       const removeServerBtn = document.createElement('button');
       removeServerBtn.type = 'button';
@@ -1030,22 +1023,20 @@
       const qualitiesContainer = document.createElement('div');
       qualitiesContainer.className = 'server-qualities';
       
-      // الجودة اختيارية؛ يكفي رابط تشغيل صالح واحد على الأقل لكل خادم.
+      // إضافة جودة افتراضية إذا لم توجد بيانات
       if (!serverData || !serverData.qualities || Object.keys(serverData.qualities).length === 0) {
         const qualityRow = document.createElement('div');
         qualityRow.className = 'quality-inputs';
         qualityRow.innerHTML = `
           <select class="quality-name">
-            <option value="720p">720p</option>
             <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
             <option value="480p">480p</option>
             <option value="360p">360p</option>
             <option value="auto">تلقائي</option>
           </select>
-          <input type="url" class="quality-url" placeholder="رابط HTTPS للتشغيل">
-          <button type="button" class="remove-quality-btn" style="background:#f44336;color:white;border:0;border-radius:var(--border-radius);padding:8px;cursor:pointer;" aria-label="حذف الجودة"><i class="fas fa-times"></i></button>
+          <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
         `;
-        qualityRow.querySelector('.remove-quality-btn').addEventListener('click', () => qualityRow.remove());
         qualitiesContainer.appendChild(qualityRow);
       } else {
         // إضافة الجودات الموجودة
@@ -1060,7 +1051,7 @@
               <option value="360p" ${quality === '360p' ? 'selected' : ''}>360p</option>
               <option value="auto" ${quality === 'auto' ? 'selected' : ''}>تلقائي</option>
             </select>
-            <input type="url" class="quality-url" placeholder="رابط HTTPS لهذه الجودة">
+            <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
           `;
           qualityRow.querySelector('.quality-url').value = String(url ?? '');
           qualitiesContainer.appendChild(qualityRow);
@@ -1082,7 +1073,7 @@
             <option value="360p">360p</option>
             <option value="auto">تلقائي</option>
           </select>
-          <input type="url" class="quality-url" placeholder="رابط HTTPS لهذه الجودة">
+          <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
           <button type="button" class="remove-quality-btn" style="background: #f44336; color: white; border: none; border-radius: var(--border-radius); padding: 8px; cursor: pointer;" onclick="this.parentElement.remove()">
             <i class="fas fa-times"></i>
           </button>
@@ -1423,63 +1414,31 @@
       
       const episodeId = document.getElementById("episodeId")?.value;
       
-      // لا تحفظ حلقة ناقصة الخوادم أو الجودات؛ لا ننشئ روابط وهمية.
+      // جمع بيانات الخوادم والجودات
       const servers = {};
-      const serverElements = Array.from(document.querySelectorAll('.server-options'));
-      if (serverElements.length < 2) {
-        showMessage('❌ أضف خادمين على الأقل للحلقة.', 'error');
-        return;
-      }
-
-      const seenServerNames = new Set();
-      for (const serverElement of serverElements) {
-        const serverName = serverElement.querySelector('.server-name').value.trim();
-        if (!serverName) {
-          showMessage('❌ اكتب اسمًا لكل خادم.', 'error');
-          return;
-        }
-        const normalizedServerName = serverName.toLocaleLowerCase();
-        if (seenServerNames.has(normalizedServerName)) {
-          showMessage('❌ أسماء الخوادم يجب أن تكون مختلفة.', 'error');
-          return;
-        }
-        seenServerNames.add(normalizedServerName);
-
+      const serverElements = document.querySelectorAll('.server-options');
+      
+      serverElements.forEach(serverElement => {
+        const serverName = serverElement.querySelector('.server-name').value;
         const qualities = {};
-        const seenQualityUrls = new Set();
-        const qualityElements = Array.from(serverElement.querySelectorAll('.quality-inputs'));
-        for (const qualityElement of qualityElements) {
+        
+        const qualityElements = serverElement.querySelectorAll('.quality-inputs');
+        qualityElements.forEach(qualityElement => {
           const qualityName = qualityElement.querySelector('.quality-name').value;
-          const qualityUrl = qualityElement.querySelector('.quality-url').value.trim();
-          if (!qualityUrl) continue;
-
-          let parsedQualityUrl;
-          try { parsedQualityUrl = new URL(qualityUrl); } catch {
-            showMessage('❌ يوجد رابط جودة غير صالح.', 'error');
-            return;
+          const qualityUrl = qualityElement.querySelector('.quality-url').value;
+          
+          if (qualityUrl) {
+            qualities[qualityName] = qualityUrl;
           }
-          if (parsedQualityUrl.protocol !== 'https:') {
-            showMessage('❌ استخدم روابط HTTPS آمنة لكل جودة.', 'error');
-            return;
-          }
-          if (Object.prototype.hasOwnProperty.call(qualities, qualityName)) {
-            showMessage('❌ لا يمكن تكرار اسم الجودة داخل الخادم نفسه.', 'error');
-            return;
-          }
-          if (seenQualityUrls.has(parsedQualityUrl.href)) {
-            showMessage('❌ يجب أن يكون لكل جودة رابط فيديو مختلف، ولا يجوز تكرار الرابط نفسه.', 'error');
-            return;
-          }
-          seenQualityUrls.add(parsedQualityUrl.href);
-          qualities[qualityName] = parsedQualityUrl.href;
+        });
+        
+        if (Object.keys(qualities).length > 0) {
+          servers[serverElement.dataset.serverId] = {
+            name: serverName,
+            qualities: qualities
+          };
         }
-
-        if (Object.keys(qualities).length < 1) {
-          showMessage(`❌ أضف رابط تشغيل صالحًا واحدًا على الأقل للخادم "${serverName}".`, 'error');
-          return;
-        }
-        servers[serverElement.dataset.serverId] = { name: serverName, qualities };
-      }
+      });
       
       const episodeData = {
         animeId: document.getElementById("episodeAnime").value,
@@ -1586,9 +1545,8 @@
         for (const [serverId, serverData] of Object.entries(episode.servers)) {
           serversContainer.appendChild(createServerElement(serverId, serverData));
         }
-      }
-      // جهّز خادمين على الأقل، مع ترك رابط الخادم الجديد فارغًا حتى يضيف المستخدم مصدرًا حقيقيًا.
-      while (serversContainer.querySelectorAll('.server-options').length < 2) {
+      } else {
+        // إضافة خادم افتراضي إذا لم توجد خوادم
         serversContainer.appendChild(createServerElement());
       }
       
@@ -1662,16 +1620,14 @@
       const serversContainer = document.getElementById("serversContainer");
       serversContainer.innerHTML = "";
       serversContainer.appendChild(createServerElement());
-      serversContainer.appendChild(createServerElement());
     }
 
     // تهيئة الصفحة
     document.addEventListener("DOMContentLoaded", function() {
       console.log("Admin panel loaded with new Firebase config");
       
-      // جهّز خادمين افتراضيين، ويضيف المستخدم رابطًا حقيقيًا لكل منهما قبل الحفظ.
+      // إضافة خادم افتراضي عند تحميل الصفحة
       const serversContainer = document.getElementById("serversContainer");
-      serversContainer.appendChild(createServerElement());
       serversContainer.appendChild(createServerElement());
       
       // إضافة مستمعات الأحداث للبحث والتصفية
