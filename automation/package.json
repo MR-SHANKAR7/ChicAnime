@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "update": "node index.js"
+    "update": "node index.js",
+    "test": "node --test"
   },
   "dependencies": {
     "firebase-admin": "^13.4.0",
