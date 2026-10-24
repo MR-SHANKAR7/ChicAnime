@@ -191,6 +191,23 @@
     }
 
     .official-source a:hover { background: #ff5252; }
+
+    .official-source button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: 0;
+      border-radius: 30px;
+      background: #ff6b6b;
+      color: #fff;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .official-source button:hover { background: #ff5252; }
     
     .navigation-buttons {
       display: flex;
@@ -671,6 +688,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js" defer></script>
   <script>
     // تهيئة Firebase
     const firebaseConfig = {
@@ -996,8 +1014,8 @@
           return;
         } else {
           video.src = parsed.href;
+          video.load();
         }
-        video.load();
         return;
       }
 
