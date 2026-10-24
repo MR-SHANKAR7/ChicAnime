@@ -113,32 +113,41 @@ export async function runCatalog() {
   console.log(`الكتالوج: ${created} أنمي جديد، ${updated} محدّث، ${episodesAdded} حلقة جديدة`);
 }
 
-// لا تُحذف إلا الحلقات التي تحمل معرّفًا آليًا مطابقًا لمصدر الأنمي ورقم الحلقة.
+// لا نحذف الأنمي نفسه إذا كانت له حلقات يدوية أو غير موثقة؛ حتى لا نتركها يتيمة.
 export async function purgeExcluded(excludedMedia, animeList, {
   readAllFn = readAll,
   removeFn = remove,
 } = {}) {
   const ids = new Set(excludedMedia.map((m) => `anilist-anime:${m.id}`));
   const victims = animeList.filter((a) => ids.has(a.sourceId));
-  if (!victims.length) return { animeRemoved: 0, episodesRemoved: 0 };
+  if (!victims.length) return { animeRemoved: 0, episodesRemoved: 0, skippedAnime: 0 };
   const episodes = await readAllFn(DB, "episodes");
-  let episodesRemoved = 0;
+  let episodesRemoved = 0, animeRemoved = 0, skippedAnime = 0;
 
   for (const anime of victims) {
-    const automaticPrefix = `${anime.sourceId}:ep:`;
-    for (const ep of episodes.filter((e) =>
-      e.animeId === anime.id &&
-      typeof e.sourceId === "string" &&
-      e.sourceId.startsWith(automaticPrefix) &&
-      /^\d+$/.test(e.sourceId.slice(automaticPrefix.length))
-    )) {
+    const linked = episodes.filter((ep) => ep.animeId === anime.id);
+    const prefix = `${anime.sourceId}:ep:`;
+    const isProvenAutomatic = (ep) =>
+      typeof ep.sourceId === "string" &&
+      ep.sourceId.startsWith(prefix) &&
+      /^\d+$/.test(ep.sourceId.slice(prefix.length));
+    const manualOrUnverified = linked.filter((ep) => !isProvenAutomatic(ep));
+
+    if (manualOrUnverified.length) {
+      skippedAnime++;
+      console.warn(`حماية: لم يُحذف ${anime.title} لأن لديه ${manualOrUnverified.length} حلقة يدوية أو غير موثقة.`);
+      continue;
+    }
+
+    for (const ep of linked) {
       await removeFn(DB, `episodes/${ep.id}`);
       episodesRemoved++;
     }
     await removeFn(DB, `anime/${anime.id}`);
-    console.log("حُذف (نوع مستبعد، مع الحفاظ على الحلقات اليدوية):", anime.title);
+    animeRemoved++;
+    console.log("حُذف أنمي مستبعد وحلقاته الآلية الموثقة:", anime.title);
   }
-  return { animeRemoved: victims.length, episodesRemoved };
+  return { animeRemoved, episodesRemoved, skippedAnime };
 }
 
 function detectRelease(prev, next) {
