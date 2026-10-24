@@ -29,7 +29,12 @@ export async function runNews({
       console.warn(`تعذر جلب ${src.name}:`, err.message);
       continue;
     }
-    items = items.filter((it) => !existing.has(it.guid)).slice(0, MAX_PER_SOURCE);
+    const seenInSource = new Set();
+    items = items.filter((it) => {
+      if (!it.guid || existing.has(it.guid) || seenInSource.has(it.guid)) return false;
+      seenInSource.add(it.guid);
+      return true;
+    }).slice(0, MAX_PER_SOURCE);
     console.log(`${src.name}: ${items.length} خبر جديد`);
 
     for (const it of items) {
