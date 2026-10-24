@@ -123,8 +123,25 @@ test("excluded-anime cleanup deletes only provably automatic episodes", async ()
       removeFn: async (_db, path) => removed.push(path),
     },
   );
-  assert.deepEqual(removed.sort(), ["anime/anime-1", "episodes/auto-1"].sort());
-  assert.deepEqual(result, { animeRemoved: 1, episodesRemoved: 1 });
+  assert.deepEqual(removed, []);
+  assert.deepEqual(result, { animeRemoved: 0, episodesRemoved: 0, skippedAnime: 1 });
+});
+
+test("excluded anime with only verified automatic episodes can be safely removed", async () => {
+  const removed = [];
+  const result = await purgeExcluded(
+    [{ id: 7 }],
+    [{ id: "anime-7", title: "Automatic anime", sourceId: "anilist-anime:7" }],
+    {
+      readAllFn: async () => [
+        { id: "episode-1", animeId: "anime-7", sourceId: "anilist-anime:7:ep:1" },
+        { id: "episode-2", animeId: "anime-7", sourceId: "anilist-anime:7:ep:2" },
+      ],
+      removeFn: async (_db, path) => removed.push(path),
+    },
+  );
+  assert.deepEqual(removed.sort(), ["anime/anime-7", "episodes/episode-1", "episodes/episode-2"].sort());
+  assert.deepEqual(result, { animeRemoved: 1, episodesRemoved: 2, skippedAnime: 0 });
 });
 
 test("translation fallback returns original text and handles batches during outages", async () => {
