@@ -85,3 +85,22 @@ button:hover {
     font-size: 15px;
   }
 }
+
+
+/* ChicAnime admin/login typography and compact controls */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap');
+body, button, input, select, textarea { font-family: 'Amiri', 'Cairo', serif; }
+body { font-size: 15px; line-height: 1.65; }
+.login-container, .admin-container { border-radius: 10px; }
+.login-container h2, .admin-container h2, h2 { font-size: 1.35rem; line-height: 1.45; }
+input[type="email"], input[type="password"], input[type="file"], input[type="text"], textarea {
+  font-size: .92rem;
+  padding: 10px 12px;
+  border-radius: 7px;
+}
+button { padding: 9px 12px; font-size: .92rem; border-radius: 7px; }
+@media screen and (max-width: 480px) {
+  .login-container, .admin-container { margin: 28px 14px; padding: 18px; }
+  h2 { font-size: 1.2rem; }
+  button { font-size: .9rem; }
+}
