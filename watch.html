@@ -618,12 +618,11 @@
           <!-- مشغل الفيديو -->
           <div class="video-main-container">
             <div class="video-container">
-              <iframe id="videoFrame" src="" allowfullscreen style="border: 0;"></iframe>
-              <div class="official-source" id="officialSource">
-                <p>هذه الحلقة متاحة بترجمة عربية على المنصة الرسمية</p>
-                <a id="officialLink" href="#" target="_blank" rel="noopener">
-                  <i class="fas fa-external-link-alt"></i> شاهد على المصدر الرسمي
-                </a>
+              <iframe id="videoFrame" src="about:blank" title="مشغل الحلقة" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="border: 0;"></iframe>
+              <video id="nativeVideo" controls playsinline preload="metadata" style="display:none;width:100%;height:100%;position:absolute;inset:0;background:#000;"></video>
+              <div class="official-source" id="officialSource" role="status" aria-live="polite">
+                <p id="playerMessage">جارٍ تجهيز مشغل الحلقة...</p>
+                <button id="chooseServerBtn" type="button" style="display:none;">اختر خادمًا آخر</button>
               </div>
             </div>
           </div>
@@ -818,39 +817,37 @@
       serverSelect.innerHTML = '';
       qualitySelect.innerHTML = '';
       
-      // التحقق من وجود خوادم
-      if (!currentEpisode.servers || Object.keys(currentEpisode.servers).length === 0) {
+      // أزل المستمعين السابقين حتى لا تتكرر أحداث التبديل عند الانتقال بين الحلقات.
+      serverSelect.onchange = null;
+      qualitySelect.onchange = null;
+      serverSelect.replaceChildren();
+      qualitySelect.replaceChildren();
+
+      const servers = currentEpisode && currentEpisode.servers && typeof currentEpisode.servers === 'object'
+        ? Object.entries(currentEpisode.servers).filter(([, data]) => data && data.qualities && typeof data.qualities === 'object')
+        : [];
+
+      if (servers.length === 0) {
         videoControls.style.display = 'none';
+        showPlayerMessage('لا توجد مصادر مشاهدة مسجلة لهذه الحلقة بعد. أضف روابط تشغيل حقيقية من لوحة الإدارة.');
         return;
       }
-      
-      // إظهار عناصر التحكم
+
       videoControls.style.display = 'flex';
-      
-      // إضافة الخوادم إلى القائمة
-      Object.entries(currentEpisode.servers).forEach(([serverId, serverData]) => {
+      servers.forEach(([serverId, serverData], index) => {
         const option = document.createElement('option');
         option.value = serverId;
-        option.textContent = getServerName(serverData.name);
+        option.textContent = getServerName(serverData.name) || `الخادم ${index + 1}`;
         serverSelect.appendChild(option);
       });
-      
-      // تحديد الخادم الأول افتراضيًا
-      const firstServerId = Object.keys(currentEpisode.servers)[0];
-      serverSelect.value = firstServerId;
-      
-      // تحديث خيارات الجودة للخادم المحدد
-      updateQualityOptions(firstServerId);
-      
-      // إضافة مستمع حدث لتغيير الخادم
-      serverSelect.addEventListener('change', function() {
+
+      serverSelect.onchange = function() {
         updateQualityOptions(this.value);
-      });
-      
-      // إضافة مستمع حدث لتغيير الجودة
-      qualitySelect.addEventListener('change', function() {
-        loadSelectedVideo();
-      });
+      };
+      qualitySelect.onchange = loadSelectedVideo;
+
+      serverSelect.selectedIndex = 0;
+      updateQualityOptions(serverSelect.value);
     }
 
     // دالة للحصول على اسم الخادم بشكل مقروء
@@ -873,25 +870,30 @@
       
       const serverData = currentEpisode.servers[serverId];
       
-      if (serverData && serverData.qualities) {
-        // إضافة الجودات المتاحة
-        Object.entries(serverData.qualities).forEach(([quality, url]) => {
-          const option = document.createElement('option');
-          option.value = url;
-          option.textContent = getQualityName(quality);
-          qualitySelect.appendChild(option);
-        });
-        
-        // تحديد أعلى جودة افتراضيًا (أو التلقائي إذا كان متاحًا)
-        const hasAuto = Object.keys(serverData.qualities).includes('auto');
-        const defaultQuality = hasAuto ? 'auto' : Object.keys(serverData.qualities)[0];
-        
-        const defaultUrl = serverData.qualities[defaultQuality];
-        qualitySelect.value = defaultUrl;
-        
-        // تحميل الفيديو بالجودة المحددة
-        loadSelectedVideo();
+      const qualities = serverData && serverData.qualities && typeof serverData.qualities === 'object'
+        ? Object.entries(serverData.qualities).filter(([, url]) => {
+            try { return new URL(String(url || '')).protocol === 'https:'; } catch { return false; }
+          })
+        : [];
+
+      if (qualities.length === 0) {
+        showPlayerMessage('هذا الخادم لا يحتوي على رابط HTTPS صالح. اختر خادمًا آخر.');
+        return;
       }
+
+      qualities.forEach(([quality, url]) => {
+        const option = document.createElement('option');
+        option.value = url;
+        option.textContent = getQualityName(quality);
+        qualitySelect.appendChild(option);
+      });
+
+      const preferred = qualities.find(([quality]) => quality === 'auto')
+        || qualities.find(([quality]) => quality === '1080p')
+        || qualities.find(([quality]) => quality === '720p')
+        || qualities[0];
+      qualitySelect.value = preferred[1];
+      loadSelectedVideo();
     }
 
     // دالة للحصول على اسم الجودة بشكل مقروء
@@ -918,30 +920,88 @@
         return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
       } catch { return ''; }
     }
-    // المنصات الرسمية تمنع التشغيل داخل إطار، فنعرض زر الانتقال إليها بدل الإطار
+    // لا نوجّه المستخدم إلى مصدر خارجي؛ المصادر التي تمنع التضمين تظهر كرسالة داخل المشغّل.
     const OFFICIAL_HOSTS = ['crunchyroll.com', 'netflix.com', 'hidive.com', 'disneyplus.com', 'primevideo.com', 'bilibili.tv', 'hulu.com'];
+    let activeHlsInstance = null;
+
+    function stopCurrentPlayback() {
+      const frame = document.getElementById('videoFrame');
+      const video = document.getElementById('nativeVideo');
+      if (activeHlsInstance) {
+        activeHlsInstance.destroy();
+        activeHlsInstance = null;
+      }
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+      video.style.display = 'none';
+      frame.src = 'about:blank';
+      frame.style.display = 'block';
+    }
+
+    function showPlayerMessage(message, allowServerChoice = true) {
+      stopCurrentPlayback();
+      const overlay = document.getElementById('officialSource');
+      document.getElementById('playerMessage').textContent = message;
+      document.getElementById('chooseServerBtn').style.display =
+        allowServerChoice && document.getElementById('serverSelect').options.length > 1 ? 'inline-flex' : 'none';
+      overlay.style.backgroundImage = '';
+      overlay.style.display = 'flex';
+    }
+
+    document.getElementById('chooseServerBtn').addEventListener('click', () => {
+      const serverSelect = document.getElementById('serverSelect');
+      if (serverSelect.options.length > 1) {
+        serverSelect.selectedIndex = (serverSelect.selectedIndex + 1) % serverSelect.options.length;
+        serverSelect.dispatchEvent(new Event('change'));
+      }
+    });
 
     function showVideo(url) {
       const frame = document.getElementById('videoFrame');
+      const video = document.getElementById('nativeVideo');
       const overlay = document.getElementById('officialSource');
       let parsed;
       try { parsed = new URL(String(url || ''), window.location.href); } catch { parsed = null; }
+
       if (!parsed || parsed.protocol !== 'https:') {
-        frame.src = 'about:blank';
-        overlay.style.display = 'none';
+        showPlayerMessage('رابط التشغيل غير صالح. اختر مصدرًا آخر أو صحّح الرابط من لوحة الإدارة.');
         return;
       }
+
       const isOfficial = OFFICIAL_HOSTS.some(host => parsed.hostname === host || parsed.hostname.endsWith('.' + host));
       if (isOfficial) {
-        frame.src = 'about:blank';
-        document.getElementById('officialLink').href = parsed.href;
-        const thumbnail = safeHttpUrl(currentEpisode && currentEpisode.thumbnail);
-        overlay.style.backgroundImage = thumbnail ? `url("${thumbnail}")` : '';
-        overlay.style.display = 'flex';
-      } else {
-        overlay.style.display = 'none';
-        frame.src = parsed.href;
+        showPlayerMessage('هذا المصدر لا يسمح بالتشغيل المضمّن داخل ChicAnime. اختر خادمًا آخر يدعم المشاهدة داخل الصفحة.');
+        return;
       }
+
+      stopCurrentPlayback();
+      overlay.style.display = 'none';
+      const mediaPath = parsed.pathname.toLowerCase();
+      const isHls = mediaPath.endsWith('.m3u8');
+      const isDirectVideo = /\.(mp4|webm|ogg)$/.test(mediaPath);
+
+      if (isDirectVideo || isHls) {
+        frame.style.display = 'none';
+        video.style.display = 'block';
+        if (isHls && !video.canPlayType('application/vnd.apple.mpegurl') && window.Hls && window.Hls.isSupported()) {
+          activeHlsInstance = new Hls();
+          activeHlsInstance.loadSource(parsed.href);
+          activeHlsInstance.attachMedia(video);
+          activeHlsInstance.on(Hls.Events.ERROR, (_event, data) => {
+            if (data && data.fatal) showPlayerMessage('تعذّر تشغيل هذا المصدر. جرّب خادمًا آخر أو تحقق من رابط الفيديو.');
+          });
+        } else if (isHls && !video.canPlayType('application/vnd.apple.mpegurl')) {
+          showPlayerMessage('هذا المتصفح لا يدعم رابط HLS حاليًا. اختر خادمًا آخر.');
+          return;
+        } else {
+          video.src = parsed.href;
+        }
+        video.load();
+        return;
+      }
+
+      frame.src = parsed.href;
     }
 
     // دالة لتحميل الفيديو المحدد
@@ -952,11 +1012,14 @@
       const serverId = serverSelect.value;
       const videoUrl = qualitySelect.value;
       
-      if (!videoUrl) return;
-      
+      if (!videoUrl) {
+        showPlayerMessage('لا توجد جودة صالحة لهذا الخادم. اختر خادمًا آخر.');
+        return;
+      }
+
       // حفظ الإعدادات الحالية
       currentServer = serverId;
-      currentQuality = qualitySelect.options[qualitySelect.selectedIndex].text;
+      currentQuality = qualitySelect.options[qualitySelect.selectedIndex]?.textContent || '';
       
       // تحضير رابط التشغيل
       let finalUrl = videoUrl;
@@ -1057,6 +1120,8 @@
         // تحديث الإطار بالفيديو
         if (videoUrl) {
           showVideo(videoUrl);
+        } else {
+          showPlayerMessage('لا يوجد رابط تشغيل لهذه الحلقة. أضف مصدرًا صالحًا من لوحة الإدارة.', false);
         }
       }
     }
