@@ -1378,3 +1378,56 @@ button:hover {
   .header .search-container input { padding-inline: 8px; font-size: .82rem; }
   .header .search-container .search-btn { min-width: 38px; flex-basis: 38px; }
 }
+
+
+/* ChicAnime unified Andalusian-inspired typography and compact controls */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap');
+
+:root {
+  --ca-font: 'Amiri', 'Cairo', serif;
+  --ca-control-radius: 9px;
+}
+body,
+button, input, select, textarea,
+.btn, .btn-view, .category-btn, .nav-link,
+.card-content, .card-content h3, .card-content p,
+.featured-content, .featured-content h3,
+.footer, .search-container, .search-suggestions {
+  font-family: var(--ca-font);
+}
+body { font-size: 15px; line-height: 1.7; }
+h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
+.section-title { font-size: clamp(1.45rem, 3vw, 2rem); margin-bottom: 24px; }
+.hero-title { font-size: clamp(1.75rem, 4vw, 2.7rem); line-height: 1.4; }
+.hero-description { font-size: 1rem; line-height: 1.8; }
+.btn, .btn-view, .category-btn, .nav-link {
+  font-size: .9rem;
+  line-height: 1.4;
+  border-radius: var(--ca-control-radius);
+}
+.btn, .btn-view { padding: 8px 13px; min-height: 38px; }
+.category-btn { padding: 6px 11px; border-width: 1px; }
+.nav-link { padding: 8px 11px; }
+.card-content { padding: 15px; }
+.card-content h3, .featured-content h3 { font-size: 1.05rem; line-height: 1.5; margin-bottom: 7px; }
+.card-content p, .card-meta { font-size: .86rem; line-height: 1.65; }
+.card-actions { gap: 8px; align-items: center; }
+.card-actions > * { min-width: 0; }
+input, select, textarea { font-size: .92rem; }
+.search-container input { min-height: 42px; }
+.search-container .search-btn { min-height: 42px; }
+.floating-btn, .theme-toggle { width: 48px; height: 48px; }
+@media (max-width: 768px) {
+  body { font-size: 14px; }
+  .section-title { font-size: 1.55rem; margin-bottom: 20px; }
+  .hero-title { font-size: clamp(1.55rem, 6vw, 2rem); }
+  .hero-description { font-size: .94rem; }
+  .btn, .btn-view { min-height: 40px; padding: 8px 11px; }
+  .category-btn { min-height: 38px; padding: 6px 9px; }
+  .card-content { padding: 11px 9px; }
+  .card-content h3, .featured-content h3 { font-size: .98rem; }
+  .card-content p, .card-meta { font-size: .8rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
