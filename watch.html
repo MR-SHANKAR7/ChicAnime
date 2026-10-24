@@ -128,11 +128,20 @@
       cursor: pointer;
     }
     
+    .playback-notice {
+      margin: -5px 0 15px;
+      padding: 10px 12px;
+      border-radius: var(--border-radius);
+      background: rgba(255, 193, 7, 0.12);
+      border: 1px solid rgba(255, 193, 7, 0.4);
+      color: #ffd166;
+      font-size: 0.9rem;
+    }
+
     .video-main-container {
       margin-bottom: 20px;
       border-radius: var(--border-radius);
       overflow: hidden;
-      box-shadow: var(--shadow);
     }
     
     .video-container {
@@ -631,6 +640,7 @@
               </select>
             </div>
           </div>
+          <p id="playbackNotice" class="playback-notice" role="status" aria-live="polite" style="display:none;"></p>
 
           <!-- مشغل الفيديو -->
           <div class="video-main-container">
@@ -845,8 +855,10 @@
         ? Object.entries(currentEpisode.servers).filter(([, data]) => data && data.qualities && typeof data.qualities === 'object')
         : [];
 
+      const playbackNotice = document.getElementById('playbackNotice');
       if (servers.length === 0) {
         videoControls.style.display = 'none';
+        playbackNotice.style.display = 'none';
         showPlayerMessage('لا توجد مصادر مشاهدة مسجلة لهذه الحلقة بعد. أضف روابط تشغيل حقيقية من لوحة الإدارة.');
         return;
       }
@@ -865,6 +877,12 @@
       qualitySelect.onchange = loadSelectedVideo;
 
       serverSelect.selectedIndex = 0;
+      if (servers.length < 2) {
+        playbackNotice.textContent = 'تنبيه: هذه الحلقة مسجلة بخادم واحد فقط؛ أضف خادمًا ثانيًا صالحًا من لوحة الإدارة.';
+        playbackNotice.style.display = 'block';
+      } else {
+        playbackNotice.style.display = 'none';
+      }
       updateQualityOptions(serverSelect.value);
     }
 
@@ -895,9 +913,22 @@
         : [];
 
       if (qualities.length === 0) {
+        const notice = document.getElementById('playbackNotice');
+        notice.textContent = 'تنبيه: لا توجد جودة صالحة لهذا الخادم.';
+        notice.style.display = 'block';
         showPlayerMessage('هذا الخادم لا يحتوي على رابط HTTPS صالح. اختر خادمًا آخر.');
         return;
       }
+
+      const notice = document.getElementById('playbackNotice');
+      const warnings = [];
+      const validServerCount = Object.values(currentEpisode.servers || {}).filter(data =>
+        data && data.qualities && Object.keys(data.qualities).length > 0
+      ).length;
+      if (validServerCount < 2) warnings.push('هذه الحلقة مسجلة بخادم واحد فقط.');
+      if (qualities.length < 3) warnings.push(`الخادم المحدد يحتوي على ${qualities.length} جودة فقط، وليس ثلاثًا.`);
+      notice.textContent = warnings.join(' ');
+      notice.style.display = warnings.length ? 'block' : 'none';
 
       qualities.forEach(([quality, url]) => {
         const option = document.createElement('option');
