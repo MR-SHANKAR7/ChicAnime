@@ -4,7 +4,7 @@ import { toArabic, toArabicMany, stripHtml } from "../lib/translate.js";
 import { notifyFollowers } from "../lib/push.js";
 
 const DB = "videos";
-const CATALOG_SIZE = Number(process.env.CATALOG_SIZE || 150);      // أشهر الأنميات عمومًا
+const CATALOG_SIZE = Number(process.env.CATALOG_SIZE || 150);
 const NEW_ANIME_PER_RUN = Number(process.env.NEW_ANIME_PER_RUN || 25);
 
 const PAGE_QUERY = `
@@ -15,10 +15,8 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort], $status: MediaStatus, $sea
   }
 }`;
 
-// أنواع مستبعدة من الموقع (محتوى غير مناسب للجمهور العام)
 const EXCLUDED_GENRES = new Set(["Ecchi", "Hentai"]);
 const isExcluded = (m) => (m.genres || []).some((g) => EXCLUDED_GENRES.has(g));
-
 const norm = (t = "") => t.toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]+/g, " ").trim();
 const episodeNumber = (title = "", fallback) => Number(title.match(/Episode\s+(\d+)/i)?.[1] || fallback);
 
@@ -33,7 +31,6 @@ async function fetchPages(variables, max) {
   return out.slice(0, max);
 }
 
-// يجمع: الموسم الحالي، الموسم القادم، المعروض حاليًا، وأشهر الأنميات
 async function collectMedia() {
   const { season, year, nextSeason, nextYear } = currentSeason();
   const sets = [
@@ -59,20 +56,16 @@ export async function runCatalog() {
   const episodeKeys = new Set((await readAll(DB, "episodes")).map((e) => e.sourceId).filter(Boolean));
 
   let created = 0, updated = 0, episodesAdded = 0;
-
   for (const m of media) {
     const rec = toAnimeRecord(m);
     const now = new Date().toISOString();
     let anime = bySource.get(rec.sourceId);
-
-    // ربط الأنمي المضاف يدويًا بالاسم نفسه بدل تكراره
     if (!anime) {
       const manual = byTitle.get(norm(rec.title)) || byTitle.get(norm(m.title.romaji));
       if (manual) { anime = manual; console.log("ربط بأنمي موجود:", manual.title); }
     }
 
     if (anime) {
-      // تحديث الحقول المتغيرة فقط، دون لمس العنوان/الوصف/الصورة التي قد يكون المستخدم عدّلها
       const { title, thumbnail, category, ...dynamic } = rec;
       const release = detectRelease(anime, rec);
       if (release) {
@@ -94,7 +87,6 @@ export async function runCatalog() {
     }
     bySource.set(rec.sourceId, anime);
 
-    // الحلقات الرسمية الجديدة، مع ترجمة عناوينها دفعة واحدة
     const fresh = (m.streamingEpisodes || [])
       .map((ep, idx) => ({ ...ep, number: episodeNumber(ep.title, idx + 1) }))
       .filter((ep) => !episodeKeys.has(`${rec.sourceId}:ep:${ep.number}`));
@@ -121,20 +113,34 @@ export async function runCatalog() {
   console.log(`الكتالوج: ${created} أنمي جديد، ${updated} محدّث، ${episodesAdded} حلقة جديدة`);
 }
 
-// حذف أي أنمي (وحلقاته) أُضيف تلقائيًا ثم تبيّن أنه من الأنواع المستبعدة
-async function purgeExcluded(excludedMedia, animeList) {
+// لا تُحذف إلا الحلقات التي تحمل معرّفًا آليًا مطابقًا لمصدر الأنمي ورقم الحلقة.
+export async function purgeExcluded(excludedMedia, animeList, {
+  readAllFn = readAll,
+  removeFn = remove,
+} = {}) {
   const ids = new Set(excludedMedia.map((m) => `anilist-anime:${m.id}`));
   const victims = animeList.filter((a) => ids.has(a.sourceId));
-  if (!victims.length) return;
-  const episodes = await readAll(DB, "episodes");
-  for (const a of victims) {
-    for (const ep of episodes.filter((e) => e.animeId === a.id)) await remove(DB, `episodes/${ep.id}`);
-    await remove(DB, `anime/${a.id}`);
-    console.log("حُذف (نوع مستبعد):", a.title);
+  if (!victims.length) return { animeRemoved: 0, episodesRemoved: 0 };
+  const episodes = await readAllFn(DB, "episodes");
+  let episodesRemoved = 0;
+
+  for (const anime of victims) {
+    const automaticPrefix = `${anime.sourceId}:ep:`;
+    for (const ep of episodes.filter((e) =>
+      e.animeId === anime.id &&
+      typeof e.sourceId === "string" &&
+      e.sourceId.startsWith(automaticPrefix) &&
+      /^\d+$/.test(e.sourceId.slice(automaticPrefix.length))
+    )) {
+      await removeFn(DB, `episodes/${ep.id}`);
+      episodesRemoved++;
+    }
+    await removeFn(DB, `anime/${anime.id}`);
+    console.log("حُذف (نوع مستبعد، مع الحفاظ على الحلقات اليدوية):", anime.title);
   }
+  return { animeRemoved: victims.length, episodesRemoved };
 }
 
-// حلقة صدرت منذ آخر تشغيل: موعد الحلقة المخزّن سابقًا قد مضى، أو رقم الحلقة القادمة تقدّم
 function detectRelease(prev, next) {
   const was = prev.nextAiring;
   if (!was) return null;
