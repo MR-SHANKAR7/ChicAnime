@@ -6,19 +6,25 @@ const parser = new Parser({ customFields: { item: ["content:encoded"] } });
 // مصادر الأخبار: العربية تُنشر كما هي، والإنجليزية تُترجم
 export const SOURCES = [
   { id: "gateanime", name: "شبكة أخبار الأنمي", url: "https://gateanime.net/feed/", lang: "ar",
-    // استبعاد منشورات الحلقات والإبقاء على الأخبار فقط
     accept: (it) => (it.categories || []).includes("أخبار أنمي") && !/مترجم|الحلقة \d+/.test(it.title) },
   { id: "arabanime", name: "عرب أنمي", url: "https://www.arabanime.com/feed/", lang: "ar", accept: () => true },
   { id: "ann", name: "Anime News Network", url: "https://www.animenewsnetwork.com/news/rss.xml?ann-edition=us", lang: "en", accept: () => true },
 ];
 
-export async function fetchSource(src, limit = 15) {
-  const feed = await parser.parseURL(src.url);
+const requestOptions = (timeoutMs) => ({
+  headers: { "User-Agent": UA },
+  signal: AbortSignal.timeout(timeoutMs),
+});
+
+export async function fetchSource(src, limit = 15, { fetchImpl = fetch, timeoutMs = 15000 } = {}) {
+  const response = await fetchImpl(src.url, requestOptions(timeoutMs));
+  if (!response.ok) throw new Error(`RSS ${src.name} HTTP ${response.status}`);
+  const feed = await parser.parseString(await response.text());
   return feed.items.filter(src.accept).slice(0, limit).map((it) => ({
     source: src,
     guid: it.guid || it.link,
     link: it.link,
-    title: it.title.trim(),
+    title: (it.title || "").trim(),
     excerpt: (it.contentSnippet || "").trim(),
     html: it["content:encoded"] || it.content || "",
     categories: it.categories || [],
@@ -27,8 +33,10 @@ export async function fetchSource(src, limit = 15) {
 }
 
 // يجلب صفحة الخبر ويستخرج الصورة الرئيسية ونص المقال (لمصادر لا توفر المحتوى في RSS)
-export async function fetchArticle(url) {
-  const html = await (await fetch(url, { headers: { "User-Agent": UA } })).text();
+export async function fetchArticle(url, { fetchImpl = fetch, timeoutMs = 15000 } = {}) {
+  const response = await fetchImpl(url, requestOptions(timeoutMs));
+  if (!response.ok) throw new Error(`Article HTTP ${response.status}: ${url}`);
+  const html = await response.text();
   const image = html.match(/property="og:image"\s+content="([^"]+)"/)?.[1] || "";
   const body = extractDiv(html, '<div class="meat">');
   return { image, text: htmlToText(body).slice(0, 1800) };
