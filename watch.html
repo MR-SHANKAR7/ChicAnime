@@ -926,8 +926,7 @@
       const validServerCount = Object.values(currentEpisode.servers || {}).filter(data =>
         data && data.qualities && Object.keys(data.qualities).length > 0
       ).length;
-      if (validServerCount < 2) warnings.push('هذه الحلقة مسجلة بخادم واحد فقط.');
-      if (qualities.length < 3) warnings.push(`الخادم المحدد يحتوي على ${qualities.length} جودة فقط، وليس ثلاثًا.`);
+      if (validServerCount < 2) warnings.push('هذه الحلقة مسجلة بخادم واحد فقط؛ أضف خادمًا ثانيًا من لوحة الإدارة.');
       notice.textContent = warnings.join(' ');
       notice.style.display = warnings.length ? 'block' : 'none';
 
