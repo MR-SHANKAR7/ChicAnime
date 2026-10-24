@@ -265,7 +265,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       margin-bottom: 15px;
+    }
+
+    .server-header .server-name {
+      flex: 1;
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--secondary-color);
+      border-radius: var(--border-radius);
+      background: var(--bg-light);
+      color: var(--text-color);
+      font: inherit;
     }
 
     .quality-inputs {
@@ -1436,6 +1448,7 @@
         seenServerNames.add(normalizedServerName);
 
         const qualities = {};
+        const seenQualityUrls = new Set();
         const qualityElements = Array.from(serverElement.querySelectorAll('.quality-inputs'));
         for (const qualityElement of qualityElements) {
           const qualityName = qualityElement.querySelector('.quality-name').value;
@@ -1455,11 +1468,16 @@
             showMessage('❌ لا يمكن تكرار اسم الجودة داخل الخادم نفسه.', 'error');
             return;
           }
+          if (seenQualityUrls.has(parsedQualityUrl.href)) {
+            showMessage('❌ يجب أن يكون لكل جودة رابط فيديو مختلف، ولا يجوز تكرار الرابط نفسه.', 'error');
+            return;
+          }
+          seenQualityUrls.add(parsedQualityUrl.href);
           qualities[qualityName] = parsedQualityUrl.href;
         }
 
         if (Object.keys(qualities).length < 3) {
-          showMessage(`❌ الخادم "${serverName}" يحتاج إلى 3 جودات فعلية على الأقل بروابط مختلفة في الاسم.`, 'error');
+          showMessage(`❌ الخادم "${serverName}" يحتاج إلى 3 جودات فعلية على الأقل بروابط HTTPS مختلفة.`, 'error');
           return;
         }
         servers[serverElement.dataset.serverId] = { name: serverName, qualities };
