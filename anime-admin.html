@@ -1030,25 +1030,23 @@
       const qualitiesContainer = document.createElement('div');
       qualitiesContainer.className = 'server-qualities';
       
-      // ابدأ بثلاث خانات جودة فعلية، ويجب إدخال رابط حقيقي لكل جودة.
+      // الجودة اختيارية؛ يكفي رابط تشغيل صالح واحد على الأقل لكل خادم.
       if (!serverData || !serverData.qualities || Object.keys(serverData.qualities).length === 0) {
-        ['1080p', '720p', '480p'].forEach(defaultQuality => {
-          const qualityRow = document.createElement('div');
-          qualityRow.className = 'quality-inputs';
-          qualityRow.innerHTML = `
-            <select class="quality-name">
-              <option value="1080p" ${defaultQuality === '1080p' ? 'selected' : ''}>1080p</option>
-              <option value="720p" ${defaultQuality === '720p' ? 'selected' : ''}>720p</option>
-              <option value="480p" ${defaultQuality === '480p' ? 'selected' : ''}>480p</option>
-              <option value="360p">360p</option>
-              <option value="auto">تلقائي</option>
-            </select>
-            <input type="url" class="quality-url" placeholder="رابط HTTPS لهذه الجودة" required>
-            <button type="button" class="remove-quality-btn" style="background:#f44336;color:white;border:0;border-radius:var(--border-radius);padding:8px;cursor:pointer;" aria-label="حذف الجودة"><i class="fas fa-times"></i></button>
-          `;
-          qualityRow.querySelector('.remove-quality-btn').addEventListener('click', () => qualityRow.remove());
-          qualitiesContainer.appendChild(qualityRow);
-        });
+        const qualityRow = document.createElement('div');
+        qualityRow.className = 'quality-inputs';
+        qualityRow.innerHTML = `
+          <select class="quality-name">
+            <option value="720p">720p</option>
+            <option value="1080p">1080p</option>
+            <option value="480p">480p</option>
+            <option value="360p">360p</option>
+            <option value="auto">تلقائي</option>
+          </select>
+          <input type="url" class="quality-url" placeholder="رابط HTTPS للتشغيل">
+          <button type="button" class="remove-quality-btn" style="background:#f44336;color:white;border:0;border-radius:var(--border-radius);padding:8px;cursor:pointer;" aria-label="حذف الجودة"><i class="fas fa-times"></i></button>
+        `;
+        qualityRow.querySelector('.remove-quality-btn').addEventListener('click', () => qualityRow.remove());
+        qualitiesContainer.appendChild(qualityRow);
       } else {
         // إضافة الجودات الموجودة
         for (const [quality, url] of Object.entries(serverData.qualities)) {
@@ -1062,7 +1060,7 @@
               <option value="360p" ${quality === '360p' ? 'selected' : ''}>360p</option>
               <option value="auto" ${quality === 'auto' ? 'selected' : ''}>تلقائي</option>
             </select>
-            <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
+            <input type="url" class="quality-url" placeholder="رابط HTTPS لهذه الجودة">
           `;
           qualityRow.querySelector('.quality-url').value = String(url ?? '');
           qualitiesContainer.appendChild(qualityRow);
@@ -1084,7 +1082,7 @@
             <option value="360p">360p</option>
             <option value="auto">تلقائي</option>
           </select>
-          <input type="url" class="quality-url" placeholder="رابط الفيديو لهذه الجودة" required>
+          <input type="url" class="quality-url" placeholder="رابط HTTPS لهذه الجودة">
           <button type="button" class="remove-quality-btn" style="background: #f44336; color: white; border: none; border-radius: var(--border-radius); padding: 8px; cursor: pointer;" onclick="this.parentElement.remove()">
             <i class="fas fa-times"></i>
           </button>
@@ -1476,8 +1474,8 @@
           qualities[qualityName] = parsedQualityUrl.href;
         }
 
-        if (Object.keys(qualities).length < 3) {
-          showMessage(`❌ الخادم "${serverName}" يحتاج إلى 3 جودات فعلية على الأقل بروابط HTTPS مختلفة.`, 'error');
+        if (Object.keys(qualities).length < 1) {
+          showMessage(`❌ أضف رابط تشغيل صالحًا واحدًا على الأقل للخادم "${serverName}".`, 'error');
           return;
         }
         servers[serverElement.dataset.serverId] = { name: serverName, qualities };
