@@ -1,19 +1,31 @@
 const ENDPOINT = "https://graphql.anilist.co";
 
-export async function gql(query, variables = {}) {
+export async function gql(query, variables = {}, { fetchImpl = fetch, sleepFn = sleep, timeoutMs = 15000 } = {}) {
+  let lastNetworkError;
   for (let attempt = 0; attempt < 3; attempt++) {
-    const res = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ query, variables }),
-    });
-    if (res.status === 429) { await sleep(Number(res.headers.get("retry-after") || 30) * 1000); continue; }
-    if (!res.ok) throw new Error(`AniList ${res.status}: ${await res.text()}`);
-    const json = await res.json();
-    if (json.errors) throw new Error(JSON.stringify(json.errors));
-    return json.data;
+    try {
+      const res = await fetchImpl(ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ query, variables }),
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      if (res.status === 429) {
+        if (attempt === 2) throw new Error("AniList: تجاوز حد الطلبات بعد 3 محاولات");
+        await sleepFn(Number(res.headers.get("retry-after") || 5) * 1000);
+        continue;
+      }
+      if (!res.ok) throw new Error(`AniList HTTP ${res.status}: ${(await res.text()).slice(0, 500)}`);
+      const json = await res.json();
+      if (json.errors) throw new Error(`AniList GraphQL: ${JSON.stringify(json.errors)}`);
+      return json.data;
+    } catch (err) {
+      if (err.message?.startsWith("AniList HTTP") || err.message?.startsWith("AniList GraphQL") || err.message?.startsWith("AniList: تجاوز")) throw err;
+      lastNetworkError = err;
+      if (attempt < 2) await sleepFn(500 * (attempt + 1));
+    }
   }
-  throw new Error("AniList: تجاوز حد الطلبات");
+  throw new Error(`AniList network failure after 3 attempts: ${lastNetworkError?.message || "unknown error"}`);
 }
 
 // ترجمة أنواع AniList إلى التصنيفات المستخدمة في لوحة إدارة الموقع
@@ -30,7 +42,6 @@ export const STATUS_MAP = { RELEASING: "ongoing", FINISHED: "completed", NOT_YET
 export const SEASON_AR = { WINTER: "شتاء", SPRING: "ربيع", SUMMER: "صيف", FALL: "خريف" };
 export const FORMAT_AR = { TV: "مسلسل", TV_SHORT: "مسلسل قصير", MOVIE: "فيلم", OVA: "OVA", ONA: "ONA", SPECIAL: "خاص", MUSIC: "موسيقى" };
 
-// الحقول المشتركة لأي أنمي نخزّنه في الموقع
 export const MEDIA_FIELDS = `
   id
   title { romaji english }
@@ -52,7 +63,6 @@ export const MEDIA_FIELDS = `
   streamingEpisodes { title thumbnail url site }
 `;
 
-// يحوّل كائن AniList إلى الحقول المخزّنة في عقدة anime (دون الوصف المترجم)
 export function toAnimeRecord(m) {
   const next = m.nextAiringEpisode;
   return {
@@ -76,7 +86,6 @@ export function toAnimeRecord(m) {
   };
 }
 
-// الموسم الحالي والقادم
 export function currentSeason(date = new Date()) {
   const m = date.getUTCMonth();
   const seasons = ["WINTER", "WINTER", "WINTER", "SPRING", "SPRING", "SPRING", "SUMMER", "SUMMER", "SUMMER", "FALL", "FALL", "FALL"];

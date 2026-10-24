@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "update": "node index.js"
+    "update": "node index.js",
+    "test": "node --test",
+    "test:firebase": "FIREBASE_INTEGRATION=1 node --test test/automation.integration.test.js"
   },
   "dependencies": {
     "firebase-admin": "^13.4.0",

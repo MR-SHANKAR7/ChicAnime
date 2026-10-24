@@ -1,0 +1,29 @@
+name: اختبارات الأتمتة
+
+on:
+  pull_request:
+    paths:
+      - "automation/**"
+      - ".github/workflows/auto-update.yml"
+      - ".github/workflows/automation-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: automation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: automation/package-lock.json
+      - run: npm ci
+      - name: تشغيل اختبارات التكامل والانحدار
+        run: npm test

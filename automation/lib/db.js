@@ -37,7 +37,7 @@ export async function readAll(dbName, node) {
   if (DRY_RUN) return [];
   const snap = await db(dbName).ref(node).once("value");
   const items = [];
-  snap.forEach((child) => { items.push({ id: child.key, ...child.val() }); });
+  snap.forEach((child) => { items.push({ ...child.val(), id: child.key }); });
   return items;
 }
 
