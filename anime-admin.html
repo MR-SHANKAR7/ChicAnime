@@ -1014,7 +1014,7 @@
       serverNameSelect.placeholder = 'اسم الخادم (مثال: Server 1)';
       serverNameSelect.setAttribute('aria-label', 'اسم خادم التشغيل');
       serverNameSelect.required = true;
-      serverNameSelect.value = serverData && serverData.name ? String(serverData.name) : '';
+      serverNameSelect.value = serverData && serverData.name ? String(serverData.name) : `Server ${serverCounter}`;
       
       const removeServerBtn = document.createElement('button');
       removeServerBtn.type = 'button';
@@ -1586,8 +1586,9 @@
         for (const [serverId, serverData] of Object.entries(episode.servers)) {
           serversContainer.appendChild(createServerElement(serverId, serverData));
         }
-      } else {
-        // إضافة خادم افتراضي إذا لم توجد خوادم
+      }
+      // جهّز خادمين على الأقل، مع ترك رابط الخادم الجديد فارغًا حتى يضيف المستخدم مصدرًا حقيقيًا.
+      while (serversContainer.querySelectorAll('.server-options').length < 2) {
         serversContainer.appendChild(createServerElement());
       }
       
@@ -1661,14 +1662,16 @@
       const serversContainer = document.getElementById("serversContainer");
       serversContainer.innerHTML = "";
       serversContainer.appendChild(createServerElement());
+      serversContainer.appendChild(createServerElement());
     }
 
     // تهيئة الصفحة
     document.addEventListener("DOMContentLoaded", function() {
       console.log("Admin panel loaded with new Firebase config");
       
-      // إضافة خادم افتراضي عند تحميل الصفحة
+      // جهّز خادمين افتراضيين، ويضيف المستخدم رابطًا حقيقيًا لكل منهما قبل الحفظ.
       const serversContainer = document.getElementById("serversContainer");
+      serversContainer.appendChild(createServerElement());
       serversContainer.appendChild(createServerElement());
       
       // إضافة مستمعات الأحداث للبحث والتصفية
