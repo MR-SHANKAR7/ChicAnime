@@ -173,10 +173,12 @@
     .anime-status { position: absolute; top: 10px; right: 10px; color: #fff; font-size: .75rem; padding: 3px 8px; border-radius: 12px; background: #2e7d32; }
     .anime-status.upcoming { background: #1565c0; }
     .anime-status.completed { background: #6d4c41; }
-    .card-actions { display: flex; gap: 8px; }
-    .card-actions .watch-btn { flex: 1; }
-    .details-btn { flex: 1; background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 20px; padding: 8px 12px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all .3s; }
+    .card-actions { display: flex; gap: 8px; align-items: stretch; }
+    .card-actions .watch-btn, .card-actions .details-btn { flex: 1 1 0; min-width: 0; min-height: 42px; margin-top: 10px; display: inline-flex; justify-content: center; align-items: center; gap: 7px; font: inherit; font-weight: 700; border-radius: 12px; padding: 10px 12px; text-decoration: none; }
+    .card-actions .watch-btn { width: auto; }
+    .details-btn { background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); cursor: pointer; transition: all .3s; }
     .details-btn:hover { background: var(--primary-color); color: #fff; }
+    .filter-toggle { display: none; }
 
     .anime-card {
       background-color: var(--card-bg);
@@ -346,16 +348,16 @@
     }
 
     @media (max-width: 768px) {
-      .filter-options {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .filter-btn {
-        text-align: center;
-        margin-bottom: 8px;
-      }
-
+      .filter-section { padding: 14px; margin-bottom: 22px; }
+      .filter-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 46px; margin-top: 12px; padding: 11px 14px; border: 1px solid var(--secondary-color); border-radius: 12px; background: var(--bg-light); color: var(--text-color); font: inherit; font-weight: 700; cursor: pointer; }
+      .filter-toggle-label { display: flex; align-items: center; gap: 9px; }
+      .filter-toggle i { transition: transform .2s ease; }
+      .filter-toggle[aria-expanded="true"] > i { transform: rotate(180deg); }
+      .filter-options { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
+      .filter-options.is-open { display: grid; }
+      .filter-btn { margin: 0; min-height: 42px; padding: 9px 8px; border-radius: 12px; text-align: center; font: inherit; font-weight: 600; }
+      .card-actions { flex-direction: column; gap: 0; }
+      .card-actions .watch-btn, .card-actions .details-btn { width: 100%; min-height: 43px; margin-top: 9px; flex: none; }
       .anime-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
@@ -435,7 +437,11 @@
           <div class="search-suggestions" id="searchSuggestions"></div>
         </div>
         
-        <div class="filter-options">
+        <button class="filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="filterOptions">
+          <span class="filter-toggle-label"><i class="fas fa-sliders-h" aria-hidden="true"></i><span>التصنيفات: <span id="selectedFilterLabel">الكل</span></span></span>
+          <i class="fas fa-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="filter-options" id="filterOptions">
           <button class="filter-btn active" onclick="setFilter('all', event)">الكل</button>
           <button class="filter-btn" onclick="setFilter('أكشن', event)">أكشن</button>
           <button class="filter-btn" onclick="setFilter('مغامرة', event)">مغامرة</button>
@@ -616,7 +622,13 @@
         btn.classList.remove('active');
       });
       const activeButton = event && event.currentTarget ? event.currentTarget : null;
-      if (activeButton) activeButton.classList.add('active');
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn === activeButton || (!activeButton && btn.textContent.trim() === filter)));
+      const selectedLabel = document.getElementById('selectedFilterLabel');
+      if (selectedLabel) selectedLabel.textContent = filter === 'all' ? 'الكل' : filter;
+      const filterOptions = document.getElementById('filterOptions');
+      const filterToggle = document.getElementById('filterToggle');
+      if (filterOptions && window.matchMedia('(max-width: 768px)').matches) filterOptions.classList.remove('is-open');
+      if (filterToggle) filterToggle.setAttribute('aria-expanded', 'false');
       
       // تصفية وعرض الأنمي
       filterAnime();
@@ -893,6 +905,15 @@
       // تحميل بيانات الأنمي
       loadAnimeData();
       
+      // قائمة تصنيفات قابلة للفتح على الهاتف
+      const filterToggle = document.getElementById('filterToggle');
+      const filterOptions = document.getElementById('filterOptions');
+      if (filterToggle && filterOptions) {
+        filterToggle.addEventListener('click', () => {
+          const isOpen = filterOptions.classList.toggle('is-open');
+          filterToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+      }
       // إضافة مستمع حدث للبحث أثناء الكتابة
       const searchInput = document.getElementById('anime-search');
       searchInput.addEventListener('input', function() {
