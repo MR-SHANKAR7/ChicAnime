@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap');
+
 :root {
   --primary-color: #C7372C;
   --primary-dark: #710D0B;
@@ -1381,8 +1383,6 @@ button:hover {
 
 
 /* ChicAnime unified Andalusian-inspired typography and compact controls */
-@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap');
-
 :root {
   --ca-font: 'Amiri', 'Cairo', serif;
   --ca-control-radius: 9px;
