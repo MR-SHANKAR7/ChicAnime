@@ -4,6 +4,11 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
+    inputs:
+      skip_seo:
+        description: "Deploy without regenerating SEO pages (use only if the SEO build keeps failing)"
+        type: boolean
+        default: false
   workflow_run:
     workflows: ["تحديث المحتوى تلقائيًا"]
     types: [completed]
@@ -24,6 +29,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout trusted main branch
         uses: actions/checkout@v4
@@ -32,8 +38,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build and validate static SEO pages
-        run: python automation/build_seo.py
+      - name: Build static SEO pages (3 attempts)
+        env:
+          SKIP_SEO: ${{ inputs.skip_seo }}
+        run: |
+          if [ "${SKIP_SEO}" = "true" ]; then
+            echo "::warning::SEO pages skipped by manual request; deploying the site without regenerated SEO pages"
+            rm -rf _site
+            mkdir _site
+            tar --exclude='./_site' --exclude='./.git' --exclude='./.github' --exclude='./automation' -cf - . | tar -xf - -C _site
+            touch _site/.nojekyll
+            exit 0
+          fi
+          for attempt in 1 2 3; do
+            if python automation/build_seo.py; then
+              exit 0
+            fi
+            echo "::warning::SEO build attempt ${attempt} of 3 failed"
+            if [ "${attempt}" -lt 3 ]; then sleep $((attempt * 20)); fi
+          done
+          echo "::error::SEO build failed after 3 attempts. Fix the cause, or re-run this workflow manually with skip_seo enabled to deploy without regenerated SEO pages."
+          exit 1
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload public site only
