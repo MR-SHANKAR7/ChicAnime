@@ -338,7 +338,8 @@
           window.imagesData = data;
           
           if (galleryGrid) {
-            renderGallery(data, galleryGrid);
+            sortGallery(document.getElementById('sort-by')?.value || 'newest');
+            filterByAnime(activeAnimeFilter);
           }
           
           if (latestGrid) {
@@ -535,31 +536,51 @@
       }, 3000);
     }
 
+    // يقرأ التاريخ من uploadedAt، أو من مفتاح Firebase للعناصر القديمة.
+    function getUploadTimestamp(image) {
+      const uploadedAt = Date.parse(image.uploadedAt || '');
+      if (Number.isFinite(uploadedAt)) return uploadedAt;
+      const alphabet = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
+      const keyPrefix = String(image.id || '').slice(0, 8);
+      if (keyPrefix.length !== 8) return 0;
+      let timestamp = 0;
+      for (const character of keyPrefix) {
+        const digit = alphabet.indexOf(character);
+        if (digit < 0) return 0;
+        timestamp = timestamp * 64 + digit;
+      }
+      return timestamp;
+    }
+
+    function normalizeAnimeName(value) {
+      return String(value || '').trim().toLocaleLowerCase();
+    }
+
+    function matchesAnimeCategory(anime, category) {
+      if (category === 'all') return true;
+      const name = normalizeAnimeName(anime);
+      const categories = {
+        'ناروتو': ['naruto', 'ناروتو'],
+        'ون بيس': ['one piece', 'ون بيس'],
+        'أتاك على تيتان': ['attack on titan', 'shingeki no kyojin', 'هجوم العمالقة', 'أتاك على تيتان'],
+        'بليتش': ['bleach', 'بليتش']
+      };
+      if (category === 'أخرى') {
+        return !Object.values(categories).some(aliases => aliases.some(alias => name.includes(normalizeAnimeName(alias))));
+      }
+      return (categories[category] || [category]).some(alias => name.includes(normalizeAnimeName(alias)));
+    }
+
+    let activeAnimeFilter = 'all';
+
     // دالة للتصفية حسب الأنمي
     function filterByAnime(animeName) {
-      const cards = document.querySelectorAll('.card');
+      activeAnimeFilter = animeName || 'all';
       const buttons = document.querySelectorAll('.category-btn');
-      
-      // تحديد الزر النشط
-      buttons.forEach(btn => {
-        if (btn.getAttribute('data-filter') === animeName) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
-      
-      cards.forEach(card => {
-        if (animeName === 'all') {
-          card.style.display = 'block';
-        } else {
-          const cardAnime = card.getAttribute('data-anime');
-          if (cardAnime === animeName) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
-        }
+      buttons.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-filter') === activeAnimeFilter));
+
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.display = matchesAnimeCategory(card.getAttribute('data-anime'), activeAnimeFilter) ? '' : 'none';
       });
     }
 
@@ -631,32 +652,35 @@
     });
 
     // تفعيل الفرز
-    document.getElementById('sort-by').addEventListener('change', function() {
+    document.getElementById('sort-by')?.addEventListener('change', function() {
       sortGallery(this.value);
     });
 
-    // دالة للفرز
+    // ترتيب كامل البيانات أولاً، ثم إعادة تطبيق التصنيف الحالي.
     function sortGallery(method) {
       if (!window.imagesData) return;
-      
-      let sortedData = [...window.imagesData];
-      
-      switch(method) {
-        case 'newest':
-          sortedData.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
-          break;
+
+      const sortedData = [...window.imagesData];
+      switch (method) {
         case 'oldest':
-          sortedData.sort((a, b) => new Date(a.uploadedAt) - new Date(b.uploadedAt));
+          sortedData.sort((a, b) => getUploadTimestamp(a) - getUploadTimestamp(b));
           break;
         case 'az':
-          sortedData.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+          sortedData.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'ar'));
           break;
         case 'za':
-          sortedData.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+          sortedData.sort((a, b) => (b.title || '').localeCompare(a.title || '', 'ar'));
           break;
+        case 'popular':
+          sortedData.sort((a, b) => (Number(b.views) || 0) - (Number(a.views) || 0));
+          break;
+        case 'newest':
+        default:
+          sortedData.sort((a, b) => getUploadTimestamp(b) - getUploadTimestamp(a));
       }
-      
+
       renderGallery(sortedData, document.getElementById('galleryGrid'));
+      filterByAnime(activeAnimeFilter);
     }
 
     // تحميل المزيد من الصور
