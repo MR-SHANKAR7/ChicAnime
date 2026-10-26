@@ -1,6 +1,7 @@
 import { readAll, push, update } from "../lib/db.js";
 import { gql, sleep } from "../lib/anilist.js";
-import { toArabic, toArabicMany, stripHtml } from "../lib/translate.js";
+import { fetchJikanAnimeCharacters } from "../lib/jikan.js";
+import { toArabicMany, stripHtml } from "../lib/translate.js";
 
 // شخصيات كل أنمي في الموقع (الرئيسية أولًا)، تُضاف إلى معرض الشخصيات مرة واحدة لكل أنمي
 const ANIME_PER_RUN = Number(process.env.ANIME_CHARACTERS_PER_RUN || 5);
@@ -8,7 +9,7 @@ const CHARACTERS_PER_ANIME = 8;
 
 const QUERY = `
 query ($id: Int, $perPage: Int) {
-  Media(id: $id) {
+  Media(id: $id, type: ANIME) {
     title { romaji english }
     startDate { year }
     characters(sort: [ROLE, FAVOURITES_DESC], perPage: $perPage) {
@@ -19,6 +20,7 @@ query ($id: Int, $perPage: Int) {
 
 const MONTHS_AR = ["", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
 const ROLE_AR = { MAIN: "رئيسية", SUPPORTING: "مساندة", BACKGROUND: "ثانوية" };
+const JIKAN_ROLE_AR = { MAIN: "رئيسية", SUPPORTING: "مساندة" };
 
 export async function runAnimeCharacters() {
   const pending = (await readAll("videos", "anime"))
@@ -30,34 +32,69 @@ export async function runAnimeCharacters() {
 
   for (const anime of pending) {
     const id = Number(anime.sourceId.split(":")[1]);
-    const { Media } = await gql(QUERY, { id, perPage: CHARACTERS_PER_ANIME });
-    const edges = Media.characters.edges.filter((e) => e.node.image?.large && !existing.has(`anilist-char:${e.node.id}`));
+    let Media = null;
+    let edges = [];
+    let source = "AniList";
+
+    try {
+      const result = await gql(QUERY, { id, perPage: CHARACTERS_PER_ANIME });
+      Media = result.Media;
+      edges = Media?.characters?.edges || [];
+      if (!edges.some((edge) => edge.node.image?.large)) {
+        throw new Error("AniList returned no usable character images");
+      }
+      edges = edges.map((edge) => ({ ...edge, sourceId: `anilist-char:${edge.node.id}` }));
+    } catch (error) {
+      if (!anime.malId) {
+        throw new Error(`AniList character lookup failed for ${anime.title}, and no MAL ID is saved for fallback: ${error.message}`);
+      }
+      console.warn(`AniList characters unavailable for ${anime.title}; trying Jikan: ${error.message}`);
+      const fallback = await fetchJikanAnimeCharacters(anime.malId);
+      source = "Jikan";
+      edges = fallback.slice(0, CHARACTERS_PER_ANIME).map((character) => ({
+        sourceId: character.sourceId,
+        role: character.role,
+        node: {
+          id: character.id,
+          name: { full: character.name },
+          image: { large: character.image },
+          description: character.description,
+          dateOfBirth: null,
+        },
+      }));
+    }
+
+    const fresh = edges.filter((edge) => edge.node.image?.large && !existing.has(edge.sourceId));
+    const names = await toArabicMany(fresh.map((edge) => edge.node.name.full));
+    const details = await toArabicMany(fresh.map((edge) => stripHtml(edge.node.description || "").slice(0, 1200)));
     const animeTitle = anime.title;
 
-    const names = await toArabicMany(edges.map((e) => e.node.name.full));
-    const details = await toArabicMany(edges.map((e) => stripHtml(e.node.description || "").slice(0, 1200)));
-
-    for (const [i, e] of edges.entries()) {
-      const c = e.node;
+    for (const [i, edge] of fresh.entries()) {
+      const c = edge.node;
       await push("gallery", "images", {
         title: `${names[i]} - ${c.name.full}`,
         anime: animeTitle,
         animeId: anime.id,
-        role: ROLE_AR[e.role] || "",
+        role: ROLE_AR[edge.role] || JIKAN_ROLE_AR[edge.role] || "",
         type: "character",
         birthdate: c.dateOfBirth?.month ? `${c.dateOfBirth.day || ""} ${MONTHS_AR[c.dateOfBirth.month]}`.trim() : "غير معروف",
         seasons: animeTitle,
-        start_date: Media.startDate?.year ? String(Media.startDate.year) : "",
+        start_date: Media?.startDate?.year ? String(Media.startDate.year) : "",
         details: details[i] || "",
         image: c.image.large,
         uploadedAt: new Date().toISOString(),
         uploadedBy: "auto",
-        sourceId: `anilist-char:${c.id}`,
+        sourceId: edge.sourceId,
       });
-      existing.add(`anilist-char:${c.id}`);
+      existing.add(edge.sourceId);
     }
-    await update("videos", `anime/${anime.id}`, { charactersSynced: true });
-    console.log(`أُضيفت ${edges.length} شخصية لـ ${animeTitle}`);
+
+    await update("videos", `anime/${anime.id}`, {
+      charactersSynced: true,
+      charactersSource: source,
+      charactersSyncedAt: new Date().toISOString(),
+    });
+    console.log(`أُضيفت ${fresh.length} شخصية لـ ${animeTitle} (المصدر: ${source})`);
     await sleep(700);
   }
 }
