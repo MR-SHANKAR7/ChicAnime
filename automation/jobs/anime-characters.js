@@ -50,6 +50,9 @@ export async function runAnimeCharacters() {
       }
       console.warn(`AniList characters unavailable for ${anime.title}; trying Jikan: ${error.message}`);
       const fallback = await fetchJikanAnimeCharacters(anime.malId);
+      if (!fallback.length) {
+        throw new Error(`Jikan returned no usable character images for ${anime.title}; leaving this anime pending for a later retry.`);
+      }
       source = "Jikan";
       edges = fallback.slice(0, CHARACTERS_PER_ANIME).map((character) => ({
         sourceId: character.sourceId,
