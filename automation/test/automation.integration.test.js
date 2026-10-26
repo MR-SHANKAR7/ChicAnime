@@ -180,7 +180,7 @@ test("Jikan character fallback validates IDs, respects response errors, and norm
   const rows = await fetchJikanAnimeCharacters(123, {
     sleepFn: async () => {},
     fetchImpl: async (url) => {
-      assert.match(url, /\\/anime\\/123\\/characters$/);
+      assert.match(url, /\/anime\/123\/characters$/);
       return {
         ok: true,
         status: 200,
