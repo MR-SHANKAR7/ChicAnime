@@ -20,7 +20,7 @@ query ($id: Int, $perPage: Int) {
 
 const MONTHS_AR = ["", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
 const ROLE_AR = { MAIN: "رئيسية", SUPPORTING: "مساندة", BACKGROUND: "ثانوية" };
-const JIKAN_ROLE_AR = { MAIN: "رئيسية", SUPPORTING: "مساندة" };
+const JIKAN_ROLE_AR = { Main: "رئيسية", Supporting: "مساندة" };
 
 export async function runAnimeCharacters() {
   const pending = (await readAll("videos", "anime"))
