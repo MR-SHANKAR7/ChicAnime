@@ -44,6 +44,7 @@ export const FORMAT_AR = { TV: "مسلسل", TV_SHORT: "مسلسل قصير", MO
 
 export const MEDIA_FIELDS = `
   id
+  idMal
   title { romaji english }
   description(asHtml: false)
   genres
@@ -68,6 +69,7 @@ export function toAnimeRecord(m) {
   return {
     title: m.title.english || m.title.romaji,
     titleRomaji: m.title.romaji,
+    malId: m.idMal || null,
     status: STATUS_MAP[m.status] || "ongoing",
     category: mapGenres(m.genres),
     thumbnail: m.coverImage.extraLarge || m.coverImage.large,

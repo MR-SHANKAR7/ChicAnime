@@ -174,3 +174,35 @@ test("Firebase temporary-node round trip (explicit opt-in only)", { skip: proces
     await close();
   }
 });
+
+test("Jikan character fallback validates IDs, respects response errors, and normalizes images", async () => {
+  const { fetchJikanAnimeCharacters } = await import("../lib/jikan.js");
+  const rows = await fetchJikanAnimeCharacters(123, {
+    sleepFn: async () => {},
+    fetchImpl: async (url) => {
+      assert.match(url, /\/anime\/123\/characters$/);
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => null },
+        json: async () => ({ data: [
+          { role: "Main", character: { mal_id: 9, name: "Example", images: { webp: { image_url: "https://img.example/9.webp" } }, about: "Character details" } },
+          { role: "Supporting", character: { mal_id: 10, name: "No image", images: {}, about: "" } },
+        ] }),
+      };
+    },
+  });
+  assert.deepEqual(rows, [{
+    id: 9,
+    name: "Example",
+    image: "https://img.example/9.webp",
+    role: "Main",
+    description: "Character details",
+    sourceId: "jikan-char:123:9",
+  }]);
+  await assert.rejects(fetchJikanAnimeCharacters(0, { sleepFn: async () => {} }), /valid MyAnimeList anime ID/);
+  await assert.rejects(fetchJikanAnimeCharacters(123, {
+    sleepFn: async () => {},
+    fetchImpl: async () => ({ ok: false, status: 503, headers: { get: () => null } }),
+  }), /Jikan character lookup failed/);
+});
