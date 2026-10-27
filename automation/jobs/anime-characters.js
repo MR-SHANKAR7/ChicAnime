@@ -1,6 +1,7 @@
 import { readAll, push, update } from "../lib/db.js";
 import { gql, sleep } from "../lib/anilist.js";
 import { fetchJikanAnimeCharacters } from "../lib/jikan.js";
+import { isUsableImage } from "../lib/images.js";
 import { toArabicMany, stripHtml } from "../lib/translate.js";
 
 // شخصيات كل أنمي في الموقع (الرئيسية أولًا)، تُضاف إلى معرض الشخصيات مرة واحدة لكل أنمي
@@ -22,6 +23,14 @@ const MONTHS_AR = ["", "يناير", "فبراير", "مارس", "أبريل", "
 const ROLE_AR = { MAIN: "رئيسية", SUPPORTING: "مساندة", BACKGROUND: "ثانوية" };
 const JIKAN_ROLE_AR = { Main: "رئيسية", Supporting: "مساندة" };
 
+async function filterUsableEdges(edges) {
+  const valid = [];
+  for (const edge of edges) {
+    if (edge.node.image?.large && await isUsableImage(edge.node.image.large)) valid.push(edge);
+  }
+  return valid;
+}
+
 export async function runAnimeCharacters() {
   const pending = (await readAll("videos", "anime"))
     .filter((a) => a.sourceId?.startsWith("anilist-anime:") && !a.charactersSynced)
@@ -40,7 +49,8 @@ export async function runAnimeCharacters() {
       const result = await gql(QUERY, { id, perPage: CHARACTERS_PER_ANIME });
       Media = result.Media;
       edges = Media?.characters?.edges || [];
-      if (!edges.some((edge) => edge.node.image?.large)) {
+      edges = await filterUsableEdges(edges);
+      if (!edges.length) {
         throw new Error("AniList returned no usable character images");
       }
       edges = edges.map((edge) => ({ ...edge, sourceId: `anilist-char:${edge.node.id}` }));
@@ -50,11 +60,15 @@ export async function runAnimeCharacters() {
       }
       console.warn(`AniList characters unavailable for ${anime.title}; trying Jikan: ${error.message}`);
       const fallback = await fetchJikanAnimeCharacters(anime.malId);
-      if (!fallback.length) {
+      const usableFallback = [];
+      for (const character of fallback) {
+        if (await isUsableImage(character.image)) usableFallback.push(character);
+      }
+      if (!usableFallback.length) {
         throw new Error(`Jikan returned no usable character images for ${anime.title}; leaving this anime pending for a later retry.`);
       }
       source = "Jikan";
-      edges = fallback.slice(0, CHARACTERS_PER_ANIME).map((character) => ({
+      edges = usableFallback.slice(0, CHARACTERS_PER_ANIME).map((character) => ({
         sourceId: character.sourceId,
         role: character.role,
         node: {
