@@ -65,3 +65,17 @@ export async function fetchJikanAnimeCharacters(
 
   throw new Error(`Jikan character lookup failed for anime ${id}: ${lastError?.message || "unknown error"}`);
 }
+
+// Fetch a single character image by MAL character ID for repairing old gallery records.
+export async function fetchJikanCharacterImage(characterId, { fetchImpl = fetch, timeoutMs = 12000 } = {}) {
+  const id = Number(characterId);
+  if (!Number.isInteger(id) || id <= 0) return "";
+  await sleep(350);
+  const response = await fetchImpl(`${BASE}/characters/${id}/full`, {
+    headers: { Accept: "application/json", "User-Agent": USER_AGENT },
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  if (!response.ok) throw new Error(`Jikan character image HTTP ${response.status} for ${id}`);
+  const payload = await response.json();
+  return payload.data?.images?.webp?.image_url || payload.data?.images?.jpg?.image_url || "";
+}
