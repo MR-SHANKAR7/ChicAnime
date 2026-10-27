@@ -1,7 +1,7 @@
 import { readAll, push } from "../lib/db.js";
 import { SOURCES, fetchSource, fetchArticle, htmlToText, firstImage } from "../lib/sources.js";
 import { toArabic } from "../lib/translate.js";
-import { cdnImage } from "../lib/images.js";
+import { cdnImage, isUsableImage } from "../lib/images.js";
 
 const MAX_PER_SOURCE = Number(process.env.NEWS_PER_RUN || 5);
 
@@ -13,6 +13,7 @@ export async function runNews({
   pushFn = push,
   translateFn = toArabic,
   cdnImageFn = cdnImage,
+  validateImageFn = isUsableImage,
 } = {}) {
   const existing = new Set((await readAllFn("gallery", "news")).map((n) => n.sourceId).filter(Boolean));
   let total = 0;
@@ -41,7 +42,10 @@ export async function runNews({
       const record = src.lang === "ar"
         ? await arabicRecord(it, { fetchArticleFn, cdnImageFn })
         : await translatedRecord(it, { fetchArticleFn, translateFn, cdnImageFn });
-      if (!record) { console.log("تخطي (بدون صورة):", it.title); continue; }
+      if (!record?.imageUrl || !(await validateImageFn(record.imageUrl))) {
+        console.log("تخطي (الصورة مفقودة أو غير صالحة):", it.title);
+        continue;
+      }
       await pushFn("gallery", "news", {
         ...record,
         category: "أخبار",
