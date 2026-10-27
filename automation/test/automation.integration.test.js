@@ -220,3 +220,45 @@ test("image validation rejects invalid URLs and non-image HTTP responses", async
     fetchImpl: async () => ({ ok: true, status: 206, headers: { get: () => "image/webp" }, body: null }),
   }), true);
 });
+
+
+test("character image maintenance repairs only broken automatic character records", async () => {
+  const { runImageHealth } = await import("../jobs/image-health.js");
+  const records = [
+    { id: "missing", type: "character", uploadedBy: "auto", sourceId: "anilist-char:123", title: "Missing image", image: "" },
+    { id: "good", type: "character", uploadedBy: "auto", sourceId: "anilist-char:124", title: "Good image", image: "https://img.example/good.webp" },
+    { id: "news", type: "news", uploadedBy: "auto", sourceId: "anilist-char:125", title: "News record", image: "" },
+  ];
+  const updates = [];
+  const removed = [];
+  const result = await runImageHealth({
+    readAllFn: async () => records,
+    validateImageFn: async (url) => url === "https://img.example/good.webp" || url === "https://img.example/repaired.webp",
+    fetchAniListImageFn: async (id) => id === 123 ? "https://img.example/repaired.webp" : "",
+    updateFn: async (_db, path, value) => updates.push({ path, value }),
+    removeFn: async (_db, path) => removed.push(path),
+    clean: true,
+  });
+  assert.deepEqual(updates, [{ path: "images/missing", value: { image: "https://img.example/repaired.webp" } }]);
+  assert.deepEqual(removed, []);
+  assert.deepEqual(result, { scanned: 2, needsRepair: 1, repaired: 1, unrecoverable: 0, deleted: 0, dryRun: false });
+});
+
+test("character image maintenance deletes only unrecoverable automatic character records", async () => {
+  const { runImageHealth } = await import("../jobs/image-health.js");
+  const removed = [];
+  const result = await runImageHealth({
+    readAllFn: async () => [
+      { id: "bad-character", type: "character", uploadedBy: "auto", sourceId: "anilist-char:999", image: "" },
+      { id: "manual-character", type: "character", uploadedBy: "manual", sourceId: "manual:1", image: "" },
+      { id: "bad-wallpaper", type: "wallpaper", uploadedBy: "auto", sourceId: "anilist-char:998", image: "" },
+    ],
+    validateImageFn: async () => false,
+    fetchAniListImageFn: async () => "",
+    updateFn: async () => assert.fail("No replacement image expected"),
+    removeFn: async (_db, path) => removed.push(path),
+    clean: true,
+  });
+  assert.deepEqual(removed, ["images/bad-character"]);
+  assert.deepEqual(result, { scanned: 1, needsRepair: 1, repaired: 0, unrecoverable: 1, deleted: 1, dryRun: false });
+});
