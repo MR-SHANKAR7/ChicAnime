@@ -391,6 +391,7 @@
         
         // استخدام الحقل الصحيح للصورة
         const imageUrl = image.image || image.url || image.secure_url;
+        if (!imageUrl || !/^https?:\\/\\//i.test(imageUrl)) return;
         const timestamp = image.uploadedAt ? new Date(image.uploadedAt) : new Date();
         const formattedDate = formatDate(timestamp);
         
