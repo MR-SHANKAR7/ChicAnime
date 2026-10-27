@@ -526,9 +526,7 @@
       
       const imageUrl = image.image || image.url || image.secure_url;
       const imgElement = document.getElementById('image-detail');
-      imgElement.src = safeHttpUrl(imageUrl);
-      if (!imgElement.src || !safeHttpUrl(imageUrl)) imgElement.hidden = true;
-      imgElement.onerror = () => { imgElement.hidden = true; };
+      imgElement.src = safeHttpUrl(imageUrl) || 'https://via.placeholder.com/900x600?text=صورة+غير+متوفرة';
       imgElement.alt = image.title || 'صورة أنمي';
       
       document.getElementById('image-details').textContent = image.details || 'لا توجد تفاصيل متاحة';
