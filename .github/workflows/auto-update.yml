@@ -9,6 +9,11 @@ on:
         description: "المهام: news,catalog,anime-characters,characters,wallpapers,digest"
         default: "news,catalog,anime-characters,characters,wallpapers,digest"
         required: false
+      clean_bad_images:
+        description: "حذف سجلات الشخصيات الآلية ذات الصور غير الصالحة (ابدأ بفحص تجريبي دون تفعيل هذا الخيار)"
+        type: boolean
+        default: false
+        required: false
 
 concurrency:
   group: auto-update
@@ -44,6 +49,7 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_SERVICE_ACCOUNT_VIDEOS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_VIDEOS }}
           JOBS: ${{ inputs.jobs || 'news,catalog,anime-characters,characters,wallpapers,digest' }}
+          CLEAN_BAD_IMAGES: ${{ inputs.clean_bad_images && '1' || '0' }}
           NEWS_PER_RUN: "5"
           CHARACTERS_PER_RUN: "6"
           WALLPAPERS_PER_RUN: "6"

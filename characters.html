@@ -391,6 +391,7 @@
         
         // استخدام الحقل الصحيح للصورة
         const imageUrl = image.image || image.url || image.secure_url;
+        if (!safeHttpUrl(imageUrl)) return;
         const timestamp = image.uploadedAt ? new Date(image.uploadedAt) : new Date();
         const formattedDate = formatDate(timestamp);
         
@@ -411,6 +412,7 @@
           </div>
         `;
         latestItem.querySelector('.btn-primary').addEventListener('click', () => viewImageDetails(image.id));
+        latestItem.querySelector('img').addEventListener('error', () => latestItem.remove(), { once: true });
         
         gridElement.appendChild(latestItem);
       });
@@ -477,6 +479,7 @@
             </div>
           </div>
         `;
+        card.querySelector('img').addEventListener('error', () => card.remove(), { once: true });
         card.querySelector('.btn-view').addEventListener('click', () => viewDetails(image.id || index));
         card.querySelector('.btn-download').addEventListener('click', () => downloadImage(safeHttpUrl(imageUrl), image.title || 'anime_character'));
         
