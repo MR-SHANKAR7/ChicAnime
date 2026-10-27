@@ -86,6 +86,7 @@ test("news job tolerates one failed source, reports partial failure, and dedupli
     readAllFn: async () => [],
     pushFn: async (_db, _node, record) => pushed.push(record),
     cdnImageFn: (url) => url,
+    validateImageFn: async () => true,
   });
   assert.equal(result.successfulSources, 1);
   assert.equal(result.failedSources.length, 1);
@@ -205,4 +206,17 @@ test("Jikan character fallback validates IDs, respects response errors, and norm
     sleepFn: async () => {},
     fetchImpl: async () => ({ ok: false, status: 503, headers: { get: () => null } }),
   }), /Jikan character lookup failed/);
+});
+
+
+test("image validation rejects invalid URLs and non-image HTTP responses", async () => {
+  const { isUsableImage, cdnImage } = await import("../lib/images.js");
+  assert.equal(cdnImage("javascript:alert(1)"), "");
+  assert.equal(await isUsableImage("not-a-url"), false);
+  assert.equal(await isUsableImage("https://example.test/not-image", {
+    fetchImpl: async () => ({ ok: true, status: 200, headers: { get: () => "text/html" }, body: null }),
+  }), false);
+  assert.equal(await isUsableImage("https://example.test/image.webp", {
+    fetchImpl: async () => ({ ok: true, status: 206, headers: { get: () => "image/webp" }, body: null }),
+  }), true);
 });
