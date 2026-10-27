@@ -1,6 +1,7 @@
 import { readAll, push } from "../lib/db.js";
 import { gql, sleep } from "../lib/anilist.js";
 import { toArabic, stripHtml } from "../lib/translate.js";
+import { isUsableImage } from "../lib/images.js";
 
 const MAX_PER_RUN = Number(process.env.CHARACTERS_PER_RUN || 6);
 
@@ -32,6 +33,10 @@ export async function runCharacters() {
     for (const c of Page.characters) {
       if (picked.length >= MAX_PER_RUN) break;
       if (existing.has(`anilist-char:${c.id}`) || !c.image?.large || !c.description) continue;
+      if (!(await isUsableImage(c.image.large))) {
+        console.warn(`تخطي شخصية بصورتها غير الصالحة: ${c.name.full}`);
+        continue;
+      }
       picked.push(c);
     }
     await sleep(700);
