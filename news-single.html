@@ -623,10 +623,12 @@
       // معالجة صورة الخبر
       const newsImage = document.getElementById('newsImage');
       if (news.imageUrl) {
-        newsImage.src = safeHttpUrl(news.imageUrl) || 'https://via.placeholder.com/900x400/6a55fa/ffffff?text=صورة+غير+متوفرة';
+        newsImage.src = safeHttpUrl(news.imageUrl);
+        if (!newsImage.src) newsImage.hidden = true;
+        newsImage.onerror = () => { newsImage.hidden = true; };
         newsImage.alt = news.title || 'صورة الخبر';
       } else {
-        newsImage.src = 'https://via.placeholder.com/900x400/6a55fa/ffffff?text=صورة+غير+متوفرة';
+        newsImage.hidden = true;
       }
       
       // معالجة محتوى الخبر
@@ -842,7 +844,7 @@
       // إعداد استماع لأخطاء تحميل الصور
       window.addEventListener('error', function(e) {
         if (e.target.tagName === 'IMG') {
-          e.target.src = 'https://via.placeholder.com/900x400/6a55fa/ffffff?text=صورة+غير+متوفرة';
+          e.target.hidden = true;
         }
       }, true);
     });
