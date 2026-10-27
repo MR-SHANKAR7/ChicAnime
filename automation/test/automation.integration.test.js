@@ -86,7 +86,6 @@ test("news job tolerates one failed source, reports partial failure, and dedupli
     readAllFn: async () => [],
     pushFn: async (_db, _node, record) => pushed.push(record),
     cdnImageFn: (url) => url,
-    validateImageFn: async () => true,
   });
   assert.equal(result.successfulSources, 1);
   assert.equal(result.failedSources.length, 1);
