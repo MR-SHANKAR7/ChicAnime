@@ -485,7 +485,7 @@
         
         newsCard.innerHTML = `
           <div class="news-thumb">
-            <img src="${escapeHtml(safeHttpUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}" onerror="this.src='https://via.placeholder.com/400x250/6a55fa/ffffff?text=صورة+غير+متوفرة'">
+            <img src="${escapeHtml(safeHttpUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.closest('.news-card')?.remove()">
             <div class="news-date">${formatDate(item.date)}</div>
           </div>
           <div class="news-content">
@@ -525,7 +525,7 @@
         featuredHTML += `
           <div class="featured-news-item">
             <div class="featured-news-thumb">
-              <img src="${escapeHtml(safeHttpUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}" onerror="this.src='https://via.placeholder.com/600x400/6a55fa/ffffff?text=صورة+غير+متوفرة'">
+              <img src="${escapeHtml(safeHttpUrl(item.imageUrl))}" alt="${escapeHtml(item.title)}" loading="lazy" onerror="this.closest('.featured-news-item')?.remove()">
             </div>
             <div class="featured-news-content">
               <div class="news-date">${formatDate(item.date)}</div>
